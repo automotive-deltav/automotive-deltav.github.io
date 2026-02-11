@@ -87,8 +87,8 @@ function delBk(id){confirmDel("Delete this booking?",async()=>{await dbDel("book
 function exportBk(){
   const rows=[["Name","Email","Phone","Reg","Vehicle","Service","Preferred Date","Confirmed Date","Time","Status","Notes"]];
   bkData.forEach(b=>rows.push([b.name,b.email,b.phone,b.reg,b.car||"",b.service||"",b.date,b.confirmed_date||"",b.confirmed_time||"",b.status,b.notes||""]));
-  const csv = rows.map(r => r.map(c => `"${(c||"").toString().replace(/"/g,'""')}"`).join(",")).join("\n");
-;
+  const csv=rows.map(r=>r.map(c=>`"${(c||"").toString().replace(/"/g,'""')}"`).join(",")).join("
+");
   const a=document.createElement("a");a.href="data:text/csv,"+encodeURIComponent(csv);a.download="bookings.csv";a.click();
 }
 fetchBk();setInterval(fetchBk,15000);
