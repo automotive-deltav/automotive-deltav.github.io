@@ -1,59 +1,174 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>DeltaV — 🗓️ Schedule</title><link rel="stylesheet" href="theme.css"><style></style></head><body><script>if(sessionStorage.getItem("dv_admin")!=="1"){location.href="login.html";}</script><div class="sidebar"><div class="sb-logo">DeltaV <span>Auto</span><small>Admin Panel</small></div><nav><div class="sb-sec">Core</div><a href="dashboard.html" class=""><span class="ni">📊</span>Dashboard</a><a href="admin.html" class=""><span class="ni">📅</span>Bookings</a><a href="schedule.html" class="active"><span class="ni">🗓️</span>Schedule</a><a href="customers.html" class=""><span class="ni">👥</span>Customers</a><a href="invoices.html" class=""><span class="ni">💰</span>Invoices</a><div class="sb-sec">Stock & Money</div><a href="inventory.html" class=""><span class="ni">📦</span>Inventory</a><a href="payments.html" class=""><span class="ni">💳</span>Payments</a><a href="finance.html" class=""><span class="ni">📈</span>Finance</a><a href="workers.html" class=""><span class="ni">👷</span>Workers</a><div class="sb-sec">Operations</div><a href="jobs.html" class=""><span class="ni">🔩</span>Job Cards</a><a href="quotes.html" class=""><span class="ni">📋</span>Quotes</a><a href="suppliers.html" class=""><span class="ni">🏭</span>Suppliers</a><a href="expenses.html" class=""><span class="ni">🧾</span>Expenses</a><a href="reports.html" class=""><span class="ni">📉</span>Reports</a><div class="sb-sec">Communication</div><a href="messages.html" class=""><span class="ni">💬</span>Messages</a><a href="notes.html" class=""><span class="ni">📝</span>Notes</a><a href="reminders.html" class=""><span class="ni">🔔</span>Reminders</a><a href="vehicles.html" class=""><span class="ni">🚗</span>Vehicle DB</a><div class="sb-sec">Extra</div><a href="audit.html" class=""><span class="ni">🔍</span>Audit Log</a><a href="tasks.html" class=""><span class="ni">✅</span>Tasks</a><a href="timesheets.html" class=""><span class="ni">⏱️</span>Timesheets</a><a href="warranties.html" class=""><span class="ni">🛡️</span>Warranties</a><a href="promotions.html" class=""><span class="ni">🎁</span>Promotions</a><a href="feedback.html" class=""><span class="ni">⭐</span>Feedback</a><a href="returns.html" class=""><span class="ni">↩️</span>Returns</a><a href="waiting.html" class=""><span class="ni">⏳</span>Waiting List</a><a href="checklist.html" class=""><span class="ni">☑️</span>Checklists</a><a href="gallery-admin.html" class=""><span class="ni">📸</span>Gallery Mgr</a><a href="targets.html" class=""><span class="ni">🎯</span>Targets</a><a href="settings.html" class=""><span class="ni">⚙️</span>Settings</a></nav><div class="sb-foot"><a href="index.html" class="btn-sb-link">🌐 Website</a><button class="btn-sb-out" onclick="if(confirm('Log out?')){sessionStorage.removeItem('dv_admin');location.href='login.html';}">🚪 Log Out</button></div></div><div class="main"><div class="topbar"><h1>🗓️ Schedule</h1><div class="tr"><button class="btn btn-ghost" onclick="loadSch()">🔄 Refresh</button><button class="btn btn-info" onclick="exportSch()">📥 Export</button><a href="admin.html" class="btn btn-dark">📅 Bookings</a></div></div><div class="body"><div style="display:flex;gap:8px;margin-bottom:16px;align-items:center;flex-wrap:wrap">
-  <button class="btn btn-dark" onclick="prevMo()">← Prev</button>
-  <h2 id="moT" style="flex:1;text-align:center;font-family:'Barlow Condensed',sans-serif;font-size:1.5rem;font-weight:700;color:var(--dk)"></h2>
-  <button class="btn btn-dark" onclick="nextMo()">Next →</button>
-  <button class="btn btn-primary" onclick="goTd()">Today</button>
-  <button class="btn btn-ghost" onclick="loadSch()">🔄</button>
-</div>
-<div class="tbl-wrap" style="overflow:visible">
-  <div style="display:grid;grid-template-columns:repeat(7,1fr);background:linear-gradient(135deg,#1b2b3a,#2e4560)">
-    <div style="padding:10px;text-align:center;color:rgba(255,255,255,.45);font-size:.64rem;font-weight:700;letter-spacing:1px">SUN</div>
-    <div style="padding:10px;text-align:center;color:rgba(255,255,255,.45);font-size:.64rem;font-weight:700;letter-spacing:1px">MON</div>
-    <div style="padding:10px;text-align:center;color:rgba(255,255,255,.45);font-size:.64rem;font-weight:700;letter-spacing:1px">TUE</div>
-    <div style="padding:10px;text-align:center;color:rgba(255,255,255,.45);font-size:.64rem;font-weight:700;letter-spacing:1px">WED</div>
-    <div style="padding:10px;text-align:center;color:rgba(255,255,255,.45);font-size:.64rem;font-weight:700;letter-spacing:1px">THU</div>
-    <div style="padding:10px;text-align:center;color:rgba(255,255,255,.45);font-size:.64rem;font-weight:700;letter-spacing:1px">FRI</div>
-    <div style="padding:10px;text-align:center;color:rgba(255,255,255,.45);font-size:.64rem;font-weight:700;letter-spacing:1px">SAT</div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DeltaV — Schedule</title>
+<link rel="stylesheet" href="theme.css">
+<style>
+.cal-head{display:grid;grid-template-columns:repeat(7,1fr);background:linear-gradient(135deg,#1b2b3a,#2e4560);border-radius:var(--r) var(--r) 0 0}
+.cal-head div{padding:12px;text-align:center;color:rgba(255,255,255,.6);font-size:.7rem;font-weight:700;letter-spacing:1.2px}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:0;background:#fff;border-radius:0 0 var(--r) var(--r);border:1.5px solid var(--br);border-top:none}
+.cal-day{min-height:120px;border:1px solid #f0f2f5;padding:8px;background:#fff;position:relative;transition:all .18s}
+.cal-day:hover{background:#f9fafb}
+.cal-day.today{background:#fff5f0;border:2px solid var(--ac)}
+.day-num{font-weight:700;font-size:.88rem;color:var(--dk);margin-bottom:6px}
+.day-num.today{color:var(--ac);font-size:1rem}
+.appt{background:#28a745;color:#fff;padding:4px 7px;border-radius:5px;font-size:.68rem;font-weight:600;margin-bottom:3px;cursor:pointer;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;box-shadow:0 2px 5px rgba(0,0,0,.15);transition:all .15s}
+.appt:hover{transform:translateY(-1px);box-shadow:0 3px 8px rgba(0,0,0,.2)}
+.appt.pending{background:#ffc107;color:#333}
+</style>
+</head>
+<body>
+<script>if(sessionStorage.getItem("dv_admin")!=="1"){location.href="login.html";}</script>
+<div class="sidebar">
+  <div class="sb-logo">DeltaV <span>Auto</span><small>Admin Panel</small></div>
+  <nav>
+    <div class="sb-sec">Core</div>
+    <a href="dashboard.html"><span class="ni">📊</span>Dashboard</a>
+    <a href="admin.html"><span class="ni">📅</span>Bookings</a>
+    <a href="schedule.html" class="active"><span class="ni">🗓️</span>Schedule</a>
+    <a href="customers.html"><span class="ni">👥</span>Customers</a>
+    <a href="invoices.html"><span class="ni">💰</span>Invoices</a>
+    <div class="sb-sec">Stock & Money</div>
+    <a href="inventory.html"><span class="ni">📦</span>Inventory</a>
+    <a href="payments.html"><span class="ni">💳</span>Payments</a>
+    <a href="finance.html"><span class="ni">📈</span>Finance</a>
+    <a href="workers.html"><span class="ni">👷</span>Workers</a>
+    <div class="sb-sec">Operations</div>
+    <a href="jobs.html"><span class="ni">🔩</span>Job Cards</a>
+    <a href="quotes.html"><span class="ni">📋</span>Quotes</a>
+    <a href="suppliers.html"><span class="ni">🏭</span>Suppliers</a>
+    <a href="expenses.html"><span class="ni">🧾</span>Expenses</a>
+    <a href="reports.html"><span class="ni">📉</span>Reports</a>
+    <div class="sb-sec">Tools</div>
+    <a href="messages.html"><span class="ni">💬</span>Messages</a>
+    <a href="notes.html"><span class="ni">📝</span>Notes</a>
+    <a href="reminders.html"><span class="ni">🔔</span>Reminders</a>
+    <a href="vehicles.html"><span class="ni">🚗</span>Vehicle DB</a>
+    <a href="settings.html"><span class="ni">⚙️</span>Settings</a>
+  </nav>
+  <div class="sb-foot">
+    <a href="index.html" class="btn-sb-link">🌐 Website</a>
+    <button class="btn-sb-out" onclick="if(confirm('Log out?')){sessionStorage.removeItem('dv_admin');location.href='login.html';}">🚪 Log Out</button>
   </div>
-  <div id="calGrid" style="display:grid;grid-template-columns:repeat(7,1fr);background:#fff"></div>
 </div>
-<div class="modal" id="mApt"><div class="mbox"><h3>📋 Appointment</h3><div id="mAptB"></div>
-<div class="mfoot"><button class="btn btn-ghost" onclick="closeM('mApt')">Close</button><a href="admin.html" class="btn btn-primary">→ Manage</a></div></div></div></div></div><div class="modal" id="mDel"><div class="mbox" style="max-width:370px"><h3>🗑️ Confirm Delete</h3><p id="mDelMsg" style="color:#555;margin-bottom:4px">This cannot be undone.</p><div class="mfoot"><button class="btn btn-ghost" onclick="closeM('mDel')">Cancel</button><button class="btn btn-danger" id="mDelBtn">Yes, Delete</button></div></div></div><script src="shared.js"></script><script>
-let sMo=new Date().getMonth(),sYr=new Date().getFullYear(),sBks=[];
-const MO=["January","February","March","April","May","June","July","August","September","October","November","December"];
-async function loadSch(){sBks=await dbGet("bookings");renderCal();}
-function renderCal(){
-  document.getElementById("moT").textContent=`${MO[sMo]} ${sYr}`;
-  const first=new Date(sYr,sMo,1).getDay(),days=new Date(sYr,sMo+1,0).getDate(),td=today();
-  const g=document.getElementById("calGrid");g.innerHTML="";
-  for(let i=0;i<first;i++){const c=document.createElement("div");c.style="min-height:100px;border:1px solid #f0f2f5;background:#fafafa";g.appendChild(c);}
-  for(let d=1;d<=days;d++){
-    const ds=`${sYr}-${String(sMo+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
-    const day=sBks.filter(b=>(b.confirmed_date||b.date)===ds);
-    const isT=ds===td;
-    const c=document.createElement("div");
-    c.style=`min-height:100px;border:1px solid ${isT?"var(--ac)":"#f0f2f5"};padding:7px;background:${isT?"#fff5f0":"#fff"}`;
-    c.innerHTML=`<div style="font-weight:700;font-size:.82rem;color:${isT?"var(--ac)":"#1b2b3a"};margin-bottom:4px">${d}${isT?` <span style="font-size:.56rem;background:var(--ac);color:#fff;padding:1px 4px;border-radius:3px">TODAY</span>`:""}`;
-    day.forEach(b=>{
-      const dot=document.createElement("div");
-      dot.style=`background:${b.status==="confirmed"?"#28a745":"#ffc107"};color:${b.status==="confirmed"?"#fff":"#333"};padding:2px 6px;border-radius:4px;font-size:.66rem;font-weight:600;margin-bottom:2px;cursor:pointer;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;`;
-      dot.textContent=`${b.confirmed_time?fmtT(b.confirmed_time)+" ":""}${b.name}`;
-      dot.title=`${b.name} — ${b.reg} — ${b.service||""}`;
-      dot.onclick=()=>{document.getElementById("mAptB").innerHTML=`<div class="ir"><span class="lbl">Customer</span><span class="val">${b.name}</span></div><div class="ir"><span class="lbl">Reg</span><span class="val">${b.reg}</span></div><div class="ir"><span class="lbl">Service</span><span class="val">${b.service||"—"}</span></div><div class="ir"><span class="lbl">Time</span><span class="val">${b.confirmed_time?fmtT(b.confirmed_time):"Not set"}</span></div><div class="ir"><span class="lbl">Status</span><span class="val">${b.status}</span></div>`;openM("mApt");};
-      c.appendChild(dot);
-    });
-    g.appendChild(c);
+
+<div class="main">
+  <div class="topbar">
+    <h1>🗓️ Schedule</h1>
+    <div class="tr">
+      <button class="btn btn-ghost" onclick="loadSch()">🔄 Refresh</button>
+      <a href="admin.html" class="btn btn-dark">📅 Bookings</a>
+    </div>
+  </div>
+  <div class="body">
+    <div style="display:flex;gap:10px;margin-bottom:18px;align-items:center;justify-content:center">
+      <button class="btn btn-dark" onclick="prevMo()">← Previous</button>
+      <h2 id="moTitle" style="font-family:'Barlow Condensed',sans-serif;font-size:1.6rem;font-weight:700;color:var(--dk);min-width:200px;text-align:center"></h2>
+      <button class="btn btn-dark" onclick="nextMo()">Next →</button>
+      <button class="btn btn-primary" onclick="goToday()">📅 Today</button>
+    </div>
+    
+    <div class="cal-head">
+      <div>SUNDAY</div><div>MONDAY</div><div>TUESDAY</div><div>WEDNESDAY</div><div>THURSDAY</div><div>FRIDAY</div><div>SATURDAY</div>
+    </div>
+    <div class="cal-grid" id="calGrid"></div>
+
+    <div class="modal" id="mAppt">
+      <div class="mbox">
+        <h3>📋 Appointment Details</h3>
+        <div id="mApptBody"></div>
+        <div class="mfoot">
+          <button class="btn btn-ghost" onclick="closeM('mAppt')">Close</button>
+          <a href="admin.html" class="btn btn-primary">→ Manage Booking</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="mDel"><div class="mbox" style="max-width:360px"><h3>🗑️ Confirm Delete</h3><p id="mDelMsg" style="color:#555">This cannot be undone.</p><div class="mfoot"><button class="btn btn-ghost" onclick="closeM('mDel')">Cancel</button><button class="btn btn-danger" id="mDelBtn">Yes, Delete</button></div></div></div>
+
+<script src="shared.js"></script>
+<script>
+let curMonth=new Date().getMonth();
+let curYear=new Date().getFullYear();
+let bookings=[];
+const MONTHS=["January","February","March","April","May","June","July","August","September","October","November","December"];
+
+async function loadSch(){
+  try{
+    bookings=await dbGet("bookings");
+    renderCal();
+  }catch(e){
+    console.error(e);
+    toast("Failed to load schedule","er");
   }
 }
-function prevMo(){sMo--;if(sMo<0){sMo=11;sYr--;}renderCal();}
-function nextMo(){sMo++;if(sMo>11){sMo=0;sYr++;}renderCal();}
-function goTd(){sMo=new Date().getMonth();sYr=new Date().getFullYear();renderCal();}
-function exportSch(){
-  const rows=[["Date","Customer","Reg","Service","Time","Status"]];
-  sBks.filter(b=>b.confirmed_date).forEach(b=>rows.push([b.confirmed_date,b.name,b.reg,b.service||"",b.confirmed_time||"",b.status]));
-  const csv=rows.map(r=>r.map(c=>`"${c||""}"`).join(",")).join("
-");
-  const a=document.createElement("a");a.href="data:text/csv,"+encodeURIComponent(csv);a.download="schedule.csv";a.click();
+
+function renderCal(){
+  document.getElementById("moTitle").textContent=`${MONTHS[curMonth]} ${curYear}`;
+  const firstDay=new Date(curYear,curMonth,1).getDay();
+  const daysInMonth=new Date(curYear,curMonth+1,0).getDate();
+  const today=new Date().toISOString().split("T")[0];
+  
+  const grid=document.getElementById("calGrid");
+  grid.innerHTML="";
+  
+  // Empty cells before month starts
+  for(let i=0;i<firstDay;i++){
+    const cell=document.createElement("div");
+    cell.className="cal-day";
+    cell.style.background="#fafafa";
+    grid.appendChild(cell);
+  }
+  
+  // Days of month
+  for(let day=1;day<=daysInMonth;day++){
+    const dateStr=`${curYear}-${String(curMonth+1).padStart(2,"0")}-${String(day).padStart(2,"0")}`;
+    const isToday=dateStr===today;
+    
+    const cell=document.createElement("div");
+    cell.className="cal-day"+(isToday?" today":"");
+    
+    const dayNum=document.createElement("div");
+    dayNum.className="day-num"+(isToday?" today":"");
+    dayNum.textContent=day;
+    cell.appendChild(dayNum);
+    
+    // Find appointments for this day
+    const dayBookings=bookings.filter(b=>(b.confirmed_date||b.date)===dateStr);
+    dayBookings.forEach(b=>{
+      const appt=document.createElement("div");
+      appt.className="appt "+(b.status==="confirmed"?"":"pending");
+      appt.textContent=(b.confirmed_time?b.confirmed_time.slice(0,5)+" ":"")+b.name;
+      appt.title=`${b.name} — ${b.reg} — ${b.service||"General"}`;
+      appt.onclick=()=>showAppt(b);
+      cell.appendChild(appt);
+    });
+    
+    grid.appendChild(cell);
+  }
 }
+
+function showAppt(b){
+  document.getElementById("mApptBody").innerHTML=`
+    <div class="ir"><span class="lbl">Customer</span><span class="val">${b.name}</span></div>
+    <div class="ir"><span class="lbl">Phone</span><span class="val">${b.phone||"—"}</span></div>
+    <div class="ir"><span class="lbl">Email</span><span class="val">${b.email}</span></div>
+    <div class="ir"><span class="lbl">Registration</span><span class="val">${b.reg}</span></div>
+    <div class="ir"><span class="lbl">Service</span><span class="val">${b.service||"—"}</span></div>
+    <div class="ir"><span class="lbl">Date</span><span class="val">${b.confirmed_date||b.date}</span></div>
+    <div class="ir"><span class="lbl">Time</span><span class="val">${b.confirmed_time?b.confirmed_time.slice(0,5):"Not set"}</span></div>
+    <div class="ir"><span class="lbl">Status</span><span class="val">${b.status}</span></div>`;
+  openM("mAppt");
+}
+
+function prevMo(){curMonth--;if(curMonth<0){curMonth=11;curYear--;}renderCal();}
+function nextMo(){curMonth++;if(curMonth>11){curMonth=0;curYear++;}renderCal();}
+function goToday(){const d=new Date();curMonth=d.getMonth();curYear=d.getFullYear();renderCal();}
+
 loadSch();
-</script></body></html>
+</script>
+</body>
+</html>
