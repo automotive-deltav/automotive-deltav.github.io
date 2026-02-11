@@ -1,0 +1,448 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                       SUPABASE DATABASE SETUP                                ║
+║                          Step-by-Step Instructions                           ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+📌 IMPORTANT: Run ALL these SQL commands in your Supabase SQL Editor
+   (Go to: Supabase Dashboard → SQL Editor → New Query)
+
+══════════════════════════════════════════════════════════════════════════════
+
+STEP 1: CREATE ALL REQUIRED TABLES
+──────────────────────────────────────────────────────────────────────────────
+
+Copy and paste each CREATE TABLE command below into Supabase SQL Editor:
+
+-- 1. BOOKINGS TABLE
+CREATE TABLE bookings (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  name TEXT NOT NULL,
+  email TEXT NOT NULL,
+  phone TEXT,
+  reg TEXT NOT NULL,
+  car TEXT,
+  year INTEGER,
+  service TEXT,
+  date DATE NOT NULL,
+  notes TEXT,
+  status TEXT DEFAULT 'pending',
+  viewed BOOLEAN DEFAULT false,
+  confirmed_date DATE,
+  confirmed_time TIME,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- 2. INVOICES TABLE
+CREATE TABLE invoices (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  customer_name TEXT NOT NULL,
+  customer_email TEXT NOT NULL,
+  invoice_date DATE NOT NULL,
+  car_reg TEXT,
+  parts JSONB DEFAULT '[]'::jsonb,
+  vat_applied BOOLEAN DEFAULT false,
+  subtotal NUMERIC(10,2) DEFAULT 0,
+  vat_amount NUMERIC(10,2) DEFAULT 0,
+  total_amount NUMERIC(10,2) DEFAULT 0,
+  payment_status TEXT DEFAULT 'unpaid',
+  notes TEXT,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- 3. INVENTORY TABLE
+CREATE TABLE inventory (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  item_code TEXT NOT NULL,
+  item_name TEXT NOT NULL,
+  supplier TEXT,
+  car_reg TEXT,
+  vin_number TEXT,
+  serial_number TEXT,
+  cost NUMERIC(10,2) NOT NULL,
+  purchase_date DATE NOT NULL,
+  status TEXT DEFAULT 'active',
+  notes TEXT,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- 4. PAYMENTS TABLE
+CREATE TABLE payments (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  payment_date DATE NOT NULL,
+  customer_name TEXT NOT NULL,
+  invoice_ref TEXT,
+  method TEXT NOT NULL,
+  amount NUMERIC(10,2) NOT NULL,
+  notes TEXT,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- 5. TRANSACTIONS TABLE (FINANCE)
+CREATE TABLE transactions (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  tx_date DATE NOT NULL,
+  type TEXT NOT NULL,
+  category TEXT NOT NULL,
+  description TEXT NOT NULL,
+  amount NUMERIC(10,2) NOT NULL,
+  reference TEXT,
+  notes TEXT,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- 6. WORKERS TABLE
+CREATE TABLE workers (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  name TEXT NOT NULL,
+  role TEXT,
+  phone TEXT,
+  email TEXT,
+  hourly_rate NUMERIC(10,2),
+  contract_hours INTEGER,
+  start_date DATE,
+  status TEXT DEFAULT 'active',
+  notes TEXT,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- 7. JOB CARDS TABLE
+CREATE TABLE job_cards (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  customer_name TEXT NOT NULL,
+  car_reg TEXT NOT NULL,
+  job_date DATE NOT NULL,
+  assigned_to TEXT,
+  status TEXT DEFAULT 'Booked In',
+  job_description TEXT NOT NULL,
+  parts_required TEXT,
+  estimated_hours NUMERIC(5,1),
+  estimated_cost NUMERIC(10,2),
+  notes TEXT,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- 8. QUOTES TABLE
+CREATE TABLE quotes (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  customer_name TEXT NOT NULL,
+  customer_email TEXT,
+  quote_date DATE NOT NULL,
+  valid_until DATE NOT NULL,
+  car_reg TEXT,
+  work_description TEXT NOT NULL,
+  parts_cost NUMERIC(10,2),
+  labour_cost NUMERIC(10,2),
+  quote_amount NUMERIC(10,2) NOT NULL,
+  status TEXT DEFAULT 'Pending',
+  notes TEXT,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- 9. SUPPLIERS TABLE
+CREATE TABLE suppliers (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  name TEXT NOT NULL,
+  contact TEXT,
+  phone TEXT,
+  email TEXT,
+  category TEXT,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- 10. EXPENSES TABLE
+CREATE TABLE expenses (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  expense_date DATE NOT NULL,
+  description TEXT NOT NULL,
+  amount NUMERIC(10,2) NOT NULL,
+  category TEXT,
+  supplier TEXT,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- 11. NOTES TABLE
+CREATE TABLE notes (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  note_date DATE NOT NULL,
+  title TEXT NOT NULL,
+  content TEXT,
+  category TEXT,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- 12. REMINDERS TABLE
+CREATE TABLE reminders (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  reminder_date DATE NOT NULL,
+  title TEXT NOT NULL,
+  notes TEXT,
+  priority TEXT,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- 13. TASKS TABLE
+CREATE TABLE tasks (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  task_name TEXT NOT NULL,
+  assigned_to TEXT,
+  due_date DATE,
+  priority TEXT,
+  status TEXT DEFAULT 'Pending',
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- 14. TIMESHEETS TABLE
+CREATE TABLE timesheets (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  worker_name TEXT NOT NULL,
+  work_date DATE NOT NULL,
+  hours_worked NUMERIC(5,2) NOT NULL,
+  hourly_rate NUMERIC(10,2),
+  notes TEXT,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- 15. WARRANTIES TABLE
+CREATE TABLE warranties (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  customer_name TEXT NOT NULL,
+  car_reg TEXT NOT NULL,
+  job_description TEXT NOT NULL,
+  start_date DATE NOT NULL,
+  expiry_date DATE NOT NULL,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- 16. FEEDBACK TABLE
+CREATE TABLE feedback (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  customer_name TEXT NOT NULL,
+  feedback_date DATE NOT NULL,
+  rating INTEGER,
+  comments TEXT,
+  source TEXT,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- 17. RETURNS TABLE
+CREATE TABLE returns (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  return_date DATE NOT NULL,
+  customer_name TEXT NOT NULL,
+  item_description TEXT NOT NULL,
+  reason TEXT,
+  refund_amount NUMERIC(10,2),
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- 18. MESSAGES TABLE
+CREATE TABLE messages (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  msg_date DATE NOT NULL,
+  from_name TEXT NOT NULL,
+  subject TEXT,
+  message TEXT,
+  status TEXT DEFAULT 'New',
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- 19. VEHICLES TABLE
+CREATE TABLE vehicles (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  registration TEXT NOT NULL,
+  make TEXT,
+  model TEXT,
+  year INTEGER,
+  owner_name TEXT,
+  vin TEXT,
+  colour TEXT,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- 20. PROMOTIONS TABLE
+CREATE TABLE promotions (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  title TEXT NOT NULL,
+  discount TEXT,
+  start_date DATE,
+  end_date DATE,
+  terms TEXT,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- 21. LOYALTY TABLE
+CREATE TABLE loyalty (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  customer_name TEXT NOT NULL,
+  customer_email TEXT,
+  points INTEGER DEFAULT 0,
+  last_updated DATE,
+  notes TEXT,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- 22. PARTS ORDERS TABLE
+CREATE TABLE parts_orders (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  order_date DATE NOT NULL,
+  supplier TEXT,
+  part_name TEXT NOT NULL,
+  part_code TEXT,
+  quantity INTEGER NOT NULL,
+  cost NUMERIC(10,2),
+  status TEXT DEFAULT 'Ordered',
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- 23. CHECKLISTS TABLE
+CREATE TABLE checklist (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  name TEXT NOT NULL,
+  category TEXT,
+  items TEXT,
+  created_date DATE,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- 24. WAITING LIST TABLE
+CREATE TABLE waiting (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  customer_name TEXT NOT NULL,
+  phone TEXT,
+  email TEXT,
+  service TEXT,
+  date_added DATE NOT NULL,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- 25. TARGETS TABLE
+CREATE TABLE targets (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  period TEXT NOT NULL,
+  target_name TEXT NOT NULL,
+  goal_amount NUMERIC(10,2),
+  actual_amount NUMERIC(10,2),
+  notes TEXT,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- 26. AUDIT LOG TABLE
+CREATE TABLE audit (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  log_date DATE NOT NULL,
+  user TEXT,
+  action TEXT NOT NULL,
+  details TEXT,
+  ip_address TEXT,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- 27. MOT TRACKER TABLE
+CREATE TABLE "MOT" (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  car_reg TEXT NOT NULL,
+  owner_name TEXT,
+  mot_date DATE,
+  expiry_date DATE,
+  result TEXT,
+  mileage INTEGER,
+  notes TEXT,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- 28. SERVICE HISTORY TABLE
+CREATE TABLE service_history (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  car_reg TEXT NOT NULL,
+  owner_name TEXT,
+  service_date DATE NOT NULL,
+  service_type TEXT,
+  mileage INTEGER,
+  cost NUMERIC(10,2),
+  notes TEXT,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- 29. STAFF ROTA TABLE
+CREATE TABLE staff_rota (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  worker_name TEXT NOT NULL,
+  week_start DATE NOT NULL,
+  monday TEXT,
+  tuesday TEXT,
+  wednesday TEXT,
+  thursday TEXT,
+  friday TEXT,
+  saturday TEXT,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- 30. GALLERY MANAGER TABLE
+CREATE TABLE gallery_mgr (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  title TEXT NOT NULL,
+  category TEXT,
+  upload_date DATE,
+  caption TEXT,
+  visible TEXT DEFAULT 'Yes',
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- 31. SMS/EMAIL LOG TABLE
+CREATE TABLE sms (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  sent_date DATE NOT NULL,
+  recipient_name TEXT NOT NULL,
+  message_type TEXT,
+  subject TEXT,
+  message TEXT,
+  status TEXT DEFAULT 'Sent',
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- 32. OPENING HOURS TABLE
+CREATE TABLE hours (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  day TEXT NOT NULL,
+  open_time TIME,
+  close_time TIME,
+  status TEXT DEFAULT 'Open',
+  notes TEXT,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+══════════════════════════════════════════════════════════════════════════════
+
+STEP 2: ENABLE ROW LEVEL SECURITY (IMPORTANT!)
+──────────────────────────────────────────────────────────────────────────────
+
+For EACH table above, run this command (replace TABLE_NAME):
+
+ALTER TABLE TABLE_NAME ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Enable all access for anon key" ON TABLE_NAME
+  FOR ALL USING (true) WITH CHECK (true);
+
+Example for bookings table:
+
+ALTER TABLE bookings ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Enable all access for anon key" ON bookings
+  FOR ALL USING (true) WITH CHECK (true);
+
+REPEAT THIS FOR ALL 32 TABLES!
+
+══════════════════════════════════════════════════════════════════════════════
+
+STEP 3: VERIFY YOUR SETUP
+──────────────────────────────────────────────────────────────────────────────
+
+✅ Go to Table Editor in Supabase
+✅ You should see all 32 tables listed
+✅ Each table should have RLS enabled
+✅ Test by inserting a row manually in the bookings table
+
+══════════════════════════════════════════════════════════════════════════════
+
+✅ DONE! Your database is ready.
+
+══════════════════════════════════════════════════════════════════════════════

@@ -1,0 +1,189 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                        DELTAV QUICK START GUIDE                              ║
+║                           Get Up and Running Fast                            ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+📦 WHAT YOU HAVE:
+──────────────────────────────────────────────────────────────────────────────
+
+✅ DeltaV-Final.zip          - All 46 website files
+✅ SUPABASE-SETUP.txt        - Database setup (32 tables)
+✅ EMAILJS-SETUP.txt         - Email verification setup
+✅ QUICK-START.txt           - This file
+
+══════════════════════════════════════════════════════════════════════════════
+
+🚀 3-STEP SETUP
+──────────────────────────────────────────────────────────────────────────────
+
+STEP 1: UPLOAD FILES TO GITHUB PAGES
+─────────────────────────────────────
+
+1. Extract DeltaV-Final.zip
+2. Go to your GitHub repository
+3. Upload ALL files to the root (or docs folder)
+4. Make sure GitHub Pages is enabled
+5. Your site will be at: https://username.github.io/repo-name/
+
+STEP 2: SETUP SUPABASE DATABASE
+────────────────────────────────
+
+1. Open SUPABASE-SETUP.txt
+2. Go to your Supabase project
+3. Click "SQL Editor"
+4. Copy/paste each CREATE TABLE command
+5. Run the RLS commands for each table
+6. Done! Database ready.
+
+STEP 3: SETUP EMAIL VERIFICATION (OPTIONAL)
+────────────────────────────────────────────
+
+1. Open EMAILJS-SETUP.txt
+2. Follow steps to create free EmailJS account
+3. Get your Public Key, Service ID, Template ID
+4. Edit booking.html lines 105 and 117
+5. Upload to GitHub
+6. Email verification now works!
+
+══════════════════════════════════════════════════════════════════════════════
+
+✅ WHAT WORKS RIGHT NOW (NO SETUP NEEDED)
+──────────────────────────────────────────────────────────────────────────────
+
+• All 8 public pages (homepage, services, about, gallery, FAQ, contact)
+• Admin login (username: admin, password: DeltaV2026!)
+• All 38 admin pages with buttons
+• Mobile responsive design
+• Professional invoice PDF print
+• Beautiful calendar schedule
+
+══════════════════════════════════════════════════════════════════════════════
+
+⚙️ WHAT NEEDS SETUP (FOLLOW GUIDES)
+──────────────────────────────────────────────────────────────────────────────
+
+• Supabase database (SUPABASE-SETUP.txt) - for saving bookings/data
+• EmailJS (EMAILJS-SETUP.txt) - for email verification codes
+
+══════════════════════════════════════════════════════════════════════════════
+
+🔑 LOGIN DETAILS
+──────────────────────────────────────────────────────────────────────────────
+
+Admin Panel: https://yoursite.com/login.html
+Username: admin
+Password: DeltaV2026!
+
+══════════════════════════════════════════════════════════════════════════════
+
+📄 FILE LIST (46 PAGES)
+──────────────────────────────────────────────────────────────────────────────
+
+PUBLIC (8):
+• index.html - Homepage
+• booking.html - Customer booking form
+• services.html - Services list
+• about.html - About page
+• contact.html - Contact form
+• gallery.html - Photo gallery
+• faq.html - Frequently asked questions
+• login.html - Admin login
+
+ADMIN (38):
+• dashboard.html - Main dashboard
+• admin.html - Bookings manager
+• schedule.html - Calendar view ✨ FIXED
+• customers.html - Customer database
+• invoices.html - Invoice creation
+• invoice-print.html - PDF invoice ✨ FIXED (prints clean)
+• inventory.html - Parts tracking
+• payments.html - Payment records
+• finance.html - Finance tracker
+• workers.html - Staff management
+• jobs.html - Job cards
+• quotes.html - Quote system
+• suppliers.html - Suppliers
+• expenses.html - Expenses
+• reports.html - Analytics
+• messages.html - Messages
+• notes.html - Notes
+• reminders.html - Reminders
+• vehicles.html - Vehicle database
+• tasks.html - Task manager
+• timesheets.html - Worker hours
+• warranties.html - Warranty tracker
+• promotions.html - Promotions
+• feedback.html - Customer feedback
+• returns.html - Returns tracking
+• waiting.html - Waiting list
+• checklist.html - Checklists
+• targets.html - Sales targets
+• audit.html - Audit log
+• gallery_mgr.html - Gallery manager
+• sms.html - SMS/Email log
+• loyalty.html - Loyalty points
+• parts_orders.html - Parts ordering
+• MOT.html - MOT tracker
+• service_history.html - Service history
+• staff_rota.html - Staff scheduling
+• hours.html - Opening hours
+• settings.html - System settings
+
+CORE FILES:
+• theme.css - All styling
+• shared.js - JavaScript functions
+
+══════════════════════════════════════════════════════════════════════════════
+
+✅ CRITICAL FIXES APPLIED
+──────────────────────────────────────────────────────────────────────────────
+
+✓ Invoice Print - Now prints ONLY the invoice on clean paper
+✓ Schedule Calendar - Beautiful new design with hover effects
+✓ Mobile Responsive - Works perfectly on phones
+✓ Email Setup Guide - Clear instructions for EmailJS
+✓ Database Guide - All 32 tables with SQL commands
+
+══════════════════════════════════════════════════════════════════════════════
+
+🎯 TESTING CHECKLIST
+──────────────────────────────────────────────────────────────────────────────
+
+□ Upload files to GitHub Pages
+□ Check homepage loads: https://yoursite.com/
+□ Test admin login: https://yoursite.com/login.html
+□ Create Supabase tables (SUPABASE-SETUP.txt)
+□ Test booking form (will need EmailJS for verification)
+□ Create test invoice and print PDF
+□ Check schedule calendar
+□ Test on mobile phone
+
+══════════════════════════════════════════════════════════════════════════════
+
+💡 TIPS
+──────────────────────────────────────────────────────────────────────────────
+
+• All pages are fully functional once database is setup
+• EmailJS is FREE (200 emails/month)
+• Print invoices with Ctrl+P or Cmd+P
+• Schedule shows green dots for confirmed, yellow for pending
+• Triple-click logo on homepage for hidden admin access
+• All data exports to CSV
+• Mobile menu: tap logo to open navigation
+
+══════════════════════════════════════════════════════════════════════════════
+
+🆘 NEED HELP?
+──────────────────────────────────────────────────────────────────────────────
+
+1. Check SUPABASE-SETUP.txt for database issues
+2. Check EMAILJS-SETUP.txt for email problems
+3. Open browser console (F12) to see errors
+4. Make sure all files uploaded to GitHub
+5. Clear browser cache if changes don't appear
+
+══════════════════════════════════════════════════════════════════════════════
+
+✅ YOU'RE READY! Upload and start using your garage management system.
+
+══════════════════════════════════════════════════════════════════════════════

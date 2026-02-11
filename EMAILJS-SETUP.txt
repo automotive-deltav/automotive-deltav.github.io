@@ -1,0 +1,142 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                         EMAILJS SETUP GUIDE                                  ║
+║                   Fix Email Verification for Bookings                        ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+🔥 CRITICAL: Email verification requires EmailJS setup (FREE account)
+
+══════════════════════════════════════════════════════════════════════════════
+
+STEP 1: CREATE FREE EMAILJS ACCOUNT
+──────────────────────────────────────────────────────────────────────────────
+
+1. Go to: https://www.emailjs.com/
+2. Click "Sign Up" (top right)
+3. Create free account with your email
+4. Verify your email address
+
+══════════════════════════════════════════════════════════════════════════════
+
+STEP 2: ADD EMAIL SERVICE
+──────────────────────────────────────────────────────────────────────────────
+
+1. After login, click "Email Services" in left menu
+2. Click "Add New Service"
+3. Choose your email provider:
+   • Gmail
+   • Outlook
+   • Yahoo Mail
+   • Or "Other" for custom SMTP
+4. Follow the connection steps
+5. Note your SERVICE ID (e.g., service_abc1234)
+
+══════════════════════════════════════════════════════════════════════════════
+
+STEP 3: CREATE EMAIL TEMPLATE
+──────────────────────────────────────────────────────────────────────────────
+
+1. Click "Email Templates" in left menu
+2. Click "Create New Template"
+3. Use these settings:
+
+   Template Name: Booking Verification
+   
+   Subject: 
+   DeltaV Booking Verification Code
+   
+   Content (HTML):
+   Hi {{to_name}},
+   
+   Your verification code is: {{code}}
+   
+   Enter this code on the booking page to confirm your service appointment.
+   
+   Thanks,
+   DeltaV Automotive Team
+   
+   From Name: DeltaV Automotive
+   From Email: (your connected email)
+   To Email: {{to_email}}
+
+4. Click "Save"
+5. Note your TEMPLATE ID (e.g., template_xyz5678)
+
+══════════════════════════════════════════════════════════════════════════════
+
+STEP 4: GET YOUR PUBLIC KEY
+──────────────────────────────────────────────────────────────────────────────
+
+1. Click "Account" in left menu
+2. Go to "General" tab
+3. Find "Public Key" section
+4. Copy your PUBLIC KEY (looks like: aBcDeFgHiJkLmNoPqR)
+
+══════════════════════════════════════════════════════════════════════════════
+
+STEP 5: UPDATE BOOKING.HTML
+──────────────────────────────────────────────────────────────────────────────
+
+Open booking.html and find line 105:
+
+   emailjs.init("YOUR_EMAILJS_PUBLIC_KEY");
+
+Replace with YOUR actual public key:
+
+   emailjs.init("aBcDeFgHiJkLmNoPqR");
+
+Then find line 117:
+
+   emailjs.send("service_hi4mpao","template_aj5l14u",{
+
+Replace with YOUR service and template IDs:
+
+   emailjs.send("service_abc1234","template_xyz5678",{
+
+══════════════════════════════════════════════════════════════════════════════
+
+STEP 6: TEST THE EMAIL
+──────────────────────────────────────────────────────────────────────────────
+
+1. Save booking.html
+2. Upload to GitHub Pages
+3. Go to your website/booking.html
+4. Fill in the form with your email
+5. Click "Send Verification Code"
+6. Check your email inbox (and spam folder)
+7. You should receive a 6-digit code
+
+══════════════════════════════════════════════════════════════════════════════
+
+✅ TROUBLESHOOTING
+──────────────────────────────────────────────────────────────────────────────
+
+❌ "Email failed to send" error?
+   → Check your Public Key is correct in booking.html line 105
+   → Check Service ID and Template ID are correct in line 117
+   → Make sure EmailJS account is verified
+
+❌ No email received?
+   → Check spam/junk folder
+   → Verify your EmailJS service is connected
+   → Test the template in EmailJS dashboard (Test button)
+
+❌ Still not working?
+   → Open browser console (F12) and check for errors
+   → Make sure you saved booking.html after editing
+   → Clear browser cache and try again
+
+══════════════════════════════════════════════════════════════════════════════
+
+📧 FREE TIER LIMITS
+──────────────────────────────────────────────────────────────────────────────
+
+EmailJS Free Account:
+• 200 emails per month
+• Perfect for small garage bookings
+• Upgrade to paid plan for more emails
+
+══════════════════════════════════════════════════════════════════════════════
+
+✅ THAT'S IT! Email verification will work with ANY email provider.
+
+══════════════════════════════════════════════════════════════════════════════
