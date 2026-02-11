@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Book a Service — DeltaV</title>
+<link rel="stylesheet" href="theme.css">
+<style>
+body{background:#0d1823}
+.form-card{background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.1);border-radius:16px;padding:30px;box-shadow:0 14px 40px rgba(0,0,0,.3)}
+.form-card .fg label{color:rgba(255,255,255,.72)}
+.form-card .fg input,.form-card .fg select,.form-card .fg textarea{background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.14);color:#fff}
+.form-card .fg input::placeholder,.form-card .fg textarea::placeholder{color:rgba(255,255,255,.28)}
+.form-card .fg input:focus,.form-card .fg select:focus,.form-card .fg textarea:focus{background:rgba(255,255,255,.1);border-color:var(--ac)}
+.form-card .fg select option{background:#1b2b3a;color:#fff}
+.step-h{color:rgba(255,255,255,.42);font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:2px;margin-bottom:18px;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,.08)}
+.div-sec{height:1px;background:rgba(255,255,255,.08);margin:20px 0}
+.ver-box{display:none;background:rgba(255,102,0,.09);border:1.5px solid rgba(255,102,0,.28);border-radius:11px;padding:18px;margin-top:16px}
+.ver-box p{color:rgba(255,255,255,.68);font-size:.86rem;margin-bottom:11px}
+.ok-box{display:none;text-align:center;padding:50px 20px}
+.ok-box .ok-ic{font-size:4rem;margin-bottom:14px}
+.ok-box h2{color:#fff;font-size:1.8rem;margin-bottom:8px;font-family:"Barlow Condensed",sans-serif;font-weight:800}
+.ok-box p{color:rgba(255,255,255,.52);margin-bottom:24px}
+@media(max-width:768px){
+  .pub-h{padding:0 20px;height:60px}
+  .pub-nav{display:none}
+  .pub-wrap{padding:80px 16px 40px}
+  .g2,.g3{grid-template-columns:1fr!important}
+}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+</head>
+<body>
+<header class="pub-h">
+  <a href="index.html" class="pub-logo">DeltaV <span>Auto</span></a>
+  <nav class="pub-nav">
+    <a href="services.html">Services</a>
+    <a href="about.html">About</a>
+    <a href="gallery.html">Gallery</a>
+    <a href="faq.html">FAQ</a>
+    <a href="contact.html">Contact</a>
+    <a href="booking.html" class="cta">📅 Book Now</a>
+  </nav>
+</header>
+
+<div class="pub-wrap">
+  <a href="index.html" class="back-btn">← Back to Home</a>
+  <div class="pub-title">📅 Book a Service</div>
+  <div class="pub-sub">Fill in your details below and we'll confirm your appointment soon.</div>
+
+  <div class="form-card" id="bookForm">
+    <div class="step-h">Step 1 — Your Details</div>
+    <div class="g2">
+      <div class="fg"><label>Full Name *</label><input type="text" id="bName" placeholder="John Smith" required></div>
+      <div class="fg"><label>Phone Number *</label><input type="tel" id="bPhone" placeholder="07700 900000" required></div>
+    </div>
+    <div class="fg"><label>Email Address * (Gmail, Outlook, Yahoo, any provider works)</label><input type="email" id="bEmail" placeholder="john@example.com" required></div>
+    <div class="div-sec"></div>
+    <div class="step-h">Step 2 — Your Vehicle</div>
+    <div class="g3">
+      <div class="fg"><label>Registration *</label><input type="text" id="bReg" placeholder="AB12 CDE" style="text-transform:uppercase" required></div>
+      <div class="fg"><label>Make & Model</label><input type="text" id="bCar" placeholder="Ford Focus"></div>
+      <div class="fg"><label>Year</label><input type="number" id="bYear" placeholder="2018" min="1990" max="2026"></div>
+    </div>
+    <div class="div-sec"></div>
+    <div class="step-h">Step 3 — Service & Date</div>
+    <div class="g2">
+      <div class="fg"><label>Service Required *</label>
+        <select id="bService" required>
+          <option value="">— Select service —</option>
+          <option>General Service / Oil Change</option>
+          <option>Brake Inspection & Repair</option>
+          <option>Engine Diagnostics</option>
+          <option>Bodywork Repair</option>
+          <option>Electrical / Battery</option>
+          <option>Air Conditioning Service</option>
+          <option>Tyre Fitting & Balancing</option>
+          <option>Exhaust Repair</option>
+          <option>Suspension Check</option>
+          <option>Wheel Alignment</option>
+          <option>Clutch Replacement</option>
+          <option>Full Annual Service</option>
+          <option>Pre-Purchase Inspection</option>
+          <option>Other — Describe below</option>
+        </select>
+      </div>
+      <div class="fg"><label>Preferred Date *</label><input type="date" id="bDate" required></div>
+    </div>
+    <div class="fg"><label>Additional Notes</label><textarea id="bNotes" placeholder="Describe the issue or any extra details..."></textarea></div>
+    <button class="btn btn-primary btn-lg btn-fw" onclick="sendVer()">Send Verification Code to My Email →</button>
+    <div class="ver-box" id="verBox">
+      <p>📧 A 6-digit code has been sent to your email address (check spam/junk if not seen). <strong>Works with Gmail, Outlook, Yahoo, and all other email providers.</strong></p>
+      <div class="g2">
+        <div class="fg"><label>Verification Code</label><input type="text" id="bCode" placeholder="123456" maxlength="6" style="font-size:1.4rem;letter-spacing:6px;text-align:center"></div>
+        <div style="display:flex;align-items:flex-end;padding-bottom:14px">
+          <button class="btn btn-success btn-lg btn-fw" onclick="submitBooking()">✅ Confirm My Booking</button>
+        </div>
+      </div>
+      <p id="cErr" style="color:#ff6b6b;font-size:.82rem;display:none">❌ Incorrect code. Try again.</p>
+      <p style="margin-top:8px"><a href="#" onclick="sendVer();return false" style="color:rgba(255,255,255,.45);font-size:.8rem">Resend code</a></p>
+    </div>
+  </div>
+
+  <div class="ok-box" id="okBox">
+    <div class="ok-ic">🎉</div>
+    <h2>Booking Submitted!</h2>
+    <p>We've received your booking request. We'll confirm your appointment date and time by email shortly.</p>
+    <div style="display:flex;gap:11px;justify-content:center;flex-wrap:wrap">
+      <a href="index.html" class="btn btn-primary btn-lg">← Back to Home</a>
+      <a href="services.html" class="btn btn-lg" style="background:rgba(255,255,255,.08);color:#fff;border:1.5px solid rgba(255,255,255,.15)">Our Services</a>
+    </div>
+  </div>
+</div>
+
+<script>
+const SB="https://cxzapvieqzqfxzolqwoh.supabase.co";
+const KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN4emFwdmllcXpxZnh6b2xxd29oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA1NjU4MzgsImV4cCI6MjA4NjE0MTgzOH0.x_F07XpdThY6EqwaP8jJGgdBIMTHdYfTr99IMOpSq_E";
+let vCode="";
+const tomorrow=new Date();tomorrow.setDate(tomorrow.getDate()+1);
+document.getElementById("bDate").min=tomorrow.toISOString().split("T")[0];
+
+// Initialize EmailJS with your public key
+emailjs.init("YOUR_EMAILJS_PUBLIC_KEY");
+
+function validate(){
+  const ids=["bName","bPhone","bEmail","bReg","bDate","bService"];
+  let ok=true;
+  ids.forEach(id=>{const el=document.getElementById(id);if(!el.value.trim()){el.style.borderColor="red";ok=false;}else el.style.borderColor="";});
+  return ok;
+}
+
+function sendVer(){
+  if(!validate())return;
+  vCode=Math.floor(100000+Math.random()*900000).toString();
+  const em=document.getElementById("bEmail").value;
+  const nm=document.getElementById("bName").value;
+  
+  // EmailJS sends to ANY email provider - Gmail, Outlook, Yahoo, ProtonMail, iCloud, etc.
+  emailjs.send("service_hi4mpao","template_aj5l14u",{
+    to_email:em,
+    to_name:nm,
+    code:vCode
+  }).then(()=>{
+    console.log("Email sent successfully to:",em);
+    document.getElementById("verBox").style.display="block";
+    document.getElementById("verBox").scrollIntoView({behavior:"smooth"});
+  }).catch(e=>{
+    console.error("EmailJS error:",e);
+    alert("Email send failed. Please check your email address and try again.");
+  });
+}
+
+async function submitBooking(){
+  const entered=document.getElementById("bCode").value.trim();
+  if(entered!==vCode){
+    document.getElementById("cErr").style.display="block";
+    document.getElementById("bCode").style.borderColor="red";
+    return;
+  }
+  const data={
+    name:document.getElementById("bName").value.trim(),
+    phone:document.getElementById("bPhone").value.trim(),
+    email:document.getElementById("bEmail").value.trim(),
+    reg:document.getElementById("bReg").value.toUpperCase().trim(),
+    car:document.getElementById("bCar").value.trim(),
+    year:document.getElementById("bYear").value||null,
+    service:document.getElementById("bService").value,
+    date:document.getElementById("bDate").value,
+    notes:document.getElementById("bNotes").value.trim(),
+    status:"pending",
+    viewed:false
+  };
+  const r=await fetch(`${SB}/rest/v1/bookings`,{
+    method:"POST",
+    headers:{
+      "apikey":KEY,
+      "Authorization":`Bearer ${KEY}`,
+      "Content-Type":"application/json",
+      "Prefer":"return=minimal"
+    },
+    body:JSON.stringify(data)
+  });
+  if(r.ok){
+    document.getElementById("bookForm").style.display="none";
+    document.getElementById("okBox").style.display="block";
+  }
+}
+</script>
+</body>
+</html>

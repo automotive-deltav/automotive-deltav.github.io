@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Invoice — DeltaV Automotive</title>
+<style>
+@page{size:A4;margin:18mm 18mm 22mm 18mm}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',Arial,sans-serif;font-size:11pt;color:#222;background:#fff}
+.page{max-width:794px;margin:0 auto;padding:20px}
+
+/* Header */
+.inv-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:28px;padding-bottom:20px;border-bottom:3px solid #ff6600}
+.logo-block .logo{font-size:28pt;font-weight:900;color:#1b2b3a;letter-spacing:1px;line-height:1}
+.logo-block .logo span{color:#ff6600}
+.logo-block .tagline{font-size:8.5pt;color:#888;margin-top:4px;letter-spacing:1px;text-transform:uppercase}
+.logo-block .addr{font-size:8.5pt;color:#666;margin-top:8px;line-height:1.7}
+.inv-meta{text-align:right}
+.inv-meta .inv-label{font-size:22pt;font-weight:900;color:#ff6600;letter-spacing:1px}
+.inv-meta .inv-num{font-size:12pt;font-weight:700;color:#1b2b3a;font-family:monospace;margin-top:4px}
+.inv-meta .inv-date{font-size:9pt;color:#666;margin-top:4px}
+
+/* Bill to */
+.bill-section{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:24px}
+.bill-box{background:#f8f9fa;border-radius:8px;padding:14px;border-left:3px solid #ff6600}
+.bill-box h4{font-size:8pt;text-transform:uppercase;letter-spacing:1.5px;color:#888;font-weight:700;margin-bottom:8px}
+.bill-box p{font-size:10pt;line-height:1.7;color:#333}
+.bill-box strong{color:#1b2b3a}
+
+/* Parts table */
+.parts-table{width:100%;border-collapse:collapse;margin-bottom:18px}
+.parts-table thead th{background:#1b2b3a;color:rgba(255,255,255,.75);padding:10px 12px;text-align:left;font-size:8pt;font-weight:700;text-transform:uppercase;letter-spacing:.8px}
+.parts-table thead th:last-child{text-align:right}
+.parts-table tbody tr{border-bottom:1px solid #eee}
+.parts-table tbody tr:last-child{border-bottom:2px solid #ddd}
+.parts-table tbody td{padding:10px 12px;font-size:10pt;color:#333}
+.parts-table tbody td.mono{font-family:monospace;color:#666;font-size:9pt}
+.parts-table tbody td.right{text-align:right;font-weight:600}
+.parts-table tbody tr:nth-child(even){background:#fafafa}
+
+/* Totals */
+.totals-wrap{display:flex;justify-content:flex-end;margin-bottom:22px}
+.totals-box{width:280px;border:1.5px solid #e0e0e0;border-radius:8px;overflow:hidden}
+.tot-row{display:flex;justify-content:space-between;padding:9px 14px;font-size:10pt;border-bottom:1px solid #eee}
+.tot-row:last-child{border-bottom:none;background:#1b2b3a;color:#fff;font-size:13pt;font-weight:800}
+.tot-row .lbl{color:inherit}
+.tot-row .val{font-weight:700}
+.tot-row.total-row .val{color:#ff6600}
+.vat-note{font-size:8pt;color:#888;text-align:right;margin-bottom:20px}
+
+/* Footer */
+.inv-footer{border-top:2px solid #f0f0f0;padding-top:16px;margin-top:8px}
+.inv-footer .notes-box{background:#fff8f5;border:1.5px solid #ffe0cc;border-radius:8px;padding:12px 15px;margin-bottom:14px}
+.inv-footer .notes-box h4{font-size:8pt;text-transform:uppercase;letter-spacing:1px;color:#ff6600;font-weight:700;margin-bottom:6px}
+.inv-footer .notes-box p{font-size:9pt;color:#555;line-height:1.7}
+.payment-box{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:14px}
+.pay-detail{background:#f8f9fa;border-radius:7px;padding:11px 13px}
+.pay-detail h4{font-size:8pt;text-transform:uppercase;letter-spacing:1px;color:#888;font-weight:700;margin-bottom:5px}
+.pay-detail p{font-size:9pt;color:#333;line-height:1.6}
+.thank-you{text-align:center;background:#ff6600;color:#fff;border-radius:7px;padding:12px;font-size:11pt;font-weight:700;letter-spacing:.5px}
+.paid-stamp{display:none;position:fixed;top:120px;right:60px;border:4px solid #28a745;color:#28a745;font-size:36pt;font-weight:900;padding:8px 16px;border-radius:5px;transform:rotate(-15deg);opacity:.35;letter-spacing:2px}
+.paid-stamp.show{display:block}
+
+/* Toolbar */
+.toolbar{position:fixed;top:0;left:0;right:0;background:#1b2b3a;padding:10px 20px;display:flex;gap:10px;align-items:center;z-index:999;box-shadow:0 2px 10px rgba(0,0,0,.3)}
+.toolbar span{color:#fff;font-weight:700;font-size:.9rem;flex:1}
+.toolbar button{padding:9px 18px;background:#ff6600;color:#fff;border:none;border-radius:7px;cursor:pointer;font-weight:700;font-size:.86rem;transition:all .2s}
+.toolbar button:hover{background:#e55a00;transform:translateY(-1px)}
+.toolbar .btn-close{background:#6c757d}
+.toolbar .btn-close:hover{background:#5a6268}
+
+@media print{
+  .toolbar{display:none!important}
+  body{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .page{padding-top:0}
+}
+
+@media(max-width:768px){
+  .page{padding:70px 12px 20px}
+  .inv-header{flex-direction:column;gap:16px}
+  .inv-meta{text-align:left}
+  .bill-section{grid-template-columns:1fr}
+  .payment-box{grid-template-columns:1fr}
+  .totals-box{width:100%}
+}
+</style>
+</head>
+<body>
+<div class="paid-stamp" id="paidStamp">PAID</div>
+
+<div class="toolbar">
+  <span>📄 Invoice Preview — DeltaV Automotive</span>
+  <button onclick="window.print()">🖨️ Print / Save as PDF</button>
+  <button onclick="downloadPDF()" style="background:#28a745">💾 Download PDF</button>
+  <button class="btn-close" onclick="window.close()">✕ Close</button>
+</div>
+
+<div class="page" id="invoiceContent">
+  <div class="inv-header">
+    <div class="logo-block">
+      <div class="logo">DeltaV <span>Automotive</span></div>
+      <div class="tagline">Professional Automotive Services</div>
+      <div class="addr">
+        DeltaV Automotive Ltd<br>
+        Unit 5, Industrial Estate<br>
+        Smethwick, West Midlands, B66 2XX<br>
+        📞 0121 XXX XXXX<br>
+        📧 info@deltavautomotive.co.uk<br>
+        VAT Reg: GB XXX XXXX XX
+      </div>
+    </div>
+    <div class="inv-meta">
+      <div class="inv-label">INVOICE</div>
+      <div class="inv-num" id="pInvNum">INV-0000</div>
+      <div class="inv-date">Date: <span id="pDate">—</span></div>
+      <div id="pStatusBadge" style="margin-top:8px"></div>
+    </div>
+  </div>
+
+  <div class="bill-section">
+    <div class="bill-box">
+      <h4>Bill To</h4>
+      <p>
+        <strong id="pCustName">—</strong><br>
+        <span id="pCustEmail">—</span>
+      </p>
+    </div>
+    <div class="bill-box">
+      <h4>Vehicle Details</h4>
+      <p>Registration: <strong id="pReg">—</strong></p>
+    </div>
+  </div>
+
+  <table class="parts-table">
+    <thead>
+      <tr>
+        <th>Part No.</th>
+        <th>Description</th>
+        <th style="text-align:center">Qty</th>
+        <th>Unit Price</th>
+        <th style="text-align:right">Subtotal</th>
+      </tr>
+    </thead>
+    <tbody id="pParts"></tbody>
+  </table>
+
+  <div class="totals-wrap">
+    <div class="totals-box">
+      <div class="tot-row"><span class="lbl">Subtotal (ex. VAT)</span><span class="val" id="pSub">£0.00</span></div>
+      <div class="tot-row" id="pVATRow"><span class="lbl">VAT (20%)</span><span class="val" id="pVAT">£0.00</span></div>
+      <div class="tot-row total-row"><span class="lbl">TOTAL</span><span class="val" id="pTotal">£0.00</span></div>
+    </div>
+  </div>
+  <div class="vat-note" id="pVATNote"></div>
+
+  <div class="inv-footer">
+    <div class="notes-box" id="pNotesBox" style="display:none">
+      <h4>Notes</h4>
+      <p id="pNotes"></p>
+    </div>
+    <div class="payment-box">
+      <div class="pay-detail">
+        <h4>Payment Details</h4>
+        <p>
+          Bank: Example Bank<br>
+          Sort Code: 00-00-00<br>
+          Account: 12345678<br>
+          Reference: <span id="pPayRef">INV-0000</span>
+        </p>
+      </div>
+      <div class="pay-detail">
+        <h4>Payment Terms</h4>
+        <p>Payment due within 14 days of invoice date. Please quote invoice number as reference.</p>
+      </div>
+    </div>
+    <div class="thank-you">Thank you for your business — DeltaV Automotive 🚗</div>
+  </div>
+</div>
+
+<script>
+const SB="https://cxzapvieqzqfxzolqwoh.supabase.co";
+const KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN4emFwdmllcXpxZnh6b2xxd29oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA1NjU4MzgsImV4cCI6MjA4NjE0MTgzOH0.x_F07XpdThY6EqwaP8jJGgdBIMTHdYfTr99IMOpSq_E";
+
+async function loadPDF(){
+  const id=sessionStorage.getItem("pdf_inv_id");
+  if(!id){
+    document.body.innerHTML='<div style="text-align:center;padding:80px;font-family:sans-serif"><h2>No invoice selected</h2><p>Close this window and click PDF from the invoices page.</p></div>';
+    return;
+  }
+  const r=await fetch(`${SB}/rest/v1/invoices?id=eq.${id}&select=*`,{
+    headers:{"apikey":KEY,"Authorization":`Bearer ${KEY}`}
+  });
+  const[inv]=await r.json();
+  if(!inv)return;
+
+  const num="INV-"+String(inv.id).padStart(4,"0").slice(-4);
+  document.getElementById("pInvNum").textContent=num;
+  document.getElementById("pPayRef").textContent=num;
+  document.getElementById("pDate").textContent=inv.invoice_date;
+  document.getElementById("pCustName").textContent=inv.customer_name;
+  document.getElementById("pCustEmail").textContent=inv.customer_email;
+  document.getElementById("pReg").textContent=inv.car_reg||"Not provided";
+  document.getElementById("pSub").textContent="£"+(inv.subtotal||0).toFixed(2);
+  document.getElementById("pVAT").textContent="£"+(inv.vat_amount||0).toFixed(2);
+  document.getElementById("pTotal").textContent="£"+(inv.total_amount||0).toFixed(2);
+  
+  if(!inv.vat_applied){
+    document.getElementById("pVATRow").style.display="none";
+  }
+  
+  document.getElementById("pVATNote").textContent=inv.vat_applied?
+    "VAT registered invoice — VAT No. GB XXX XXXX XX":
+    "Prices shown do not include VAT";
+
+  const pb=document.getElementById("pParts");
+  (inv.parts||[]).forEach(p=>{
+    const tr=document.createElement("tr");
+    tr.innerHTML=`
+      <td class="mono">${p.part_number||"—"}</td>
+      <td>${p.description}</td>
+      <td style="text-align:center">${p.quantity}</td>
+      <td>£${parseFloat(p.unit_price||0).toFixed(2)}</td>
+      <td class="right">£${(parseFloat(p.quantity||0)*parseFloat(p.unit_price||0)).toFixed(2)}</td>`;
+    pb.appendChild(tr);
+  });
+
+  if(inv.notes){
+    document.getElementById("pNotes").textContent=inv.notes;
+    document.getElementById("pNotesBox").style.display="block";
+  }
+
+  if(inv.payment_status==="paid"){
+    document.getElementById("paidStamp").classList.add("show");
+    document.getElementById("pStatusBadge").innerHTML='<span style="background:#28a745;color:#fff;padding:5px 12px;border-radius:6px;font-size:10pt;font-weight:700">✓ PAID</span>';
+  } else {
+    document.getElementById("pStatusBadge").innerHTML='<span style="background:#ffc107;color:#333;padding:5px 12px;border-radius:6px;font-size:10pt;font-weight:700">○ AWAITING PAYMENT</span>';
+  }
+}
+
+// Download as PDF using browser's print to PDF
+function downloadPDF(){
+  window.print();
+}
+
+loadPDF();
+</script>
+</body>
+</html>

@@ -1,0 +1,38 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Admin Login — DeltaV</title><link rel="stylesheet" href="theme.css"><style>
+body{background:linear-gradient(135deg,#0d1823 0%,#1b2b3a 100%);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+.back-corner{position:fixed;top:20px;left:20px;display:inline-flex;align-items:center;gap:7px;color:rgba(255,255,255,.48);text-decoration:none;font-size:.84rem;font-weight:600;transition:all .2s;padding:9px 14px;border-radius:8px;border:1px solid rgba(255,255,255,.12)}
+.back-corner:hover{color:#fff;background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.2)}
+.box{background:#fff;border-radius:18px;padding:40px;width:100%;max-width:400px;box-shadow:0 24px 65px rgba(0,0,0,.38)}
+.logo{font-family:'Barlow Condensed',sans-serif;font-size:2.1rem;font-weight:800;color:var(--dk);margin-bottom:3px;text-align:center;letter-spacing:1px}
+.logo span{color:var(--ac)}
+.sub{text-align:center;color:var(--mu);font-size:.84rem;margin-bottom:28px}
+.err-box{background:#f8d7da;border:1.5px solid #f5c6cb;color:#721c24;padding:11px 14px;border-radius:8px;font-size:.84rem;font-weight:600;margin-bottom:14px;display:none;text-align:center}
+.hint{text-align:center;margin-top:14px;font-size:.78rem;color:var(--mu)}
+.hint a{color:var(--ac);text-decoration:none;font-weight:600}
+</style></head><body>
+<a href="index.html" class="back-corner">← Back to Website</a>
+<div class="box">
+  <div class="logo">DeltaV <span>Admin</span></div>
+  <div class="sub">Authorised personnel only</div>
+  <div class="err-box" id="err">Incorrect username or password</div>
+  <div class="fg"><label>Username</label><input type="text" id="u" placeholder="admin" autocomplete="username" onkeydown="if(event.key==='Enter')login()"></div>
+  <div class="fg"><label>Password</label><input type="password" id="p" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')login()"></div>
+  <button class="btn btn-primary btn-lg btn-fw" style="margin-top:6px" onclick="login()">Login to Admin Panel →</button>
+  <div class="hint">Forgot password? <a href="contact.html">Contact support</a></div>
+</div>
+<script>
+if(sessionStorage.getItem("dv_admin")==="1")location.href="dashboard.html";
+function login(){
+  const u=document.getElementById("u").value.trim();
+  const p=document.getElementById("p").value;
+  if(u==="admin"&&p==="DeltaV2026!"){
+    sessionStorage.setItem("dv_admin","1");
+    location.href="dashboard.html";
+  } else {
+    const e=document.getElementById("err");e.style.display="block";
+    document.getElementById("p").value="";document.getElementById("p").focus();
+    setTimeout(()=>e.style.display="none",3000);
+  }
+}
+</script>
+</body></html>

@@ -1,0 +1,56 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Gallery — DeltaV</title><link rel="stylesheet" href="theme.css"><style>
+body{background:#0d1823}
+.gal-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:16px}
+.g-item{background:rgba(255,255,255,.05);border:1.5px solid rgba(255,255,255,.08);border-radius:13px;overflow:hidden;transition:all .28s;cursor:pointer}
+.g-item:hover{border-color:rgba(255,102,0,.28);transform:scale(1.02);box-shadow:0 14px 36px rgba(0,0,0,.4)}
+.g-thumb{height:190px;display:flex;align-items:center;justify-content:center;font-size:4rem;background:linear-gradient(135deg,rgba(255,102,0,.12),rgba(27,43,58,.8))}
+.g-info{padding:15px}
+.g-info h4{color:#fff;font-weight:700;margin-bottom:3px}
+.g-info p{color:rgba(255,255,255,.42);font-size:.82rem}
+.rev-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:15px;margin-top:20px}
+.rev-c{background:rgba(255,255,255,.05);border:1.5px solid rgba(255,255,255,.08);border-radius:12px;padding:20px}
+.stars{color:#ffc107;font-size:1rem;margin-bottom:9px}
+.rev-c p{color:rgba(255,255,255,.55);font-size:.84rem;line-height:1.72;margin-bottom:11px}
+.reviewer{color:rgba(255,255,255,.36);font-size:.78rem;font-weight:600}
+</style></head><body>
+<header class="pub-h">
+  <a href="index.html" class="pub-logo">DeltaV <span>Auto</span></a>
+  <nav class="pub-nav">
+    <a href="services.html">Services</a>
+    <a href="about.html">About</a>
+    <a href="gallery.html">Gallery</a>
+    <a href="faq.html">FAQ</a>
+    <a href="contact.html">Contact</a>
+    <a href="booking.html" class="cta">📅 Book Now</a>
+  </nav>
+</header>
+<div class="pub-wrap-wide">
+  <a href="index.html" class="back-btn">← Back to Home</a>
+  <div class="pub-title">Gallery &amp; Reviews</div>
+  <div class="pub-sub">Our work and what customers say about it.</div>
+  <div class="gal-grid">
+    <div class="g-item"><div class="g-thumb">🔧</div><div class="g-info"><h4>Engine Rebuild</h4><p>Full engine strip and rebuild — BMW 3 Series</p></div></div>
+    <div class="g-item"><div class="g-thumb">🚗</div><div class="g-info"><h4>Full Respray</h4><p>Panel prep, primer, and full colour respray — Ford Focus</p></div></div>
+    <div class="g-item"><div class="g-thumb">💨</div><div class="g-info"><h4>AC System Repair</h4><p>Compressor replacement and full AC regas</p></div></div>
+    <div class="g-item"><div class="g-thumb">🛞</div><div class="g-info"><h4>Alloy Refurb</h4><p>4 alloys stripped, refurbished and powder coated</p></div></div>
+    <div class="g-item"><div class="g-thumb">💻</div><div class="g-info"><h4>Diagnostics Session</h4><p>Full 36-point diagnostic scan and fault resolution</p></div></div>
+    <div class="g-item"><div class="g-thumb">🔋</div><div class="g-info"><h4>Alternator Job</h4><p>Alternator replacement + battery upgrade — VW Golf</p></div></div>
+  </div>
+  <div style="margin-top:50px">
+    <h2 style="color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:2rem;margin-bottom:7px;font-weight:800">Customer Reviews</h2>
+    <p style="color:rgba(255,255,255,.42);margin-bottom:24px">Real reviews from real customers.</p>
+    <div class="rev-grid">
+      <div class="rev-c"><div class="stars">★★★★★</div><p>"Took my car in for brakes and they found a couple of other things too. Showed me everything, no pressure. Brilliant garage."</p><div class="reviewer">— Sarah M., Smethwick</div></div>
+      <div class="rev-c"><div class="stars">★★★★★</div><p>"Dropped it off at 9am, picked up fully fixed by 2pm. Fastest turnaround I've ever had. Will definitely be back."</p><div class="reviewer">— James T., Oldbury</div></div>
+      <div class="rev-c"><div class="stars">★★★★★</div><p>"Honest pricing. They called before doing any extra work. Exactly how a garage should be."</p><div class="reviewer">— Mohammed A., West Brom</div></div>
+      <div class="rev-c"><div class="stars">★★★★★</div><p>"Finally found a garage I can trust. They diagnosed an issue 3 other garages missed. Exceptional."</p><div class="reviewer">— Karen L., Birmingham</div></div>
+      <div class="rev-c"><div class="stars">★★★★★</div><p>"Used them for my whole family's cars now. Wouldn't go anywhere else."</p><div class="reviewer">— David P., Harborne</div></div>
+      <div class="rev-c"><div class="stars">★★★★★</div><p>"Great bodywork job. My car looks brand new after the respray. Colour match is perfect."</p><div class="reviewer">— Priya S., Erdington</div></div>
+    </div>
+  </div>
+  <div style="text-align:center;margin-top:44px;display:flex;gap:11px;justify-content:center;flex-wrap:wrap">
+    <a href="booking.html" class="btn btn-primary btn-lg">📅 Book Now</a>
+    <a href="contact.html" class="btn btn-lg" style="background:rgba(255,255,255,.08);color:#fff;border:1.5px solid rgba(255,255,255,.14)">📞 Contact Us</a>
+  </div>
+</div>
+</body></html>

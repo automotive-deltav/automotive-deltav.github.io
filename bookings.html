@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>DeltaV Admin - Bookings</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+<script type="text/javascript" src="https://cdn.emailjs.com/sdk/3.2.0/email.min.js"></script>
+<script type="text/javascript">
+  (function(){ emailjs.init("R2O3dhHwzD8kLNqo3"); })();
+</script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  
+  body {
+    font-family: 'Montserrat', sans-serif;
+    background: #f0f2f5;
+    color: #333;
+    display: flex;
+    min-height: 100vh;
+  }
+
+  /* Sidebar */
+  .sidebar {
+    width: 250px;
+    background: linear-gradient(180deg, #1b2b3a, #33475b);
+    color: #fff;
+    padding: 30px 0;
+    position: fixed;
+    height: 100vh;
+    overflow-y: auto;
+  }
+
+  .sidebar .logo {
+    font-size: 1.5rem;
+    font-weight: 700;
+    padding: 0 20px;
+    margin-bottom: 40px;
+  }
+
+  .sidebar .logo span {
+    color: #ff6600;
+  }
+
+  .sidebar nav a {
+    display: block;
+    color: #fff;
+    text-decoration: none;
+    padding: 15px 20px;
+    transition: 0.3s;
+    border-left: 3px solid transparent;
+  }
+
+  .sidebar nav a:hover,
+  .sidebar nav a.active {
+    background: rgba(255,255,255,0.1);
+    border-left-color: #ff6600;
+  }
+
+  .logout-btn {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    right: 20px;
+    padding: 12px;
+    background: #ff6600;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    font-family: 'Montserrat', sans-serif;
+  }
+
+  .logout-btn:hover {
+    background: #e55a00;
+  }
+
+  /* Main Content */
+  .main-content {
+    margin-left: 250px;
+    padding: 30px;
+    flex: 1;
+  }
+
+  header h1 {
+    font-size: 2rem;
+    color: #1b2b3a;
+    margin-bottom: 30px;
+  }
+
+  #searchBar {
+    padding:10px 15px;
+    font-size:1rem;
+    width: 100%;
+    max-width:400px;
+    border-radius:8px;
+    border:1px solid #ccc;
+    margin-bottom:20px;
+    display:block;
+  }
+
+  .cards-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: flex-start;
+  }
+
+  .booking-card {
+    background:#fff;
+    border-radius:12px;
+    box-shadow:0 4px 15px rgba(0,0,0,0.1);
+    padding:20px;
+    width: calc(33% - 20px);
+    min-width:250px;
+    position: relative;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .booking-card:hover {
+    transform: translateY(-5px);
+    box-shadow:0 8px 25px rgba(0,0,0,0.15);
+  }
+
+  .booking-card p { margin:6px 0;}
+  .booking-card .status { font-weight:600; margin-top:10px; color:#1b2b3a; }
+  
+  .new-badge {
+    display: inline-block;
+    background: #ff6600;
+    color: #fff;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    margin-left: 8px;
+    animation: pulse 2s infinite;
+  }
+  
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+  }
+  
+  .status-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-left: 8px;
+  }
+  
+  .status-pending {
+    background: #fff3cd;
+    color: #856404;
+  }
+  
+  .status-confirmed {
+    background: #d4edda;
+    color: #155724;
+  }
+  
+  .booking-card button {
+    margin-top:12px;
+    padding:8px 14px;
+    background-color:#1b2b3a;
+    color:#fff;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    font-weight:600;
+    transition:0.2s;
+    margin-right: 8px;
+  }
+  
+  .booking-card button:hover { background-color:#33475b; }
+
+  /* Modal styles */
+  .modal {
+    display:none;
+    position:fixed;
+    top:0; left:0;
+    width:100%; height:100%;
+    background:rgba(0,0,0,0.5);
+    justify-content:center;
+    align-items:center;
+    z-index:999;
+  }
+  
+  .modal-content {
+    background:#fff;
+    padding:25px 30px;
+    border-radius:12px;
+    max-width:500px;
+    width:90%;
+    position:relative;
+    animation: fadeInUp 0.3s ease;
+  }
+  
+  .modal-content h3 { margin-top:0; }
+  
+  .close-btn {
+    position:absolute;
+    top:10px;
+    right:15px;
+    font-size:1.2rem;
+    font-weight:600;
+    cursor:pointer;
+    color:#333;
+  }
+  
+  .modal-content input,
+  .modal-content select {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-family: 'Montserrat', sans-serif;
+  }
+  
+  .modal-content button {
+    width: 100%;
+    padding: 12px;
+    background: #1b2b3a;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    margin-top: 10px;
+  }
+  
+  .modal-content button:hover {
+    background: #33475b;
+  }
+
+  #loading { text-align:center; margin-top:20px; font-size:1.1rem; color:#555; }
+
+  @keyframes fadeInUp { from{opacity:0; transform:translateY(20px);} to{opacity:1; transform:translateY(0);} }
+</style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<div class="sidebar">
+  <div class="logo">DeltaV <span>Admin</span></div>
+  <nav>
+    <a href="dashboard.html">📊 Dashboard</a>
+    <a href="bookings.html" class="active">📅 Bookings</a>
+    <a href="schedule.html">🕐 Schedule</a>
+    <a href="invoices.html">📄 Invoices</a>
+  </nav>
+  <button class="logout-btn" onclick="logout()">Logout</button>
+</div>
+
+<!-- Main Content -->
+<div class="main-content">
+  <header>
+    <h1>Manage Bookings</h1>
+  </header>
+
+  <input type="text" id="searchBar" placeholder="Search by name, email, or car registration...">
+  <div class="cards-container" id="bookingsContainer"></div>
+  <div id="loading">Loading bookings...</div>
+</div>
+
+<!-- Modal for inspecting -->
+<div class="modal" id="inspectModal">
+  <div class="modal-content">
+    <span class="close-btn" id="closeModal">&times;</span>
+    <h3>Booking Details</h3>
+    <div id="modalBody"></div>
+  </div>
+</div>
+
+<!-- Modal for confirming with date/time -->
+<div class="modal" id="confirmModal">
+  <div class="modal-content">
+    <span class="close-btn" id="closeConfirmModal">&times;</span>
+    <h3>Confirm Booking</h3>
+    <p>Set the confirmed date and time for this appointment:</p>
+    <input type="date" id="confirmDate" required>
+    <input type="time" id="confirmTime" required>
+    <button onclick="saveConfirmation()">Confirm Booking</button>
+  </div>
+</div>
+
+<script src="bookings.js"></script>
+</body>
+</html>
