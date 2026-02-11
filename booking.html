@@ -49,7 +49,7 @@ body{background:#0d1823}
       <div class="fg"><label>Full Name *</label><input type="text" id="bName" placeholder="John Smith" required></div>
       <div class="fg"><label>Phone Number *</label><input type="tel" id="bPhone" placeholder="07700 900000" required></div>
     </div>
-    <div class="fg"><label>Email Address * (Gmail, Outlook, Yahoo - any provider)</label><input type="email" id="bEmail" placeholder="john@example.com" required></div>
+    <div class="fg"><label>Email Address *</label><input type="email" id="bEmail" placeholder="john@example.com" required></div>
     <div class="div-sec"></div>
     <div class="step-h">Step 2 — Your Vehicle</div>
     <div class="g3">
@@ -116,7 +116,7 @@ const tomorrow=new Date();tomorrow.setDate(tomorrow.getDate()+1);
 document.getElementById("bDate").min=tomorrow.toISOString().split("T")[0];
 
 // Initialize EmailJS - REPLACE WITH YOUR KEY
-emailjs.init("R2O3dhHwzD8kLNqo3");
+emailjs.init("YOUR_EMAILJS_PUBLIC_KEY");
 
 function validate(){
   const ids=["bName","bPhone","bEmail","bReg","bDate","bService"];
@@ -136,19 +136,24 @@ function sendVer(){
   const em=document.getElementById("bEmail").value;
   const nm=document.getElementById("bName").value;
   
-  // EmailJS sends to ANY email provider
+  console.log("Sending code:",vCode,"to",em);
+  
+  // CRITICAL: EmailJS template variables MUST EXACTLY match
   emailjs.send("service_hi4mpao","template_aj5l14u",{
-    to_email:em,
-    to_name:nm,
-    code:vCode
+    to_name: nm,
+    to_email: em,
+    verification_code: vCode,
+    code: vCode,
+    message: "Your DeltaV booking verification code is: " + vCode
   }).then(()=>{
+    console.log("Email sent successfully! Code is:",vCode);
     document.getElementById("sentTo").textContent=em;
     document.getElementById("verBox").style.display="block";
     document.getElementById("cErr").style.display="none";
     document.getElementById("verBox").scrollIntoView({behavior:"smooth"});
   }).catch(e=>{
     console.error("EmailJS error:",e);
-    alert("Email failed to send. Please check:\n\n1. Your EmailJS public key is set in booking.html line 105\n2. Service ID and Template ID are correct\n3. Your EmailJS account is active\n\nError: "+e);
+    alert("Email failed to send. Please check:\n\n1. Your EmailJS public key is set in booking.html line 105\n2. Service ID and Template ID are correct\n3. Your EmailJS template has these variables:\n   - {{to_email}}\n   - {{to_name}}\n   - {{code}} or {{verification_code}}\n\nError: "+e);
   });
 }
 

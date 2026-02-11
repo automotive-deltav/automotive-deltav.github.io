@@ -1,0 +1,15 @@
+ADMIN.HTML BUTTONS FIX:
+
+Replace the addNote function with:
+
+function addNote(id){
+  showPrompt("📝 Add Note","Enter note for this booking:","e.g. Customer requested early morning slot",(n)=>{
+    dbUpd("bookings",id,{notes:n});
+    const b=bkData.find(x=>x.id===id);
+    if(b)b.notes=n;
+    renderBk();
+    toast("Note saved!");
+  });
+}
+
+This uses the professional modal from shared.js instead of browser prompt.
