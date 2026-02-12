@@ -299,3 +299,22 @@ window.confirmAction=function(action,callback){
 window.showKeyboardHelp=function(){
   alert(`⌨️ Keyboard Shortcuts:\n\nEsc - Close modal\nCtrl+S - Save\nCtrl+N - New\nCtrl+F - Search`);
 };
+
+// Attach autocomplete to input
+window.attachAC=function(input,suggestions){
+  let acList=null;
+  input.addEventListener("input",e=>{
+    const val=e.target.value.toLowerCase();
+    if(!val){if(acList)acList.remove();acList=null;return;}
+    const matches=suggestions.filter(s=>s.toLowerCase().includes(val));
+    if(!matches.length){if(acList)acList.remove();acList=null;return;}
+    if(!acList){acList=document.createElement("div");acList.style.cssText="position:absolute;background:#fff;border:1px solid #e2e8f0;border-radius:4px;max-height:200px;overflow-y:auto;width:"+input.offsetWidth+"px;z-index:1000;margin-top:-2px";input.parentElement.style.position="relative";input.parentElement.appendChild(acList);}
+    acList.innerHTML=matches.map(m=>`<div style="padding:8px 12px;cursor:pointer;border-bottom:1px solid #f1f3f5;transition:all .15s">${m}</div>`).join("");
+    acList.querySelectorAll("div").forEach(item=>{
+      item.onmouseover=()=>{item.style.backgroundColor="#f8f9fb"};
+      item.onmouseout=()=>{item.style.backgroundColor=""};
+      item.onclick=()=>{input.value=item.textContent;acList.remove();acList=null;input.dispatchEvent(new Event("input"))};
+    });
+  });
+  document.addEventListener("click",e=>{if(e.target!==input&&acList)acList.remove();});
+};

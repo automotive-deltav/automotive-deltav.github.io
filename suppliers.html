@@ -23,8 +23,38 @@
     </div>
   </div>
   <div class="body">
-    <div class="tbl-wrap">
-      <table><thead><tr><th>Name</th><th>Contact</th><th>Phone</th><th>Email</th><th>Category</th><th>Actions</th></tr></thead><tbody id="tbody"></tbody></table>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:20px">
+      <div class="stat-card" style="background:linear-gradient(135deg,rgba(255,102,0,.1),rgba(255,102,0,.05))">
+        <div class="stat-label">Total Suppliers</div>
+        <div class="stat-value" id="statTotal">0</div>
+      </div>
+      <div class="stat-card" style="background:linear-gradient(135deg,rgba(34,197,94,.1),rgba(34,197,94,.05))">
+        <div class="stat-label">Categories</div>
+        <div class="stat-value" id="statCategories">0</div>
+      </div>
+      <div class="stat-card" style="background:linear-gradient(135deg,rgba(59,130,246,.1),rgba(59,130,246,.05))">
+        <div class="stat-label">With Email</div>
+        <div class="stat-value" id="statEmail">0</div>
+      </div>
+      <div class="stat-card" style="background:linear-gradient(135deg,rgba(168,85,247,.1),rgba(168,85,247,.05))">
+        <div class="stat-label">With Phone</div>
+        <div class="stat-value" id="statPhone">0</div>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;align-items:center">
+      <div class="srch-w" style="flex:1;min-width:200px">
+        <input type="text" id="searchInput" placeholder="🔍 Search by name, email, category..." oninput="renderData()" style="width:100%">
+      </div>
+      <button class="btn btn-ghost" onclick="loadData()" title="Refresh data">🔄</button>
+      <button class="btn btn-info btn-sm" onclick="exportData()">📥 CSV</button>
+      <button class="btn btn-warning btn-sm" onclick="window.print()">🖨️ Print</button>
+    </div>
+
+    <div id="dataGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px"></div>
+    <div id="emptyState" style="display:none;text-align:center;padding:60px 20px;color:#94a3b8">
+      <div style="font-size:3em;margin-bottom:12px">🏭</div>
+      <p style="font-size:1.1em">No suppliers found</p>
     </div>
   </div>
 </div>
@@ -64,26 +94,114 @@
 <script src="shared.js"></script>
 <script>
 let data=[],editId=null;
+
 async function loadData(){
   try{
     data=await dbGet("suppliers","&order=created_at.desc");
+    
+    // Update statistics
+    const categories=new Set(data.map(r=>r.category).filter(Boolean)).size;
+    const withEmail=data.filter(r=>r.email).length;
+    const withPhone=data.filter(r=>r.phone).length;
+    
+    document.getElementById("statTotal").textContent=data.length;
+    document.getElementById("statCategories").textContent=categories;
+    document.getElementById("statEmail").textContent=withEmail;
+    document.getElementById("statPhone").textContent=withPhone;
+    
     renderData();
   }catch(e){showError("Failed to load. Make sure 'suppliers' table exists in Supabase!");}
 }
+
 function renderData(){
-  const tb=document.getElementById("tbody");
-  if(!data.length){
-    tb.innerHTML='<tr><td colspan="99"><div class="empty"><div class="ei">🏭</div><h3>No data yet</h3><p>Click "+ New" to add your first entry</p></div></td></tr>';
+  const query=document.getElementById("searchInput").value.toLowerCase();
+  const filtered=data.filter(r=>
+    (r.name||"").toLowerCase().includes(query)||
+    (r.email||"").toLowerCase().includes(query)||
+    (r.category||"").toLowerCase().includes(query)||
+    (r.contact||"").toLowerCase().includes(query)
+  );
+  
+  const grid=document.getElementById("dataGrid");
+  grid.innerHTML="";
+  
+  if(!filtered.length){
+    document.getElementById("emptyState").style.display="";
     return;
   }
-  tb.innerHTML=data.map(r=>`<tr><td>${r.name || '—'}</td><td>${r.contact || '—'}</td><td>${r.phone || '—'}</td><td>${r.email || '—'}</td><td>${r.category || '—'}</td><td><button class="btn btn-warning btn-sm" onclick="editRow('${r.id}')">✏️</button> <button class="btn btn-danger btn-sm" onclick="confirmDel('Delete this?',()=>deleteRow('${r.id}'))">🗑️</button></td></tr>`).join('');
+  document.getElementById("emptyState").style.display="none";
+  
+  filtered.forEach((r,idx)=>{
+    const card=document.createElement("div");
+    card.style.cssText=`background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:16px;animation:fadeInUp .3s ease-out ${idx*0.05}s backwards;cursor:pointer;transition:all .2s;position:relative;overflow:hidden`;
+    
+    card.innerHTML=`
+      <div style="position:absolute;top:0;left:0;width:4px;height:100%;background:var(--ac)"></div>
+      <div style="padding-left:8px">
+        <h4 style="margin:0 0 8px;color:var(--dk);font-size:1.1em">${r.name||"—"}</h4>
+        ${r.category?`<div style="display:inline-block;background:#f1f3f5;color:#64748b;font-size:.8em;padding:3px 8px;border-radius:4px;margin-bottom:10px">${r.category}</div>`:""}
+        
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:10px 0;border-top:1px solid #f1f3f5;border-bottom:1px solid #f1f3f5;margin-bottom:10px">
+          <div><small style="color:#94a3b8">Contact</small><div style="font-weight:700;color:#64748b;font-size:.95em">${r.contact||"—"}</div></div>
+          <div><small style="color:#94a3b8">Phone</small><div style="font-weight:700;color:var(--ac);font-size:.95em"><a href="tel:${r.phone}" style="text-decoration:none;color:inherit">${r.phone||"—"}</a></div></div>
+        </div>
+        
+        ${r.email?`<div style="font-size:.85em;color:#64748b;margin-bottom:12px"><strong>Email:</strong> <a href="mailto:${r.email}" style="color:var(--ac);text-decoration:none">${r.email}</a></div>`:""}
+        
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <button class="btn btn-primary btn-sm" onclick="editRow('${r.id}')">✏️ Edit</button>
+          <button class="btn btn-danger btn-sm" onclick="confirmDel('Delete this supplier?',()=>deleteRow('${r.id}'))">🗑️ Delete</button>
+        </div>
+      </div>
+    `;
+    
+    card.onmouseover=()=>{
+      card.style.boxShadow="0 12px 24px rgba(0,0,0,.1)";
+      card.style.transform="translateY(-4px)";
+    };
+    card.onmouseout=()=>{
+      card.style.boxShadow="";
+      card.style.transform="";
+    };
+    
+    grid.appendChild(card);
+  });
 }
-function openNew(){editId=null;document.getElementById("formTitle").textContent="➕ New";document.getElementById("inp0").value = ""; document.getElementById("inp1").value = ""; document.getElementById("inp2").value = ""; document.getElementById("inp3").value = ""; document.getElementById("inp4").value = "";openM("mForm");}
-function editRow(id){const r=data.find(x=>x.id===id);if(!r)return;editId=id;document.getElementById("formTitle").textContent="✏️ Edit";document.getElementById("inp0").value = r.name || ""; document.getElementById("inp1").value = r.contact || ""; document.getElementById("inp2").value = r.phone || ""; document.getElementById("inp3").value = r.email || ""; document.getElementById("inp4").value = r.category || "";openM("mForm");}
+
+function openNew(){
+  editId=null;
+  document.getElementById("formTitle").textContent="➕ New Supplier";
+  document.getElementById("inp0").value="";
+  document.getElementById("inp1").value="";
+  document.getElementById("inp2").value="";
+  document.getElementById("inp3").value="";
+  document.getElementById("inp4").value="";
+  openM("mForm");
+}
+
+function editRow(id){
+  const r=data.find(x=>x.id===id);
+  if(!r)return;
+  editId=id;
+  document.getElementById("formTitle").textContent="✏️ Edit Supplier";
+  document.getElementById("inp0").value=r.name||"";
+  document.getElementById("inp1").value=r.contact||"";
+  document.getElementById("inp2").value=r.phone||"";
+  document.getElementById("inp3").value=r.email||"";
+  document.getElementById("inp4").value=r.category||"";
+  openM("mForm");
+}
+
 async function saveData(){
   const val=document.getElementById("inp0").value.trim();
   if(!val){showError("Name is required!");return;}
-  const d={name: document.getElementById("inp0").value.trim() || null, contact: document.getElementById("inp1").value.trim() || null, phone: document.getElementById("inp2").value.trim() || null, email: document.getElementById("inp3").value.trim() || null, category: document.getElementById("inp4").value.trim() || null};
+  const d={
+    name:document.getElementById("inp0").value.trim()||null,
+    contact:document.getElementById("inp1").value.trim()||null,
+    phone:document.getElementById("inp2").value.trim()||null,
+    email:document.getElementById("inp3").value.trim()||null,
+    category:document.getElementById("inp4").value.trim()||null
+  };
   try{
     if(editId){
       await dbUpd("suppliers",editId,d);
@@ -96,6 +214,7 @@ async function saveData(){
     loadData();
   }catch(e){showError("Failed to save: "+e.message);}
 }
+
 async function deleteRow(id){
   try{
     await dbDel("suppliers",id);
@@ -104,6 +223,26 @@ async function deleteRow(id){
     showToast("Deleted successfully!","success");
   }catch(e){showError("Failed to delete: "+e.message);}
 }
+
+function exportData(){
+  const rows=[["Name","Contact","Phone","Email","Category"]];
+  data.forEach(r=>rows.push([r.name||"",r.contact||"",r.phone||"",r.email||"",r.category||""]));
+  const csv=rows.map(r=>r.map(c=>`"${c||""}"`).join(",")).join("\n");
+  const a=document.createElement("a");
+  a.href="data:text/csv,"+encodeURIComponent(csv);
+  a.download="suppliers.csv";
+  a.click();
+}
+
+function showError(msg){
+  document.getElementById("errorMsg").innerText=msg;
+  openM("mError");
+}
+
+function showToast(msg,type){
+  toast(msg,type==="success"?"ok":type);
+}
+
 loadData();
 </script>
 </body></html>
