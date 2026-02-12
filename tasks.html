@@ -102,11 +102,17 @@ function renderData(){
     if(!col)return;
     const priorityColor=r.priority==='high'?'var(--er)':r.priority==='medium'?'var(--wa)':'var(--ok)';
     const card=document.createElement('div');
-    card.style.cssText='background:#fff;padding:12px;border-radius:8px;margin-bottom:10px;border-left:3px solid '+priorityColor+';box-shadow:0 1px 3px rgba(0,0,0,.08);cursor:pointer';
-    card.innerHTML=`<div style="font-weight:600;color:#1b2b3a;margin-bottom:8px">${r.task_name}</div>
+    card.className='card';
+    card.draggable=true;
+    card.style.cssText='background:#fff;padding:12px;border-radius:8px;margin-bottom:10px;border-left:3px solid '+priorityColor+';box-shadow:0 1px 3px rgba(0,0,0,.08);cursor:grab;transition:all .2s';
+    card.onmouseenter=function(){this.style.boxShadow='0 4px 12px rgba(0,0,0,.15)';this.style.transform='translateY(-2px)';}
+    card.onmouseleave=function(){this.style.boxShadow='0 1px 3px rgba(0,0,0,.08)';this.style.transform='translateY(0)';}
+    card.ondragstart=function(e){e.dataTransfer.effectAllowed='move';e.dataTransfer.setData('taskId',r.id);this.style.opacity='0.5';}
+    card.ondragend=function(){this.style.opacity='1';}
+    card.innerHTML=`<div style="font-weight:600;color:#1b2b3a;margin-bottom:8px;word-break:break-word">${r.task_name}</div>
       <div style="font-size:.8rem;color:#94a3b8;margin-bottom:8px">${r.assigned_to||'Unassigned'}</div>
       ${r.due_date?'<div style="font-size:.75rem;color:#64748b;margin-bottom:8px">📅 '+r.due_date+'</div>':''}
-      <div style="display:flex;gap:6px;justify-content:space-between">
+      <div style="display:flex;gap:6px;justify-content:space-between;align-items:center">
         <span style="font-size:.7rem;padding:3px 8px;background:${priorityColor};color:#fff;border-radius:4px;font-weight:600">${r.priority||'low'}</span>
         <div style="display:flex;gap:4px">
           <button class="btn btn-sm" style="padding:2px 8px;font-size:.7rem;color:#ff6600" onclick="editRow('${r.id}')">✏️</button>
@@ -115,6 +121,29 @@ function renderData(){
       </div>`;
     col.appendChild(card);
   });
+  // Add drop zones
+  ['todo','progress','review','done'].forEach(status=>{
+    const col=document.getElementById('col-'+status);
+    if(!col)return;
+    col.ondragover=e=>{e.preventDefault();e.dataTransfer.dropEffect='move';col.style.backgroundColor='rgba(255,102,0,.05)';col.style.borderColor='var(--ac)';}
+    col.ondragleave=e=>{col.style.backgroundColor='';col.style.borderColor='';}
+    col.ondrop=e=>{
+      e.preventDefault();
+      col.style.backgroundColor='';
+      col.style.borderColor='';
+      const taskId=e.dataTransfer.getData('taskId');
+      moveTask(taskId,status);
+    };
+  });
+}
+async function moveTask(id,newStatus){
+  try{
+    await dbUpd("tasks",id,{status:newStatus});
+    const task=data.find(t=>t.id===id);
+    if(task)task.status=newStatus;
+    renderData();
+    toast("Task moved to "+newStatus,"in");
+  }catch(e){toast("Failed to move task","er");}
 }
 function delRow(id){
   confirmDel("Delete this task?",async()=>{

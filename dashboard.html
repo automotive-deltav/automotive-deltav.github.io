@@ -19,6 +19,7 @@
     <h1>📊 Dashboard</h1>
     <div class="tr">
       <button class="btn btn-ghost" onclick="loadDash()">🔄 Refresh</button>
+      <button class="btn btn-ghost" onclick="showKeyboardHelp()">⌨️ Shortcuts</button>
     </div>
   </div>
   <div class="body">
@@ -71,24 +72,59 @@ async function loadDash(){
     dbGet("tasks","&status=eq.Pending")
   ]);
   
-  document.getElementById("statBookings").textContent=bookings.length;
-  document.getElementById("statSuppliers").textContent=suppliers.length;
-  document.getElementById("statVehicles").textContent=vehicles.length;
-  document.getElementById("statTasks").textContent=tasks.length;
+  // Animate stat values
+  animateStat("statBookings",bookings.length);
+  animateStat("statSuppliers",suppliers.length);
+  animateStat("statVehicles",vehicles.length);
+  animateStat("statTasks",tasks.length);
   
+  // Render recent bookings with animations
   const rb=document.getElementById("recentBookings");
   if(!bookings.length)rb.innerHTML='<p style="color:#94a3b8;text-align:center;padding:40px">No bookings yet</p>';
-  else rb.innerHTML=bookings.slice(0,5).map(b=>`<div style="padding:14px;border-bottom:1px solid #f1f3f5;display:flex;justify-content:space-between;align-items:center">
-    <div><strong style="color:var(--dk)">${b.name}</strong><br><small style="color:#94a3b8">${b.reg} • ${b.service||'General'}</small></div>
-    <span style="font-size:.8rem;color:#64748b">${b.date}</span>
-  </div>`).join('');
+  else {
+    rb.innerHTML='';
+    bookings.slice(0,5).forEach((b,i)=>{
+      const item=document.createElement('div');
+      item.style.cssText='padding:14px;border-bottom:1px solid #f1f3f5;display:flex;justify-content:space-between;align-items:center;cursor:pointer;transition:all .2s;animation:fadeInUp .3s ease-out '+(i*0.05)+'s backwards';
+      item.onmouseover=function(){this.style.backgroundColor='rgba(255,102,0,.05)';this.style.paddingLeft='20px';}
+      item.onmouseout=function(){this.style.backgroundColor='';this.style.paddingLeft='14px';}
+      item.innerHTML=`<div><strong style="color:var(--dk)">${b.name}</strong><br><small style="color:#94a3b8">${b.reg} • ${b.service||'General'}</small></div>
+        <span style="font-size:.8rem;color:#64748b;background:#f8f9fb;padding:4px 8px;border-radius:4px">${b.date}</span>`;
+      rb.appendChild(item);
+    });
+  }
   
+  // Render upcoming tasks with animations
   const ut=document.getElementById("upcomingTasks");
   if(!tasks.length)ut.innerHTML='<p style="color:#94a3b8;text-align:center;padding:40px">No pending tasks</p>';
-  else ut.innerHTML=tasks.slice(0,5).map(t=>`<div style="padding:14px;border-bottom:1px solid #f1f3f5">
-    <strong style="color:var(--dk)">${t.task_name}</strong><br>
-    <small style="color:#94a3b8">${t.assigned_to||'Unassigned'} • ${t.due_date||'No deadline'}</small>
-  </div>`).join('');
+  else {
+    ut.innerHTML='';
+    tasks.slice(0,5).forEach((t,i)=>{
+      const item=document.createElement('div');
+      item.style.cssText='padding:14px;border-bottom:1px solid #f1f3f5;cursor:pointer;transition:all .2s;animation:fadeInUp .3s ease-out '+(i*0.05)+'s backwards;border-left:3px solid '+(t.priority==='high'?'var(--er)':'var(--ok)')+';margin-bottom:4px';
+      item.onmouseover=function(){this.style.backgroundColor='rgba(255,102,0,.05)';this.style.paddingLeft='20px';}
+      item.onmouseout=function(){this.style.backgroundColor='';this.style.paddingLeft='14px';}
+      item.innerHTML=`<strong style="color:var(--dk)">${t.task_name}</strong><br>
+        <small style="color:#94a3b8">${t.assigned_to||'Unassigned'} • ${t.due_date||'No deadline'}</small>`;
+      ut.appendChild(item);
+    });
+  }
+}
+
+function animateStat(id,target){
+  const el=document.getElementById(id);
+  const current=parseInt(el.textContent)||0;
+  const step=(target-current)/20;
+  let count=current;
+  const interval=setInterval(()=>{
+    count+=step;
+    if((step>0&&count>=target)||(step<0&&count<=target)){
+      el.textContent=target;
+      clearInterval(interval);
+    }else{
+      el.textContent=Math.round(count);
+    }
+  },50);
 }
 loadDash();
 </script>
