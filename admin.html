@@ -1,275 +1,170 @@
-<script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>DeltaV Admin</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+
+<!-- ✅ Supabase CDN MUST be before your script -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Montserrat', sans-serif;
+  background: #f5f7fa;
+}
+
+header {
+  background: #1e88e5;
+  color: white;
+  padding: 20px;
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.container {
+  padding: 20px;
+}
+
+.card {
+  background: white;
+  padding: 20px;
+  margin-bottom: 15px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+  transition: 0.2s;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+}
+
+.card h3 {
+  margin-bottom: 8px;
+}
+
+.buttons {
+  margin-top: 15px;
+}
+
+button {
+  padding: 8px 14px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  margin-right: 8px;
+}
+
+.confirm {
+  background: #1e88e5;
+  color: white;
+}
+
+.inspect {
+  background: #eee;
+}
+</style>
+</head>
+
+<body>
+
+<header>DeltaV Admin Dashboard</header>
+
+<div class="container" id="bookings"></div>
+
 <script>
-const supabaseClient = supabase.createClient(
-  "https://cxzapvieqzqfxzolqwoh.supabase.co",
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN4emFwdmllcXpxZnh6b2xxd29oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA1NjU4MzgsImV4cCI6MjA4NjE0MTgzOH0.x_F07XpdThY6EqwaP8jJGgdBIMTHdYfTr99IMOpSq_E"
-);
+/* ===========================
+   🔹 REPLACE THESE
+=========================== */
+const SUPABASE_URL = "YOUR_SUPABASE_URL";
+const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
 
-async function dbGet(table) {
-  const { data, error } = await supabaseClient
-    .from(table)
-    .select("*");
+/* ===========================
+   🔹 INIT
+=========================== */
+const { createClient } = supabase;
+const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-  if (error) throw error;
-  return data;
-}
+/* ===========================
+   🔹 FETCH BOOKINGS
+=========================== */
+async function fetchBookings() {
 
-async function dbUpd(table, id, values) {
-  const { error } = await supabaseClient
-    .from(table)
-    .update(values)
-    .eq("id", id);
+  const { data, error } = await db
+    .from("bookings")
+    .select("*")
+    .order("id", { ascending: false });
 
-  if (error) throw error;
-}
-
-async function dbDel(table, id) {
-  const { error } = await supabaseClient
-    .from(table)
-    .delete()
-    .eq("id", id);
-
-  if (error) throw error;
-}
-</script>
-
-let bkData = [], cBkId = null, inspId = null;
-
-async function fetchBk() {
-  try {
-    bkData = await dbGet("bookings") || [];
-    renderBk();
-  } catch (e) {
-    console.error(e);
-  }
-}
-
-function renderBk() {
-  const q = (document.getElementById("bsrch").value || "").toLowerCase();
-  const st = document.getElementById("bfSt").value;
-
-  let f = bkData.filter(b =>
-    (b.name || "").toLowerCase().includes(q) ||
-    (b.email || "").toLowerCase().includes(q) ||
-    (b.reg || "").toLowerCase().includes(q)
-  );
-
-  if (st) {
-    f = f.filter(b => (b.status || "pending") === st);
+  if (error) {
+    console.error(error);
+    return;
   }
 
-  f.sort((a, b) => {
-    const sa = a.status || "pending";
-    const sb = b.status || "pending";
-    if (sa === sb) return 0;
-    return sa === "pending" ? -1 : 1;
-  });
+  const container = document.getElementById("bookings");
+  container.innerHTML = "";
 
-  const g = document.getElementById("bGrid");
-  g.innerHTML = "";
-  document.getElementById("bEmpty").style.display = f.length ? "none" : "block";
-
-  f.forEach(b => {
-    const isN = !b.viewed;
-    const status = b.status || "pending";
-    const badgeClass = status === "confirmed" ? "b-ok" : "b-wa";
-
-    const confirmedBlock = b.confirmed_date
-      ? `<div style="background:#eafaf1;border:1px solid #c3e6cb;border-radius:7px;padding:7px 10px;font-size:.76rem;color:#155724;font-weight:600;margin-top:6px">
-          📅 ${b.confirmed_date}${b.confirmed_time ? " at " + fmtT(b.confirmed_time) : ""}
-        </div>`
-      : "";
+  data.forEach(booking => {
 
     const card = document.createElement("div");
-    card.style = "background:#fff;border-radius:var(--r);border:1.5px solid var(--br);box-shadow:var(--s2);overflow:hidden;transition:all .2s;";
+    card.className = "card";
 
     card.innerHTML = `
-      <div style="background:linear-gradient(135deg,#1b2b3a,#2e4560);padding:12px 15px;display:flex;justify-content:space-between;align-items:center">
-        <span style="color:#fff;font-weight:700;font-size:.88rem">
-          ${b.name || "—"}
-          ${isN ? '<span class="badge b-or b-pulse" style="margin-left:6px;font-size:.58rem">NEW</span>' : ""}
-        </span>
-        <span style="background:var(--ac);color:#fff;padding:2px 8px;border-radius:5px;font-weight:700;font-size:.76rem">
-          ${b.reg || "—"}
-        </span>
+      <h3>${booking.name}</h3>
+      <p><strong>Date:</strong> ${booking.date}</p>
+      <p><strong>Status:</strong> ${booking.confirmed ? "Confirmed" : "Pending"}</p>
+      <div class="buttons">
+        <button class="confirm" onclick="toggleConfirm(${booking.id}, ${booking.confirmed})">
+          ${booking.confirmed ? "Unconfirm" : "Confirm"}
+        </button>
+        <button class="inspect" onclick="inspectBooking('${booking.name}', '${booking.email}', '${booking.phone}')">
+          Inspect
+        </button>
       </div>
-      <div style="padding:13px 15px">
-        <div class="ir"><span class="lbl">📧</span><span class="val">${b.email || "—"}</span></div>
-        <div class="ir"><span class="lbl">📞</span><span class="val">${b.phone || "—"}</span></div>
-           g.appendChild(card);
+    `;
 
-    if (isN) {
-      dbUpd("bookings", b.id, { viewed: true }).catch(() => {});
-    }
+    container.appendChild(card);
   });
 }
 
-function inspBk(id) {
-  const b = bkData.find(x => x.id === id);
-  if (!b) return;
-  inspId = id;
+/* ===========================
+   🔹 TOGGLE CONFIRM
+=========================== */
+async function toggleConfirm(id, currentStatus) {
 
-  document.getElementById("mInspB").innerHTML = `
-    <div class="ir"><span class="lbl">Name</span><span class="val">${b.name || "—"}</span></div>
-    <div class="ir"><span class="lbl">Email</span><span class="val">${b.email || "—"}</span></div>
-    <div class="ir"><span class="lbl">Phone</span><span class="val">${b.phone || "—"}</span></div>
-    <div class="ir"><span class="lbl">Registration</span><span class="val">${b.reg || "—"}</span></div>
-    <div class="ir">
-      <span class="lbl">Vehicle</span>
-      <span class="val">
-        ${b.car || "—"}${b.year ? " (" + b.year + ")" : ""}
-      </span>
-    </div>
-    <div class="ir">
-      <span class="lbl">Service</span>
-      <span class="val">${b.service || "—"}</span>
-    </div>
-    <div class="ir ac">
-      <span class="lbl">Preferred Date</span>
-      <span class="val">${b.date || "—"}</span>
-    </div>
+  await db
+    .from("bookings")
+    .update({ confirmed: !currentStatus })
+    .eq("id", id);
 
-    ${
-      b.confirmed_date
-        ? `<div class="ir hi">
-            <span class="lbl">✅ Confirmed</span>
-            <span class="val">
-              ${b.confirmed_date}${b.confirmed_time ? " at " + fmtT(b.confirmed_time) : ""}
-            </span>
-           </div>`
-        : ""
-    }
-
-    <div class="ir">
-      <span class="lbl">Status</span>
-      <span class="val">${b.status || "pending"}</span>
-    </div>
-
-    ${
-      b.notes
-        ? `<div class="ir">
-            <span class="lbl">Notes</span>
-            <span class="val">${b.notes}</span>
-           </div>`
-        : ""
-    }
-  `;
-
-  openM("mInsp");
+  fetchBookings();
 }
 
-function openCfFrom() {
-
-  if (inspId) {
-    const b = bkData.find(x => x.id === inspId);
-    closeM("mInsp");
-    if (b) openCf(b.id, b.date || "");
-  }
+/* ===========================
+   🔹 INSPECT
+=========================== */
+function inspectBooking(name, email, phone) {
+  alert(
+    "Name: " + name + "\n" +
+    "Email: " + email + "\n" +
+    "Phone: " + phone
+  );
 }
 
-function openCf(id, pref) {
-  cBkId = id;
-  document.getElementById("cfPref").textContent = pref || "Not specified";
-  document.getElementById("cfD").value = pref || today();
-  document.getElementById("cfT").value = "09:00";
-  document.getElementById("cfNote").value = "";
-  openM("mCf");
-}
-
-async function submitCf() {
-  const d = document.getElementById("cfD").value;
-  const t = document.getElementById("cfT").value;
-  if (!d || !t) return;
-
-  await dbUpd("bookings", cBkId, {
-    status: "confirmed",
-    confirmed_date: d,
-    confirmed_time: t
-  });
-
-  fetchBk();
-  closeM("mCf");
-}
-
-async function unpend(id) {
-  await dbUpd("bookings", id, {
-    status: "pending",
-    confirmed_date: null,
-    confirmed_time: null
-  });
-  fetchBk();
-}
-
-function goInv(id) {
-  const b = bkData.find(x => x.id === id);
-  if (!b) return;
-
-  sessionStorage.setItem("inv_pre", JSON.stringify({
-    customer_name: b.name,
-    customer_email: b.email,
-    car_reg: b.reg,
-    service: b.service
-  }));
-
-  location.href = "invoices.html";
-}
-
-function goInvFromInsp() {
-  if (inspId) {
-    goInv(inspId);
-    closeM("mInsp");
-  }
-}
-
-function addNote(id) {
-  const n = prompt("Note:");
-  if (!n) return;
-  dbUpd("bookings", id, { notes: n });
-  fetchBk();
-}
-
-function callCustomer(ph) {
-  if (ph) window.open("tel:" + ph);
-}
-
-function delBk(id) {
-  confirmDel("Delete this booking?", async () => {
-    await dbDel("bookings", id);
-    fetchBk();
-  });
-}
-
-function exportBk() {
-  const rows = [["Name","Email","Phone","Reg","Vehicle","Service","Preferred Date","Confirmed Date","Time","Status","Notes"]];
-  bkData.forEach(b => {
-    rows.push([
-      b.name || "",
-      b.email || "",
-      b.phone || "",
-      b.reg || "",
-      b.car || "",
-      b.service || "",
-      b.date || "",
-      b.confirmed_date || "",
-      b.confirmed_time || "",
-      b.status || "pending",
-      b.notes || ""
-    ]);
-  });
-
-  const csv = rows.map(r =>
-    r.map(c => `"${String(c).replace(/"/g,'""')}"`).join(",")
-  ).join("\\n");
-
-  const a = document.createElement("a");
-  a.href = "data:text/csv;charset=utf-8," + encodeURIComponent(csv);
-  a.download = "bookings.csv";
-  a.click();
-}
-
-fetchBk();
-setInterval(fetchBk, 15000);
+/* ===========================
+   🔹 AUTO LOAD + REFRESH
+=========================== */
+fetchBookings();
+setInterval(fetchBookings, 5000);
 </script>
+
+</body>
+</html>
