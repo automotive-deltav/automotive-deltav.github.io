@@ -97,31 +97,7 @@ function renderBk() {
       <div style="padding:13px 15px">
         <div class="ir"><span class="lbl">📧</span><span class="val">${b.email || "—"}</span></div>
         <div class="ir"><span class="lbl">📞</span><span class="val">${b.phone || "—"}</span></div>
-        <div class="ir"><span class="lbl">🔧</span><span class="val">${b.service || "Not specified"}</span></div>
-        <div class="ir" style="background:#fff5f0;border-left-color:var(--ac);font-size:.78rem;font-style:italic">
-          <span class="lbl">Pref.</span>
-          <span class="val">${b.date || "—"} (customer choice)</span>
-        </div>
-        ${confirmedBlock}
-        <div style="margin-top:7px">
-          <span class="badge ${badgeClass}">${status.toUpperCase()}</span>
-        </div>
-      </div>
-      <div style="padding:9px 15px;border-top:1.5px solid #eef0f3;display:flex;gap:5px;flex-wrap:wrap">
-        <button class="btn btn-ghost btn-sm" onclick="inspBk('${b.id}')">🔍 Details</button>
-        ${
-          status !== "confirmed"
-          ? `<button class="btn btn-success btn-sm" onclick="openCf('${b.id}','${b.date || ""}')">✅ Confirm</button>`
-          : `<button class="btn btn-warning btn-sm" onclick="unpend('${b.id}')">↩ Pending</button>`
-        }
-        <button class="btn btn-primary btn-sm" onclick="goInv('${b.id}')">💰 Invoice</button>
-        <button class="btn btn-info btn-sm" onclick="addNote('${b.id}')">📝 Note</button>
-        <button class="btn btn-dark btn-sm" onclick="callCustomer('${b.phone || ""}')">📞</button>
-        <button class="btn btn-danger btn-sm" onclick="delBk('${b.id}')">🗑️</button>
-      </div>
-    `;
-
-    g.appendChild(card);
+           g.appendChild(card);
 
     if (isN) {
       dbUpd("bookings", b.id, { viewed: true }).catch(() => {});
@@ -139,24 +115,52 @@ function inspBk(id) {
     <div class="ir"><span class="lbl">Email</span><span class="val">${b.email || "—"}</span></div>
     <div class="ir"><span class="lbl">Phone</span><span class="val">${b.phone || "—"}</span></div>
     <div class="ir"><span class="lbl">Registration</span><span class="val">${b.reg || "—"}</span></div>
-    <div class="ir"><span class="lbl">Vehicle</span><span class="val">${b.car || "—"}${b.year ? " (" + b.year + ")" : ""}</span></div>
-    <div class="ir"><span class="lbl">Service</span><span class="val">${b.service || "—"}</span></div>
-    <div class="ir ac"><span class="lbl">Preferred Date</span><span class="val">${b.date || "—"}</span></div>
-`;
+    <div class="ir">
+      <span class="lbl">Vehicle</span>
+      <span class="val">
+        ${b.car || "—"}${b.year ? " (" + b.year + ")" : ""}
+      </span>
+    </div>
+    <div class="ir">
+      <span class="lbl">Service</span>
+      <span class="val">${b.service || "—"}</span>
+    </div>
+    <div class="ir ac">
+      <span class="lbl">Preferred Date</span>
+      <span class="val">${b.date || "—"}</span>
+    </div>
 
     ${
       b.confirmed_date
-      ? `<div class="ir hi"><span class="lbl">✅ Confirmed</span><span class="val">${b.confirmed_date}${b.confirmed_time ? " at " + fmtT(b.confirmed_time) : ""}</span></div>`
-      : ""
+        ? `<div class="ir hi">
+            <span class="lbl">✅ Confirmed</span>
+            <span class="val">
+              ${b.confirmed_date}${b.confirmed_time ? " at " + fmtT(b.confirmed_time) : ""}
+            </span>
+           </div>`
+        : ""
     }
-    <div class="ir"><span class="lbl">Status</span><span class="val">${b.status || "pending"}</span></div>
-    ${b.notes ? `<div class="ir"><span class="lbl">Notes</span><span class="val">${b.notes}</span></div>` : ""}
+
+    <div class="ir">
+      <span class="lbl">Status</span>
+      <span class="val">${b.status || "pending"}</span>
+    </div>
+
+    ${
+      b.notes
+        ? `<div class="ir">
+            <span class="lbl">Notes</span>
+            <span class="val">${b.notes}</span>
+           </div>`
+        : ""
+    }
   `;
 
   openM("mInsp");
 }
 
 function openCfFrom() {
+
   if (inspId) {
     const b = bkData.find(x => x.id === inspId);
     closeM("mInsp");
