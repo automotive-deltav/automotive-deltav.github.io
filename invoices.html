@@ -161,8 +161,7 @@ function editInv(id){const inv=invData.find(x=>x.id===id);if(!inv)return;invEdit
 async function togPay(id,cur){const ns=cur==="paid"?"unpaid":"paid";await dbUpd("invoices",id,{payment_status:ns});const inv=invData.find(x=>x.id===id);if(inv)inv.payment_status=ns;renderInv();toast(`Marked ${ns}`,"in");}
 async function dupInv(id){const inv=invData.find(x=>x.id===id);if(!inv)return;const c={...inv};delete c.id;c.invoice_date=today();await dbIns("invoices",c);loadInv();toast("Invoice duplicated!");}
 function delInv(id){confirmDel("Delete this invoice?",async()=>{await dbDel("invoices",id);invData=invData.filter(i=>i.id!==id);renderInv();toast("Deleted","in");});}
-function exportInv(){const rows=[["Invoice #","Customer","Email","Date","Reg","Subtotal","VAT","Total","Status"]];invData.forEach(i=>rows.push(["INV-"+String(i.id||0).slice(-4),i.customer_name,i.customer_email,i.invoice_date,i.car_reg||"",i.subtotal?.toFixed(2)||"0.00",i.vat_amount?.toFixed(2)||"0.00",i.total_amount?.toFixed(2)||"0.00",i.payment_status]));const csv=rows.map(r=>r.map(c=>`"${c||""}"`).join(",")).join("
-");const a=document.createElement("a");a.href="data:text/csv,"+encodeURIComponent(csv);a.download="invoices.csv";a.click();}
+function exportInv(){const rows=[["Invoice #","Customer","Email","Date","Reg","Subtotal","VAT","Total","Status"]];invData.forEach(i=>rows.push(["INV-"+String(i.id||0).slice(-4),i.customer_name,i.customer_email,i.invoice_date,i.car_reg||"",i.subtotal?.toFixed(2)||"0.00",i.vat_amount?.toFixed(2)||"0.00",i.total_amount?.toFixed(2)||"0.00",i.payment_status]));const csv=rows.map(r=>r.map(c=>`"${c||""}"`).join(",")).join("\\n");const a=document.createElement("a");a.href="data:text/csv,"+encodeURIComponent(csv);a.download="invoices.csv";a.click();}
 function pdfInv(id){sessionStorage.setItem("pdf_inv_id",id);window.open("invoice-print.html","_blank");}
 loadInv();
 </script></body></html>
