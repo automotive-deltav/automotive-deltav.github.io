@@ -149,8 +149,14 @@
   window.addEventListener('error', function(e){ try{ DeltaV.toast(e.message || 'Error occurred','error'); }catch(_){ console.error(e); } });
   window.addEventListener('unhandledrejection', function(ev){ try{ DeltaV.toast((ev.reason && ev.reason.message) || 'Unhandled rejection','error'); }catch(_){ console.error(ev); } });
 
-  // Provide no-op stubs for commonly used action names so clicks give feedback instead of failing silently
-  const _stubs = ['openNewInv','saveInv','loadInv','addPart','calcT','editInv','delInv','exportInv','pdfInv','togPay','dupInv'];
-  _stubs.forEach(n=>{ if(!win[n]) win[n]=function(){ DeltaV.toast(`Action '${n}' not available right now`,'error'); console.warn('Missing function',n); }; });
+  // Delay creating no-op stubs until DOM is ready so page scripts can define real handlers first
+  const _stubs = ['openNewInv','saveInv','loadInv','addPart','calcT','editInv','delInv','exportInv','pdfInv','togPay','dupInv','openNew'];
+  window.addEventListener('DOMContentLoaded', ()=>{
+    _stubs.forEach(n=>{
+      if(!win[n]){
+        win[n]=function(){ DeltaV.toast(`Action '${n}' not available right now`,'error'); console.warn('Missing function',n); };
+      }
+    });
+  });
 
 })(window);
