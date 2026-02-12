@@ -32,11 +32,13 @@
 
   // Unified toast (small, non-blocking notifications)
   DeltaV.toast = function(msg, type='success'){
+    // normalize legacy type aliases: 'er' -> 'error', 'in' -> 'info'
+    const map = {er:'error', in:'info', error:'error', success:'success'};
+    const ttype = map[type] || type || 'success';
     const t = document.createElement('div');
-    t.className = `toast ${type}`;
-    t.innerHTML = `<span class="ico">${type==='success'?'✓':'✕'}</span><span class="msg">${msg}</span>`;
+    t.className = `toast ${ttype}`;
+    t.innerHTML = `<span class="ico">${ttype==='success'?'✓':ttype==='error'?'✕':'ℹ'}</span><span class="msg">${msg}</span>`;
     document.body.appendChild(t);
-    // allow CSS to animate
     requestAnimationFrame(()=>t.classList.add('show'));
     setTimeout(()=>{ t.classList.remove('show'); setTimeout(()=>t.remove(),350); }, 3500);
   };
@@ -142,5 +144,13 @@
     if((e.ctrlKey||e.metaKey) && e.key.toLowerCase() === 's'){ e.preventDefault(); const btn=document.querySelector('[onclick*="saveData"],[onclick*="saveTx"],[onclick*="saveInv"]'); if(btn) btn.click(); }
     if((e.ctrlKey||e.metaKey) && e.key.toLowerCase() === 'n'){ e.preventDefault(); const btn=document.querySelector('[onclick*="openNew"],[onclick*="openNewInv"]'); if(btn) btn.click(); }
   });
+
+  // Surface uncaught errors and promise rejections to the UI so missing functions are visible
+  window.addEventListener('error', function(e){ try{ DeltaV.toast(e.message || 'Error occurred','error'); }catch(_){ console.error(e); } });
+  window.addEventListener('unhandledrejection', function(ev){ try{ DeltaV.toast((ev.reason && ev.reason.message) || 'Unhandled rejection','error'); }catch(_){ console.error(ev); } });
+
+  // Provide no-op stubs for commonly used action names so clicks give feedback instead of failing silently
+  const _stubs = ['openNewInv','saveInv','loadInv','addPart','calcT','editInv','delInv','exportInv','pdfInv','togPay','dupInv'];
+  _stubs.forEach(n=>{ if(!win[n]) win[n]=function(){ DeltaV.toast(`Action '${n}' not available right now`,'error'); console.warn('Missing function',n); }; });
 
 })(window);
