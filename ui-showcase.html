@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>UI Component Showcase — DeltaV</title>
+  <link rel="stylesheet" href="theme.css">
+  <style>
+    .showcase-section { margin-bottom: 40px; padding: 28px; background: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,.06); }
+    .showcase-title { font-size: 1.3rem; font-weight: 700; color: #1b2b3a; margin-bottom: 16px; font-family: 'Barlow Condensed', sans-serif; }
+    .component-row { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
+    .component-group { margin-bottom: 20px; }
+    .component-label { font-size: .75rem; color: #94a3b8; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; display: block; }
+  </style>
+</head>
+<body>
+<div class="sidebar">
+  <div class="sb-logo">DeltaV <span>Auto</span><small>Showcase</small></div>
+  <nav>
+    <div class="sb-sec">Components</div>
+    <a href="#" class="active"><span class="ni">🎨</span>Buttons</a>
+    <a href="#"><span class="ni">🏷️</span>Badges</a>
+    <a href="#"><span class="ni">⚠️</span>Alerts</a>
+    <a href="#"><span class="ni">📊</span>Cards</a>
+    <a href="#"><span class="ni">📝</span>Forms</a>
+  </nav>
+  <div class="sb-foot">
+    <button class="btn-sb-link">← Back</button>
+  </div>
+</div>
+
+<div class="main">
+  <div class="topbar">
+    <h1>🎨 UI Component Showcase</h1>
+  </div>
+
+  <div class="body">
+    <!-- BUTTONS -->
+    <div class="showcase-section">
+      <h2 class="showcase-title">Buttons</h2>
+      
+      <div class="component-group">
+        <span class="component-label">Solid Buttons</span>
+        <div class="component-row">
+          <button class="btn btn-primary">Primary</button>
+          <button class="btn btn-success">Success</button>
+          <button class="btn btn-danger">Danger</button>
+          <button class="btn btn-warning">Warning</button>
+          <button class="btn btn-info">Info</button>
+        </div>
+      </div>
+
+      <div class="component-group">
+        <span class="component-label">Outline Buttons</span>
+        <div class="component-row">
+          <button class="btn btn-outline-primary">Primary</button>
+          <button class="btn btn-outline-success">Success</button>
+          <button class="btn btn-outline-danger">Danger</button>
+          <button class="btn btn-outline-warning">Warning</button>
+          <button class="btn btn-outline-info">Info</button>
+        </div>
+      </div>
+
+      <div class="component-group">
+        <span class="component-label">Subtle Buttons</span>
+        <div class="component-row">
+          <button class="btn btn-subtle-primary">Primary</button>
+          <button class="btn btn-subtle-success">Success</button>
+          <button class="btn btn-subtle-danger">Danger</button>
+          <button class="btn btn-subtle-warning">Warning</button>
+          <button class="btn btn-subtle-info">Info</button>
+        </div>
+      </div>
+
+      <div class="component-group">
+        <span class="component-label">Sizes</span>
+        <div class="component-row">
+          <button class="btn btn-primary btn-sm">Small</button>
+          <button class="btn btn-primary">Medium</button>
+          <button class="btn btn-primary btn-lg">Large</button>
+        </div>
+      </div>
+
+      <div class="component-group">
+        <span class="component-label">Special Variants</span>
+        <div class="component-row">
+          <button class="btn btn-primary btn-pill">Pill Button</button>
+          <button class="btn btn-icon btn-icon-primary" title="Action">✎</button>
+          <button class="btn btn-link">Link Button</button>
+          <button class="btn btn-ghost">Ghost Button</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- BADGES & TAGS -->
+    <div class="showcase-section">
+      <h2 class="showcase-title">Badges & Tags</h2>
+      
+      <div class="component-group">
+        <span class="component-label">Badges</span>
+        <div class="component-row">
+          <span class="badge b-primary">Primary</span>
+          <span class="badge b-success">Success</span>
+          <span class="badge b-danger">Danger</span>
+          <span class="badge b-warning">Warning</span>
+          <span class="badge b-info">Info</span>
+          <span class="badge b-dk">Dark</span>
+        </div>
+      </div>
+
+      <div class="component-group">
+        <span class="component-label">Tags</span>
+        <div class="component-row">
+          <span class="tag">Default Tag</span>
+          <span class="tag tag-primary">Primary Tag</span>
+          <span class="tag tag-success">Success Tag</span>
+          <span class="tag tag-danger">Danger Tag</span>
+        </div>
+      </div>
+
+      <div class="component-group">
+        <span class="component-label">Chips</span>
+        <div class="component-row">
+          <div class="chip">
+            <span>JavaScript</span>
+            <button class="chip-remove">×</button>
+          </div>
+          <div class="chip chip-primary">
+            <span>React</span>
+            <button class="chip-remove">×</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ALERTS -->
+    <div class="showcase-section">
+      <h2 class="showcase-title">Alerts</h2>
+      
+      <div class="alert alert-success">
+        <span class="alert-icon">✓</span>
+        <div class="alert-content">
+          <div class="alert-title">Success!</div>
+          <div class="alert-message">Your action was completed successfully.</div>
+        </div>
+      </div>
+
+      <div class="alert alert-danger">
+        <span class="alert-icon">✕</span>
+        <div class="alert-content">
+          <div class="alert-title">Error</div>
+          <div class="alert-message">Something went wrong. Please try again.</div>
+        </div>
+      </div>
+
+      <div class="alert alert-warning">
+        <span class="alert-icon">⚠</span>
+        <div class="alert-content">
+          <div class="alert-title">Warning</div>
+          <div class="alert-message">Please review this action before proceeding.</div>
+        </div>
+      </div>
+
+      <div class="alert alert-info">
+        <span class="alert-icon">ⓘ</span>
+        <div class="alert-content">
+          <div class="alert-title">Information</div>
+          <div class="alert-message">This is an informational message for the user.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROGRESS -->
+    <div class="showcase-section">
+      <h2 class="showcase-title">Progress Bars</h2>
+      
+      <div class="component-group">
+        <span class="component-label">Default</span>
+        <div class="progress">
+          <div class="progress-bar" style="width: 65%"></div>
+        </div>
+      </div>
+
+      <div class="component-group">
+        <span class="component-label">Colors</span>
+        <div style="margin-bottom: 12px;">
+          <div class="progress">
+            <div class="progress-bar success" style="width: 75%"></div>
+          </div>
+        </div>
+        <div style="margin-bottom: 12px;">
+          <div class="progress">
+            <div class="progress-bar danger" style="width: 45%"></div>
+          </div>
+        </div>
+        <div>
+          <div class="progress">
+            <div class="progress-bar warning" style="width: 55%"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CARDS -->
+    <div class="showcase-section">
+      <h2 class="showcase-title">Card Variants</h2>
+      
+      <div class="component-row">
+        <div class="card" style="flex: 1;">
+          <div class="card-title">Default Card</div>
+          <div class="card-text">This is a standard card with subtle shadow and border.</div>
+          <div class="card-sub">Posted 2 hours ago</div>
+        </div>
+
+        <div class="card card-elevated" style="flex: 1;">
+          <div class="card-title">Elevated Card</div>
+          <div class="card-text">This card has more prominent shadow for emphasis.</div>
+          <div class="card-sub">Posted 1 hour ago</div>
+        </div>
+
+        <div class="card card-primary" style="flex: 1;">
+          <div class="card-title">Primary Accent</div>
+          <div class="card-text">Card with left-side accent color indicator.</div>
+          <div class="card-sub">Just now</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STAT CARDS -->
+    <div class="showcase-section">
+      <h2 class="showcase-title">Stat Cards</h2>
+      
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px;">
+        <div class="stat-card stat-card-primary">
+          <div class="stat-label">Total Revenue</div>
+          <div class="stat-value">£12,450</div>
+          <div class="stat-sub">↑ 12% from last month</div>
+          <span class="stat-icon">💰</span>
+        </div>
+
+        <div class="stat-card stat-card-success">
+          <div class="stat-label">Active Users</div>
+          <div class="stat-value">1,248</div>
+          <div class="stat-sub">↑ 8% from last week</div>
+          <span class="stat-icon">👥</span>
+        </div>
+
+        <div class="stat-card stat-card-danger">
+          <div class="stat-label">Issues</div>
+          <div class="stat-value">23</div>
+          <div class="stat-sub">↓ 3 resolved this week</div>
+          <span class="stat-icon">⚠️</span>
+        </div>
+
+        <div class="stat-card stat-card-info">
+          <div class="stat-label">Pending Tasks</div>
+          <div class="stat-value">42</div>
+          <div class="stat-sub">5 due today</div>
+          <span class="stat-icon">✓</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- FORMS -->
+    <div class="showcase-section">
+      <h2 class="showcase-title">Form Elements</h2>
+      
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+        <div>
+          <div class="fg">
+            <label>Standard Input</label>
+            <input type="text" placeholder="Enter text...">
+          </div>
+
+          <div class="fg">
+            <label>With Error State</label>
+            <input type="text" placeholder="Error input" class="input-error">
+            <div class="fg-error-text">This field is required</div>
+          </div>
+
+          <div class="fg">
+            <label>Checkbox</label>
+            <div class="checkbox">
+              <input type="checkbox" id="cb1">
+              <label for="cb1">Remember me</label>
+            </div>
+            <div class="checkbox">
+              <input type="checkbox" id="cb2">
+              <label for="cb2">I agree to terms</label>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="fg">
+            <label>Select Dropdown</label>
+            <select>
+              <option>Choose an option</option>
+              <option>Option 1</option>
+              <option>Option 2</option>
+            </select>
+          </div>
+
+          <div class="fg">
+            <label>Input Group</label>
+            <div class="input-group">
+              <span class="input-group-addon">£</span>
+              <input type="number" placeholder="Amount">
+            </div>
+          </div>
+
+          <div class="fg">
+            <label>Switch Toggle</label>
+            <label class="switch">
+              <input type="checkbox" checked>
+              <span class="switch-slider"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MISC -->
+    <div class="showcase-section">
+      <h2 class="showcase-title">Other Components</h2>
+      
+      <div class="component-group">
+        <span class="component-label">Breadcrumbs</span>
+        <div class="breadcrumb">
+          <span class="breadcrumb-item"><a href="#" class="breadcrumb-link">Dashboard</a></span>
+          <span class="breadcrumb-separator">/</span>
+          <span class="breadcrumb-item"><a href="#" class="breadcrumb-link">Invoices</a></span>
+          <span class="breadcrumb-separator">/</span>
+          <span class="breadcrumb-item active">Detail</span>
+        </div>
+      </div>
+
+      <div class="component-group">
+        <span class="component-label">Dividers</span>
+        <div style="padding: 16px 0;">
+          <p>Content above divider</p>
+          <div class="divider"></div>
+          <p>Content below divider</p>
+          <div class="divider-text">OR</div>
+          <p>More content after text divider</p>
+        </div>
+      </div>
+
+      <div class="component-group">
+        <span class="component-label">Stepper</span>
+        <div class="stepper">
+          <div class="step completed">
+            <div class="step-number">✓</div>
+            <div class="step-label">Verify</div>
+            <div class="step-line"></div>
+          </div>
+          <div class="step completed">
+            <div class="step-number">✓</div>
+            <div class="step-label">Payment</div>
+            <div class="step-line"></div>
+          </div>
+          <div class="step active">
+            <div class="step-number">3</div>
+            <div class="step-label">Confirm</div>
+            <div class="step-line"></div>
+          </div>
+          <div class="step">
+            <div class="step-number">4</div>
+            <div class="step-label">Complete</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>
