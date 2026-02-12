@@ -1,4 +1,39 @@
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script>
+const supabaseClient = supabase.createClient(
+  "https://cxzapvieqzqfxzolqwoh.supabase.co",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN4emFwdmllcXpxZnh6b2xxd29oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA1NjU4MzgsImV4cCI6MjA4NjE0MTgzOH0.x_F07XpdThY6EqwaP8jJGgdBIMTHdYfTr99IMOpSq_E"
+);
+
+async function dbGet(table) {
+  const { data, error } = await supabaseClient
+    .from(table)
+    .select("*");
+
+  if (error) throw error;
+  return data;
+}
+
+async function dbUpd(table, id, values) {
+  const { error } = await supabaseClient
+    .from(table)
+    .update(values)
+    .eq("id", id);
+
+  if (error) throw error;
+}
+
+async function dbDel(table, id) {
+  const { error } = await supabaseClient
+    .from(table)
+    .delete()
+    .eq("id", id);
+
+  if (error) throw error;
+}
+</script>
+
 let bkData = [], cBkId = null, inspId = null;
 
 async function fetchBk() {
