@@ -107,6 +107,8 @@ function inspBk(id) {
     <div class="ir"><span class="lbl">Vehicle</span><span class="val">${b.car || "—"}${b.year ? " (" + b.year + ")" : ""}</span></div>
     <div class="ir"><span class="lbl">Service</span><span class="val">${b.service || "—"}</span></div>
     <div class="ir ac"><span class="lbl">Preferred Date</span><span class="val">${b.date || "—"}</span></div>
+`;
+
     ${
       b.confirmed_date
       ? `<div class="ir hi"><span class="lbl">✅ Confirmed</span><span class="val">${b.confirmed_date}${b.confirmed_time ? " at " + fmtT(b.confirmed_time) : ""}</span></div>`
