@@ -56,28 +56,38 @@
 <div class="main">
   <div class="topbar"><h1>📈 Finance</h1><div class="tr"><button class="btn btn-primary" onclick="openM('mNewTx')">+ Add Transaction</button><button class="btn btn-info" onclick="exportFin()">📥 Export</button><button class="btn btn-ghost" onclick="loadFin()">🔄 Refresh</button></div></div>
   <div class="body">
-<div class="stat-grid">
-  <div class="card"><div class="card-title">💰 Total Income</div><div class="card-val" id="fIn" style="color:var(--ok)">—</div></div>
-  <div class="card"><div class="card-title">📉 Total Expenses</div><div class="card-val" id="fOut" style="color:var(--er)">—</div></div>
-  <div class="card"><div class="card-title">📊 Net Profit</div><div class="card-val" id="fNet">—</div></div>
-  <div class="card"><div class="card-title">🔩 Parts Costs</div><div class="card-val" id="fParts">—</div></div>
-  <div class="card"><div class="card-title">👷 Staff Costs</div><div class="card-val" id="fStaff">—</div></div>
-  <div class="card"><div class="card-title">📅 This Month</div><div class="card-val" id="fMo">—</div></div>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:28px">
+  <div class="stat-card stat-card-success">
+    <div class="stat-label">💰 Total Income</div>
+    <div class="stat-value" id="fIn" style="font-size:1.8rem;color:var(--ok)">£0</div>
+    <div class="stat-sub">All transactions</div>
+  </div>
+  <div class="stat-card stat-card-danger">
+    <div class="stat-label">📉 Total Expenses</div>
+    <div class="stat-value" id="fOut" style="font-size:1.8rem;color:var(--er)">£0</div>
+    <div class="stat-sub">All outgoing</div>
+  </div>
+  <div class="stat-card stat-card-primary">
+    <div class="stat-label">📊 Net Profit</div>
+    <div class="stat-value" id="fNet" style="font-size:1.8rem;color:var(--ac)">£0</div>
+    <div class="stat-sub">Bottom line</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">📅 This Month</div>
+    <div class="stat-value" id="fMo" style="font-size:1.6rem">£0</div>
+    <div class="stat-sub" id="fMoSub"></div>
+  </div>
 </div>
-<div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;align-items:center">
-  <div class="srch-w"><input type="text" id="fsrch" placeholder="Search transactions..." oninput="renderFin()"></div>
+<div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;align-items:center">
+  <div class="srch-w"><input type="text" id="fsrch" placeholder="Search description..." oninput="renderFin()"></div>
   <select id="fType" class="btn btn-ghost" onchange="renderFin()" style="padding:9px 12px;font-size:.82rem">
     <option value="">All Types</option><option value="income">Income</option><option value="expense">Expense</option>
   </select>
-  <select id="fCat" class="btn btn-ghost" onchange="renderFin()" style="padding:9px 12px;font-size:.82rem">
-    <option value="">All Categories</option>
-    <option>Parts Purchase</option><option>Staff Wages</option><option>Overheads</option><option>Equipment</option><option>Invoice Payment</option><option>Other</option>
-  </select>
-  <button class="btn btn-ghost btn-sm" onclick="loadFin()">🔄</button>
-  <button class="btn btn-info btn-sm" onclick="exportFin()">📥 CSV</button>
+  <button class="btn btn-primary" onclick="openM('mNewTx')">+ Add</button>
+  <button class="btn btn-info btn-sm" onclick="exportFin()">📥 Export</button>
+  <button class="btn btn-ghost" onclick="loadFin()">🔄</button>
 </div>
-<div class="tbl-wrap"><table><thead><tr>
-  <th>Date</th><th>Type</th><th>Category</th><th>Description</th><th>Amount</th><th>Reference</th><th>Actions</th>
+<div style="display:flex;flex-direction:column;gap:8px" id="finList"></div>
 </tr></thead><tbody id="finTb"></tbody></table></div>
 
 <div class="modal" id="mNewTx"><div class="mbox">
@@ -137,25 +147,26 @@ function updateFinStats(){
 function renderFin(){
   const q=document.getElementById("fsrch").value.toLowerCase();
   const tp=document.getElementById("fType").value;
-  const ct=document.getElementById("fCat").value;
   let f=finData.filter(t=>(t.description||"").toLowerCase().includes(q)||(t.reference||"").toLowerCase().includes(q));
   if(tp)f=f.filter(t=>t.type===tp);
-  if(ct)f=f.filter(t=>t.category===ct);
-  const tb=document.getElementById("finTb");tb.innerHTML="";
-  if(!f.length){tb.innerHTML=`<tr><td colspan="7"><div class="empty"><div class="ei">📈</div><p>No transactions</p></div></td></tr>`;return;}
+  const list=document.getElementById("finList");list.innerHTML="";
+  if(!f.length){list.innerHTML=`<div style="padding:40px 20px;text-align:center"><div class="empty"><div class="ei">📈</div><p>No transactions found</p></div></div>`;return;}
   f.forEach(t=>{
-    const ic=t.type==="income"?"b-ok":"b-er";
-    tb.innerHTML+=`<tr>
-      <td style="font-size:.82rem">${fmtD(t.tx_date)}</td>
-      <td><span class="badge ${ic}">${t.type?.toUpperCase()}</span></td>
-      <td><span class="badge b-dk">${t.category||"—"}</span></td>
-      <td>${t.description||"—"}</td>
-      <td><strong style="color:${t.type==="income"?"var(--ok)":"var(--er)"}">${t.type==="expense"?"-":""}${fmtGBP(t.amount)}</strong></td>
-      <td style="font-size:.78rem;font-family:monospace;color:#888">${t.reference||"—"}</td>
-      <td>
-        <button class="btn btn-warning btn-sm" onclick="editTx('${t.id}')">✏️</button>
-        <button class="btn btn-danger btn-sm" onclick="delTx('${t.id}')">🗑️</button>
-      </td></tr>`;
+    const color=t.type==="income"?'var(--ok)':'var(--er)';
+    const item=document.createElement('div');
+    item.className='card';
+    item.style.borderLeft='4px solid '+color;
+    item.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:12px">
+      <div><div style="font-weight:600;color:#1b2b3a">${t.description}</div><div style="font-size:.8rem;color:#94a3b8">${t.category}</div></div>
+      <div style="text-align:right"><div style="font-weight:700;color:${color};font-size:1.2rem">${t.type==="expense"?"-":""}${fmtGBP(t.amount)}</div><div style="font-size:.75rem;color:#94a3b8">${t.tx_date}</div></div>
+    </div>
+    ${t.reference?'<div style="font-size:.8rem;color:#cbd5e0;margin-bottom:8px">📋 Ref: '+t.reference+'</div>':''}
+    ${t.notes?'<div style="font-size:.8rem;color:#94a3b8;padding:8px;background:#f8f9fb;border-radius:6px;margin-bottom:8px">'+t.notes+'</div>':''}
+    <div style="display:flex;gap:6px;justify-content:flex-end">
+      <button class="btn btn-warning btn-sm" onclick="editTx('${t.id}')">✏️</button>
+      <button class="btn btn-danger btn-sm" onclick="delTx('${t.id}')">🗑️</button>
+    </div>`;
+    list.appendChild(item);
   });
 }
 async function saveTx(){

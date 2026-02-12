@@ -22,22 +22,13 @@
     </div>
   </div>
   <div class="body">
-    <div class="tbl-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>Customer</th>
-            <th>Vehicle</th>
-            <th>Service</th>
-            <th>Date</th>
-            <th>Phone</th>
-            <th>Status</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody id="tbody"></tbody>
-      </table>
+    <div style="display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap">
+      <div class="srch-w"><input type="text" id="srch" placeholder="Search bookings..." oninput="renderData()"></div>
+      <button class="btn btn-primary" onclick="openNew()">+ New</button>
+      <button class="btn btn-info" onclick="doExport()">📥 Export</button>
+      <button class="btn btn-ghost" onclick="loadData()">🔄</button>
     </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px" id="cardGrid"></div>
   </div>
 </div>
 
@@ -70,51 +61,47 @@ async function loadData(){
   renderData();
 }
 function renderData(){
-  const tb=document.getElementById("tbody");
-  if(!data.length){
-    tb.innerHTML='<tr><td colspan="7"><div class="empty"><div class="ei">📅</div><h3>No bookings yet</h3><p>Bookings from customers will appear here</p></div></td></tr>';
+  const q=document.getElementById("srch").value.toLowerCase();
+  const f=data.filter(r=>Object.values(r).some(v=>String(v||"").toLowerCase().includes(q)));
+  const grid=document.getElementById("cardGrid");
+  grid.innerHTML="";
+  if(!f.length){
+    grid.innerHTML='<div style="grid-column:1/-1;padding:60px 20px;text-align:center"><div class="empty"><div class="ei">📅</div><h3>No bookings found</h3><p>Bookings will appear here</p></div></div>';
     return;
   }
-  tb.innerHTML=data.map(r=>{
-    const statusColor=r.status==='confirmed'?'var(--ok)':'var(--wa)';
-    return `<tr>
-      <td><strong>${r.name}</strong><br><small style="color:#94a3b8">${r.email}</small></td>
-      <td><strong>${r.reg}</strong><br><small style="color:#94a3b8">${r.car||'—'}</small></td>
-      <td>${r.service||'General'}</td>
-      <td>${r.date}</td>
-      <td>${r.phone||'—'}</td>
-      <td><span style="display:inline-block;padding:4px 10px;border-radius:6px;font-size:.75rem;font-weight:600;background:${statusColor};color:#fff">${r.status||'pending'}</span></td>
-      <td>
-        <button class="btn btn-info btn-sm" onclick="viewRow('${r.id}')">👁️ View</button>
-        <button class="btn btn-danger btn-sm" onclick="confirmDel('Delete this booking?',()=>deleteRow('${r.id}'))">🗑️</button>
-      </td>
-    </tr>`;
-  }).join('');
-}
-function viewRow(id){
-  const r=data.find(x=>x.id===id);
-  if(!r)return;
-  document.getElementById("viewContent").innerHTML=`
-    <div style="display:grid;gap:16px">
-      <div><strong>Customer:</strong> ${r.name}</div>
-      <div><strong>Email:</strong> ${r.email}</div>
-      <div><strong>Phone:</strong> ${r.phone||'—'}</div>
-      <div><strong>Vehicle:</strong> ${r.reg} ${r.car||''} ${r.year||''}</div>
-      <div><strong>Service:</strong> ${r.service||'General'}</div>
-      <div><strong>Date:</strong> ${r.date}</div>
-      <div><strong>Status:</strong> ${r.status||'pending'}</div>
-      <div><strong>Notes:</strong> ${r.notes||'None'}</div>
+  f.forEach(r=>{
+    const statusColor=r.status==='confirmed'?'var(--ok)':r.status==='pending'?'var(--wa)':'var(--in)';
+    const card=document.createElement("div");
+    card.className="card";
+    card.style.borderLeft="4px solid "+statusColor;
+    card.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:12px">
+      <div><div style="font-weight:700;color:#1b2b3a">${r.name}</div><div style="font-size:.8rem;color:#94a3b8">${r.email}</div></div>
+      <span style="display:inline-block;padding:4px 8px;border-radius:4px;font-size:.7rem;font-weight:600;background:${statusColor};color:#fff">${r.status||'pending'}</span>
     </div>
-  `;
-  openM("mView");
+    <div style="margin:12px 0;padding:12px;background:#f8f9fb;border-radius:8px">
+      <div style="color:#64748b;font-size:.8rem;margin-bottom:4px">🚗 Vehicle</div>
+      <div style="font-weight:600;color:#1b2b3a">${r.reg}</div>
+      <div style="font-size:.8rem;color:#94a3b8">${r.car||'Unknown'}</div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0;font-size:.85rem">
+      <div><span style="color:#94a3b8">📋 Service</span><div style="font-weight:600;color:#1b2b3a">${r.service||'General'}</div></div>
+      <div><span style="color:#94a3b8">📅 Date</span><div style="font-weight:600;color:#1b2b3a">${r.date}</div></div>
+    </div>
+    <div style="font-size:.85rem;margin:12px 0"><span style="color:#94a3b8">📞 Contact</span><div style="font-weight:600;color:#1b2b3a">${r.phone||'—'}</div></div>
+    <div style="display:flex;gap:8px;margin-top:16px">
+      <button class="btn btn-primary btn-sm" onclick="viewRow('${r.id}')" style="flex:1">View</button>
+      <button class="btn btn-danger btn-sm" onclick="delRow('${r.id}')">🗑️</button>
+    </div>`;
+    grid.appendChild(card);
+  });
 }
-async function deleteRow(id){
-  try{
+function delRow(id){
+  confirmDel("Delete this booking?",async()=>{
     await dbDel("bookings",id);
     data=data.filter(x=>x.id!==id);
     renderData();
-    showToast("Booking deleted!","success");
-  }catch(e){alert("Failed to delete");}
+    toast("Deleted","in");
+  });
 }
 loadData();
 </script>
