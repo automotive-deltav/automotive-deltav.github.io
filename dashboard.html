@@ -1,46 +1,234 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>DeltaV — 📊 Dashboard</title><link rel="stylesheet" href="theme.css"><style></style></head><body><script>if(sessionStorage.getItem("dv_admin")!=="1"){location.href="login.html";}</script><div class="sidebar"><div class="sb-logo">DeltaV <span>Auto</span><small>Admin Panel</small></div><nav><div class="sb-sec">Core</div><a href="dashboard.html" class="active"><span class="ni">📊</span>Dashboard</a><a href="admin.html" class=""><span class="ni">📅</span>Bookings</a><a href="schedule.html" class=""><span class="ni">🗓️</span>Schedule</a><a href="customers.html" class=""><span class="ni">👥</span>Customers</a><a href="invoices.html" class=""><span class="ni">💰</span>Invoices</a><div class="sb-sec">Stock & Money</div><a href="inventory.html" class=""><span class="ni">📦</span>Inventory</a><a href="payments.html" class=""><span class="ni">💳</span>Payments</a><a href="finance.html" class=""><span class="ni">📈</span>Finance</a><a href="workers.html" class=""><span class="ni">👷</span>Workers</a><div class="sb-sec">Operations</div><a href="jobs.html" class=""><span class="ni">🔩</span>Job Cards</a><a href="quotes.html" class=""><span class="ni">📋</span>Quotes</a><a href="suppliers.html" class=""><span class="ni">🏭</span>Suppliers</a><a href="expenses.html" class=""><span class="ni">🧾</span>Expenses</a><a href="reports.html" class=""><span class="ni">📉</span>Reports</a><div class="sb-sec">Communication</div><a href="messages.html" class=""><span class="ni">💬</span>Messages</a><a href="notes.html" class=""><span class="ni">📝</span>Notes</a><a href="reminders.html" class=""><span class="ni">🔔</span>Reminders</a><a href="vehicles.html" class=""><span class="ni">🚗</span>Vehicle DB</a><div class="sb-sec">Extra</div><a href="audit.html" class=""><span class="ni">🔍</span>Audit Log</a><a href="tasks.html" class=""><span class="ni">✅</span>Tasks</a><a href="timesheets.html" class=""><span class="ni">⏱️</span>Timesheets</a><a href="warranties.html" class=""><span class="ni">🛡️</span>Warranties</a><a href="promotions.html" class=""><span class="ni">🎁</span>Promotions</a><a href="feedback.html" class=""><span class="ni">⭐</span>Feedback</a><a href="returns.html" class=""><span class="ni">↩️</span>Returns</a><a href="waiting.html" class=""><span class="ni">⏳</span>Waiting List</a><a href="checklist.html" class=""><span class="ni">☑️</span>Checklists</a><a href="gallery-admin.html" class=""><span class="ni">📸</span>Gallery Mgr</a><a href="targets.html" class=""><span class="ni">🎯</span>Targets</a><a href="settings.html" class=""><span class="ni">⚙️</span>Settings</a></nav><div class="sb-foot"><a href="index.html" class="btn-sb-link">🌐 Website</a><button class="btn-sb-out" onclick="if(confirm('Log out?')){sessionStorage.removeItem('dv_admin');location.href='login.html';}">🚪 Log Out</button></div></div><div class="main"><div class="topbar"><h1>📊 Dashboard</h1><div class="tr"><button class="btn btn-ghost" onclick="loadDash()">🔄 Refresh</button><a href="reports.html" class="btn btn-info">📉 Reports</a></div></div><div class="body"><div class="stat-grid">
-  <div class="card"><div class="card-title">📅 Total Bookings</div><div class="card-val" id="sTB">—</div><div class="card-sub">All time</div></div>
-  <div class="card"><div class="card-title">⏳ Pending</div><div class="card-val" id="sPen" style="color:var(--wa)">—</div><div class="card-sub">Awaiting confirmation</div></div>
-  <div class="card"><div class="card-title">✅ Today's Jobs</div><div class="card-val" id="sTod" style="color:var(--ok)">—</div><div class="card-sub">Confirmed for today</div></div>
-  <div class="card"><div class="card-title">💰 Month Revenue</div><div class="card-val" id="sRev">—</div><div class="card-sub">Paid invoices this month</div></div>
-  <div class="card"><div class="card-title">📦 In Stock</div><div class="card-val" id="sStk">—</div><div class="card-sub">Active inventory items</div></div>
-  <div class="card"><div class="card-title">🧾 Unpaid</div><div class="card-val" id="sUnp" style="color:var(--er)">—</div><div class="card-sub">Outstanding invoices</div></div>
-</div>
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px">
-  <div class="card-flat"><div class="sh"><h2>📅 Recent Bookings</h2><a href="admin.html" class="btn btn-dark btn-sm">View All</a></div><div id="rBk"><p style="color:#aaa;font-size:.84rem">Loading...</p></div></div>
-  <div class="card-flat"><div class="sh"><h2>💰 Recent Invoices</h2><a href="invoices.html" class="btn btn-dark btn-sm">View All</a></div><div id="rInv"><p style="color:#aaa;font-size:.84rem">Loading...</p></div></div>
-</div>
-<div class="card-flat"><div class="sh"><h2>⚡ Quick Actions</h2></div>
-<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:9px">
-  <a href="admin.html" class="btn btn-dark btn-fw">📅 Bookings</a>
-  <a href="invoices.html" class="btn btn-primary btn-fw">💰 New Invoice</a>
-  <a href="inventory.html" class="btn btn-success btn-fw">📦 Inventory</a>
-  <a href="customers.html" class="btn btn-info btn-fw">👥 Customers</a>
-  <a href="schedule.html" class="btn btn-purple btn-fw">🗓️ Schedule</a>
-  <a href="jobs.html" class="btn btn-fw" style="background:linear-gradient(135deg,#6c757d,#868e96);color:#fff">🔩 Job Cards</a>
-  <a href="quotes.html" class="btn btn-warning btn-fw">📋 Quotes</a>
-  <a href="finance.html" class="btn btn-fw" style="background:linear-gradient(135deg,#20c997,#0ca678);color:#fff">📈 Finance</a>
-  <a href="reminders.html" class="btn btn-fw" style="background:linear-gradient(135deg,#e83e8c,#c82371);color:#fff">🔔 Reminders</a>
-  <a href="reports.html" class="btn btn-fw" style="background:linear-gradient(135deg,#6610f2,#520dc2);color:#fff">📉 Reports</a>
-  <a href="tasks.html" class="btn btn-fw" style="background:linear-gradient(135deg,#17a2b8,#0e6b7a);color:#fff">✅ Tasks</a>
-  <a href="waiting.html" class="btn btn-fw" style="background:linear-gradient(135deg,#fd7e14,#c96000);color:#fff">⏳ Waiting</a>
-</div></div></div></div><div class="modal" id="mDel"><div class="mbox" style="max-width:370px"><h3>🗑️ Confirm Delete</h3><p id="mDelMsg" style="color:#555;margin-bottom:4px">This cannot be undone.</p><div class="mfoot"><button class="btn btn-ghost" onclick="closeM('mDel')">Cancel</button><button class="btn btn-danger" id="mDelBtn">Yes, Delete</button></div></div></div><script src="shared.js"></script><script>
-async function loadDash(){
-  try{
-    const[bk,inv,invt]=await Promise.all([dbGet("bookings"),dbGet("invoices"),dbGet("inventory")]);
-    const td=today(),mn=td.slice(0,7);
-    document.getElementById("sTB").textContent=bk.length;
-    document.getElementById("sPen").textContent=bk.filter(b=>b.status==="pending").length;
-    document.getElementById("sTod").textContent=bk.filter(b=>b.confirmed_date===td).length;
-    const rev=inv.filter(i=>i.payment_status==="paid"&&(i.invoice_date||"").startsWith(mn)).reduce((s,i)=>s+(i.total_amount||0),0);
-    document.getElementById("sRev").textContent=fmtGBP(rev);
-    document.getElementById("sStk").textContent=invt.filter(i=>i.status==="active").length;
-    document.getElementById("sUnp").textContent=inv.filter(i=>i.payment_status==="unpaid").length;
-    const rb=document.getElementById("rBk");rb.innerHTML="";
-    bk.slice(-5).reverse().forEach(b=>{rb.innerHTML+=`<div style="display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid #f0f2f5;font-size:.84rem"><div><strong>${b.name}</strong><br><span style="color:#999">${b.reg} · ${b.date||""}</span></div><span class="badge ${b.status==="confirmed"?"b-ok":"b-wa"}">${b.status}</span></div>`;});
-    const ri=document.getElementById("rInv");ri.innerHTML="";
-    inv.slice(-5).reverse().forEach(i=>{ri.innerHTML+=`<div style="display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid #f0f2f5;font-size:.84rem"><div><strong>${i.customer_name}</strong><br><span style="color:#999">${i.invoice_date||""}</span></div><strong style="color:var(--ac)">${fmtGBP(i.total_amount)}</strong></div>`;});
-  }catch(e){console.error(e)}
+<script>
+let bkData = [], cBkId = null, inspId = null;
+
+async function fetchBk() {
+  try {
+    bkData = await dbGet("bookings") || [];
+    console.log("Bookings loaded:", bkData);
+    renderBk();
+  } catch (e) {
+    console.error(e);
+    toast("Load failed", "er");
+  }
 }
-loadDash();setInterval(loadDash,30000);
-</script></body></html>
+
+function renderBk() {
+  const q = document.getElementById("bsrch").value.toLowerCase();
+  const st = document.getElementById("bfSt").value;
+
+  let f = bkData.filter(b =>
+    (b.name || "").toLowerCase().includes(q) ||
+    (b.email || "").toLowerCase().includes(q) ||
+    (b.reg || "").toLowerCase().includes(q)
+  );
+
+  if (st) {
+    f = f.filter(b => (b.status || "pending") === st);
+  }
+
+  f.sort((a, b) => {
+    const sa = a.status || "pending";
+    const sb = b.status || "pending";
+    if (sa === sb) return 0;
+    return sa === "pending" ? -1 : 1;
+  });
+
+  const g = document.getElementById("bGrid");
+  g.innerHTML = "";
+  document.getElementById("bEmpty").style.display = f.length ? "none" : "block";
+
+  f.forEach(b => {
+    const isN = !b.viewed;
+    const sc = (b.status || "pending") === "confirmed" ? "b-ok" : "b-wa";
+
+    const ap = b.confirmed_date
+      ? `<div style="background:#eafaf1;border:1px solid #c3e6cb;border-radius:7px;padding:7px 10px;font-size:.76rem;color:#155724;font-weight:600;margin-top:6px">📅 ${b.confirmed_date} at ${fmtT(b.confirmed_time)}</div>`
+      : "";
+
+    const card = document.createElement("div");
+    card.style = "background:#fff;border-radius:var(--r);border:1.5px solid var(--br);box-shadow:var(--s2);overflow:hidden;transition:all .2s;";
+
+    card.innerHTML = `
+    <div style="background:linear-gradient(135deg,#1b2b3a,#2e4560);padding:12px 15px;display:flex;justify-content:space-between;align-items:center">
+      <span style="color:#fff;font-weight:700;font-size:.88rem">${b.name}${isN ? '<span class="badge b-or b-pulse" style="margin-left:6px;font-size:.58rem">NEW</span>' : ""}</span>
+      <span style="background:var(--ac);color:#fff;padding:2px 8px;border-radius:5px;font-weight:700;font-size:.76rem">${b.reg}</span>
+    </div>
+    <div style="padding:13px 15px">
+      <div class="ir"><span class="lbl">📧</span><span class="val">${b.email}</span></div>
+      <div class="ir"><span class="lbl">📞</span><span class="val">${b.phone || "—"}</span></div>
+      <div class="ir"><span class="lbl">🔧</span><span class="val">${b.service || "Not specified"}</span></div>
+      <div class="ir" style="background:#fff5f0;border-left-color:var(--ac);font-size:.78rem;font-style:italic">
+        <span class="lbl">Pref.</span><span class="val">${b.date || "—"} (customer choice)</span>
+      </div>
+      ${ap}
+      <div style="margin-top:7px">
+        <span class="badge ${sc}">${(b.status || "pending").toUpperCase()}</span>
+      </div>
+    </div>
+    <div style="padding:9px 15px;border-top:1.5px solid #eef0f3;display:flex;gap:5px;flex-wrap:wrap">
+      <button class="btn btn-ghost btn-sm" onclick="inspBk('${b.id}')">🔍 Details</button>
+      ${(b.status || "pending") !== "confirmed"
+        ? `<button class="btn btn-success btn-sm" onclick="openCf('${b.id}','${b.date || ""}')">✅ Confirm</button>`
+        : `<button class="btn btn-warning btn-sm" onclick="unpend('${b.id}')">↩ Pending</button>`}
+      <button class="btn btn-primary btn-sm" onclick="goInv('${b.id}')">💰 Invoice</button>
+      <button class="btn btn-info btn-sm" onclick="addNote('${b.id}')">📝 Note</button>
+      <button class="btn btn-dark btn-sm" onclick="callCustomer('${b.phone || ""}')">📞</button>
+      <button class="btn btn-danger btn-sm" onclick="delBk('${b.id}')">🗑️</button>
+    </div>
+    `;
+
+    g.appendChild(card);
+
+    if (isN) {
+      dbUpd("bookings", b.id, { viewed: true }).catch(() => {});
+    }
+  });
+}
+
+function inspBk(id) {
+  const b = bkData.find(x => x.id === id);
+  if (!b) return;
+  inspId = id;
+
+  document.getElementById("mInspB").innerHTML = `
+    <div class="ir"><span class="lbl">Name</span><span class="val">${b.name}</span></div>
+    <div class="ir"><span class="lbl">Email</span><span class="val">${b.email}</span></div>
+    <div class="ir"><span class="lbl">Phone</span><span class="val">${b.phone || "—"}</span></div>
+    <div class="ir"><span class="lbl">Registration</span><span class="val">${b.reg}</span></div>
+    <div class="ir"><span class="lbl">Vehicle</span><span class="val">${b.car || "—"}${b.year ? " (" + b.year + ")" : ""}</span></div>
+    <div class="ir"><span class="lbl">Service</span><span class="val">${b.service || "—"}</span></div>
+    <div class="ir ac"><span class="lbl">Preferred Date</span><span class="val">${b.date || "—"}</span></div>
+    ${b.confirmed_date ? `<div class="ir hi"><span class="lbl">✅ Confirmed</span><span class="val">${b.confirmed_date} at ${fmtT(b.confirmed_time)}</span></div>` : ""}
+    <div class="ir"><span class="lbl">Status</span><span class="val">${b.status || "pending"}</span></div>
+    ${b.notes ? `<div class="ir"><span class="lbl">Notes</span><span class="val">${b.notes}</span></div>` : ""}
+  `;
+
+  openM("mInsp");
+}
+
+function openCfFrom() {
+  if (inspId) {
+    const b = bkData.find(x => x.id === inspId);
+    closeM("mInsp");
+    if (b) openCf(b.id, b.date || "");
+  }
+}
+
+function openCf(id, pref) {
+  cBkId = id;
+  document.getElementById("cfPref").textContent = pref || "Not specified";
+  document.getElementById("cfD").value = pref || today();
+  document.getElementById("cfT").value = "09:00";
+  document.getElementById("cfNote").value = "";
+  openM("mCf");
+}
+
+async function submitCf() {
+  const d = document.getElementById("cfD").value;
+  const t = document.getElementById("cfT").value;
+  if (!d || !t) {
+    toast("Set date and time", "er");
+    return;
+  }
+
+  await dbUpd("bookings", cBkId, {
+    status: "confirmed",
+    confirmed_date: d,
+    confirmed_time: t
+  });
+
+  const b = bkData.find(x => x.id === cBkId);
+  if (b) {
+    b.status = "confirmed";
+    b.confirmed_date = d;
+    b.confirmed_time = t;
+  }
+
+  renderBk();
+  closeM("mCf");
+  toast("Appointment confirmed! ✅");
+}
+
+async function unpend(id) {
+  await dbUpd("bookings", id, {
+    status: "pending",
+    confirmed_date: null,
+    confirmed_time: null
+  });
+
+  const b = bkData.find(x => x.id === id);
+  if (b) {
+    b.status = "pending";
+    b.confirmed_date = null;
+    b.confirmed_time = null;
+  }
+
+  renderBk();
+  toast("Marked pending", "in");
+}
+
+function goInv(id) {
+  const b = bkData.find(x => x.id === id);
+  if (!b) return;
+
+  sessionStorage.setItem("inv_pre", JSON.stringify({
+    customer_name: b.name,
+    customer_email: b.email,
+    car_reg: b.reg,
+    service: b.service
+  }));
+
+  location.href = "invoices.html";
+}
+
+function goInvFromInsp() {
+  if (inspId) {
+    goInv(inspId);
+    closeM("mInsp");
+  }
+}
+
+function addNote(id) {
+  const n = prompt("Note:");
+  if (n) {
+    dbUpd("bookings", id, { notes: n });
+    const b = bkData.find(x => x.id === id);
+    if (b) b.notes = n;
+    toast("Note saved!");
+  }
+}
+
+function callCustomer(ph) {
+  if (ph) window.open("tel:" + ph);
+}
+
+function delBk(id) {
+  confirmDel("Delete this booking?", async () => {
+    await dbDel("bookings", id);
+    bkData = bkData.filter(b => b.id !== id);
+    renderBk();
+    toast("Deleted", "in");
+  });
+}
+
+function exportBk() {
+  const rows = [["Name","Email","Phone","Reg","Vehicle","Service","Preferred Date","Confirmed Date","Time","Status","Notes"]];
+  bkData.forEach(b => rows.push([
+    b.name, b.email, b.phone, b.reg, b.car || "",
+    b.service || "", b.date, b.confirmed_date || "",
+    b.confirmed_time || "", b.status || "pending", b.notes || ""
+  ]));
+
+  const csv = rows.map(r =>
+    r.map(c => `"${(c || "").toString().replace(/"/g, '""')}"`).join(",")
+  ).join("\n");
+
+  const a = document.createElement("a");
+  a.href = "data:text/csv," + encodeURIComponent(csv);
+  a.download = "bookings.csv";
+  a.click();
+}
+
+fetchBk();
+setInterval(fetchBk, 15000);
+</script>
