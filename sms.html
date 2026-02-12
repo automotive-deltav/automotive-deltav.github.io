@@ -22,7 +22,7 @@ function renderData(){
   const tb=document.getElementById("tbody");tb.innerHTML="";
   if(!f.length){tb.innerHTML=`<tr><td colspan="99"><div class="empty"><div class="ei">📱</div><p>No sms / email log found</p></div></td></tr>`;return;}
   f.forEach(r=>{
-    tb.innerHTML+=`<tr>$"<td>"+r.sent_date+"</td>"+"<td>"+r.recipient_name+"</td>"+"<td>"+r.message_type+"</td>"+"<td>"+r.subject+"</td>"+"<td>"+r.message+"</td>"+"<td>"+r.status+"</td>"+`<td>
+    tb.innerHTML+=`<tr><td>${r.sent_date}</td><td>${r.recipient_name}</td><td>${r.message_type}</td><td>${r.subject}</td><td>${r.message}</td><td>${r.status}</td><td>
       <button class="btn btn-warning btn-sm" onclick="editRow('${r.id}')">✏️</button>
       <button class="btn btn-danger btn-sm" onclick="delRow('${r.id}')">🗑️</button>
     </td></tr>`;
@@ -39,7 +39,7 @@ async function saveData(){
     closeM("mForm");loadData();
   }catch(e){console.error(e);toast("Failed to save","er");}
 }
-function delRow(id){confirmDel("Delete this entry?",async()=>{try{await dbDel("sms",id);data=data.filter(x=>x.id!==id);renderData();toast("Deleted","in");}catch(e){toast("Failed","er");}}));}
+function delRow(id){confirmDel("Delete this entry?",async()=>{try{await dbDel("sms",id);data=data.filter(x=>x.id!==id);renderData();toast("Deleted","in");}catch(e){toast("Failed","er");}});}
 function doExport(){const rows=[["Sent Date","Recipient Name","Message Type","Subject","Message","Status"]];data.forEach(r=>rows.push([r.sent_date||"",r.recipient_name||"",r.message_type||"",r.subject||"",r.message||"",r.status||""]));const csv=rows.map(r=>r.map(c=>`"${c||""}"`).join(",")).join("\n");const a=document.createElement("a");a.href="data:text/csv,"+encodeURIComponent(csv);a.download="sms.csv";a.click();}
 loadData();
 </script></body></html>

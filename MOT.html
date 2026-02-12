@@ -22,7 +22,7 @@ function renderData(){
   const tb=document.getElementById("tbody");tb.innerHTML="";
   if(!f.length){tb.innerHTML=`<tr><td colspan="99"><div class="empty"><div class="ei">🔖</div><p>No mot tracker found</p></div></td></tr>`;return;}
   f.forEach(r=>{
-    tb.innerHTML+=`<tr>$"<td>"+r.car_reg+"</td>"+"<td>"+r.owner_name+"</td>"+"<td>"+r.mot_date+"</td>"+"<td>"+r.expiry_date+"</td>"+"<td>"+r.result+"</td>"+"<td>"+r.mileage+"</td>"+"<td>"+r.notes+"</td>"+`<td>
+    tb.innerHTML+=`<tr><td>${r.car_reg}</td><td>${r.owner_name}</td><td>${r.mot_date}</td><td>${r.expiry_date}</td><td>${r.result}</td><td>${r.mileage}</td><td>${r.notes}</td><td>
       <button class="btn btn-warning btn-sm" onclick="editRow('${r.id}')">✏️</button>
       <button class="btn btn-danger btn-sm" onclick="delRow('${r.id}')">🗑️</button>
     </td></tr>`;
@@ -39,7 +39,7 @@ async function saveData(){
     closeM("mForm");loadData();
   }catch(e){console.error(e);toast("Failed to save","er");}
 }
-function delRow(id){confirmDel("Delete this entry?",async()=>{try{await dbDel("MOT",id);data=data.filter(x=>x.id!==id);renderData();toast("Deleted","in");}catch(e){toast("Failed","er");}}));}
+function delRow(id){confirmDel("Delete this entry?",async()=>{try{await dbDel("MOT",id);data=data.filter(x=>x.id!==id);renderData();toast("Deleted","in");}catch(e){toast("Failed","er");}});}
 function doExport(){const rows=[["Car Reg","Owner Name","Mot Date","Expiry Date","Result","Mileage","Notes"]];data.forEach(r=>rows.push([r.car_reg||"",r.owner_name||"",r.mot_date||"",r.expiry_date||"",r.result||"",r.mileage||"",r.notes||""]));const csv=rows.map(r=>r.map(c=>`"${c||""}"`).join(",")).join("\n");const a=document.createElement("a");a.href="data:text/csv,"+encodeURIComponent(csv);a.download="MOT.csv";a.click();}
 loadData();
 </script></body></html>

@@ -22,7 +22,7 @@ function renderData(){
   const tb=document.getElementById("tbody");tb.innerHTML="";
   if(!f.length){tb.innerHTML=`<tr><td colspan="99"><div class="empty"><div class="ei">⏱️</div><p>No timesheets found</p></div></td></tr>`;return;}
   f.forEach(r=>{
-    tb.innerHTML+=`<tr>$"<td>"+r.worker_name+"</td>"+"<td>"+r.work_date+"</td>"+"<td>"+r.hours_worked+"</td>"+"<td>"+r.hourly_rate+"</td>"+"<td>"+r.notes+"</td>"+`<td>
+    tb.innerHTML+=`<tr><td>${r.worker_name}</td><td>${r.work_date}</td><td>${r.hours_worked}</td><td>${r.hourly_rate}</td><td>${r.notes}</td><td>
       <button class="btn btn-warning btn-sm" onclick="editRow('${r.id}')">✏️</button>
       <button class="btn btn-danger btn-sm" onclick="delRow('${r.id}')">🗑️</button>
     </td></tr>`;
@@ -39,7 +39,7 @@ async function saveData(){
     closeM("mForm");loadData();
   }catch(e){console.error(e);toast("Failed to save","er");}
 }
-function delRow(id){confirmDel("Delete this entry?",async()=>{try{await dbDel("timesheets",id);data=data.filter(x=>x.id!==id);renderData();toast("Deleted","in");}catch(e){toast("Failed","er");}}));}
+function delRow(id){confirmDel("Delete this entry?",async()=>{try{await dbDel("timesheets",id);data=data.filter(x=>x.id!==id);renderData();toast("Deleted","in");}catch(e){toast("Failed","er");}});}
 function doExport(){const rows=[["Worker Name","Work Date","Hours Worked","Hourly Rate","Notes"]];data.forEach(r=>rows.push([r.worker_name||"",r.work_date||"",r.hours_worked||"",r.hourly_rate||"",r.notes||""]));const csv=rows.map(r=>r.map(c=>`"${c||""}"`).join(",")).join("\n");const a=document.createElement("a");a.href="data:text/csv,"+encodeURIComponent(csv);a.download="timesheets.csv";a.click();}
 loadData();
 </script></body></html>

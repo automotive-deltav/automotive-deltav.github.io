@@ -22,7 +22,7 @@ function renderData(){
   const tb=document.getElementById("tbody");tb.innerHTML="";
   if(!f.length){tb.innerHTML=`<tr><td colspan="99"><div class="empty"><div class="ei">⏰</div><p>No opening hours found</p></div></td></tr>`;return;}
   f.forEach(r=>{
-    tb.innerHTML+=`<tr>$"<td>"+r.day+"</td>"+"<td>"+r.open_time+"</td>"+"<td>"+r.close_time+"</td>"+"<td>"+r.status+"</td>"+"<td>"+r.notes+"</td>"+`<td>
+    tb.innerHTML+=`<tr><td>${r.day}</td><td>${r.open_time}</td><td>${r.close_time}</td><td>${r.status}</td><td>${r.notes}</td><td>
       <button class="btn btn-warning btn-sm" onclick="editRow('${r.id}')">✏️</button>
       <button class="btn btn-danger btn-sm" onclick="delRow('${r.id}')">🗑️</button>
     </td></tr>`;
@@ -39,7 +39,7 @@ async function saveData(){
     closeM("mForm");loadData();
   }catch(e){console.error(e);toast("Failed to save","er");}
 }
-function delRow(id){confirmDel("Delete this entry?",async()=>{try{await dbDel("hours",id);data=data.filter(x=>x.id!==id);renderData();toast("Deleted","in");}catch(e){toast("Failed","er");}}));}
+function delRow(id){confirmDel("Delete this entry?",async()=>{try{await dbDel("hours",id);data=data.filter(x=>x.id!==id);renderData();toast("Deleted","in");}catch(e){toast("Failed","er");}});}
 function doExport(){const rows=[["Day","Open Time","Close Time","Status","Notes"]];data.forEach(r=>rows.push([r.day||"",r.open_time||"",r.close_time||"",r.status||"",r.notes||""]));const csv=rows.map(r=>r.map(c=>`"${c||""}"`).join(",")).join("\n");const a=document.createElement("a");a.href="data:text/csv,"+encodeURIComponent(csv);a.download="hours.csv";a.click();}
 loadData();
 </script></body></html>

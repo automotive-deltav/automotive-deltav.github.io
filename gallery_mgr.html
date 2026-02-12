@@ -22,7 +22,7 @@ function renderData(){
   const tb=document.getElementById("tbody");tb.innerHTML="";
   if(!f.length){tb.innerHTML=`<tr><td colspan="99"><div class="empty"><div class="ei">📸</div><p>No gallery manager found</p></div></td></tr>`;return;}
   f.forEach(r=>{
-    tb.innerHTML+=`<tr>$"<td>"+r.title+"</td>"+"<td>"+r.category+"</td>"+"<td>"+r.upload_date+"</td>"+"<td>"+r.caption+"</td>"+"<td>"+r.visible+"</td>"+`<td>
+    tb.innerHTML+=`<tr><td>${r.title}</td><td>${r.category}</td><td>${r.upload_date}</td><td>${r.caption}</td><td>${r.visible}</td><td>
       <button class="btn btn-warning btn-sm" onclick="editRow('${r.id}')">✏️</button>
       <button class="btn btn-danger btn-sm" onclick="delRow('${r.id}')">🗑️</button>
     </td></tr>`;
@@ -39,7 +39,7 @@ async function saveData(){
     closeM("mForm");loadData();
   }catch(e){console.error(e);toast("Failed to save","er");}
 }
-function delRow(id){confirmDel("Delete this entry?",async()=>{try{await dbDel("gallery_mgr",id);data=data.filter(x=>x.id!==id);renderData();toast("Deleted","in");}catch(e){toast("Failed","er");}}));}
+function delRow(id){confirmDel("Delete this entry?",async()=>{try{await dbDel("gallery_mgr",id);data=data.filter(x=>x.id!==id);renderData();toast("Deleted","in");}catch(e){toast("Failed","er");}});}
 function doExport(){const rows=[["Title","Category","Upload Date","Caption","Visible"]];data.forEach(r=>rows.push([r.title||"",r.category||"",r.upload_date||"",r.caption||"",r.visible||""]));const csv=rows.map(r=>r.map(c=>`"${c||""}"`).join(",")).join("\n");const a=document.createElement("a");a.href="data:text/csv,"+encodeURIComponent(csv);a.download="gallery_mgr.csv";a.click();}
 loadData();
 </script></body></html>
