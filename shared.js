@@ -76,19 +76,29 @@
   DeltaV.today = function(){ return new Date().toISOString().split('T')[0]; };
 
   // Autocomplete attach (lightweight)
-  DeltaV.attachAC = function(input, suggestions){
+  // Autocomplete attach (lightweight)
+  // Accepts: (inputElement, suggestionsArray, onSelectCallback?)
+  DeltaV.attachAC = function(input, suggestions, onSelect){
+    if(!input) return;
+    suggestions = Array.isArray(suggestions) ? suggestions : [];
     let list = null;
     const close = ()=>{ if(list){ list.remove(); list=null; } };
+    const ensureList = ()=>{
+      if(!list){ list = document.createElement('div'); list.style.cssText = 'position:absolute;left:0;right:0;background:#fff;border:1px solid #e6eef8;border-radius:6px;max-height:240px;overflow:auto;z-index:1100';
+        // ensure container positioning
+        const p = input.parentElement; if(p) p.style.position = p.style.position || 'relative'; p.appendChild(list);
+      }
+    };
     input.addEventListener('input', e => {
-      const v = e.target.value.trim().toLowerCase();
+      const v = (e.target.value||'').trim().toLowerCase();
       if(!v){ close(); return; }
-      const matches = suggestions.filter(s=>s.toLowerCase().includes(v)).slice(0,20);
+      const matches = suggestions.filter(s=>String(s).toLowerCase().includes(v)).slice(0,20);
       if(!matches.length){ close(); return; }
-      if(!list){ list = document.createElement('div'); list.style.cssText = 'position:absolute;background:#fff;border:1px solid #e6eef8;border-radius:6px;max-height:240px;overflow:auto;z-index:1100'; input.parentElement.style.position='relative'; input.parentElement.appendChild(list); }
+      ensureList();
       list.innerHTML = matches.map(m=>`<div class="ac-item" style="padding:8px 12px;cursor:pointer">${m}</div>`).join('');
-      list.querySelectorAll('.ac-item').forEach(it=>{ it.onmouseenter=()=>it.style.background='#f8fafb'; it.onmouseleave=()=>it.style.background=''; it.onclick=()=>{ input.value = it.textContent; input.dispatchEvent(new Event('input')); close(); }; });
+      list.querySelectorAll('.ac-item').forEach(it=>{ it.onmouseenter=()=>it.style.background='#f8fafb'; it.onmouseleave=()=>it.style.background=''; it.onclick=()=>{ input.value = it.textContent; input.dispatchEvent(new Event('input')); if(typeof onSelect==='function') onSelect(it.textContent); close(); }; });
     });
-    document.addEventListener('click', e => { if(e.target!==input) close(); });
+    document.addEventListener('click', e => { if(e.target!==input && (!list || !list.contains(e.target))) close(); });
   };
 
   // Utilities exposed on window for compatibility (shorthand names)
