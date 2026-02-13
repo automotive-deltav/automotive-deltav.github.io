@@ -103,7 +103,8 @@ function renderInv(){
     </div>
     <div style="display:flex;gap:8px;justify-content:flex-end">
       <button class="btn btn-warning btn-sm" onclick="editInv('${inv.id}')">✏️ Edit</button>
-      <button class="btn btn-dark btn-sm" onclick="pdfInv('${inv.id}')">📄 PDF</button>
+      <button class="btn btn-dark btn-sm" onclick="pdfInv('${inv.id}')">📄 View PDF</button>
+      <button class="btn btn-success btn-sm" onclick="downloadInvPDF('${inv.id}')">⬇️ Download PDF</button>
       <button class="btn btn-ghost btn-sm" onclick="togPay('${inv.id}','${inv.payment_status}')">💳 Toggle</button>
       <button class="btn btn-danger btn-sm" onclick="delInv('${inv.id}')">🗑️ Delete</button>
     </div>`;
@@ -163,5 +164,10 @@ async function dupInv(id){const inv=invData.find(x=>x.id===id);if(!inv)return;co
 function delInv(id){confirmDel("Delete this invoice?",async()=>{await dbDel("invoices",id);invData=invData.filter(i=>i.id!==id);renderInv();toast("Deleted","in");});}
 function exportInv(){const rows=[["Invoice #","Customer","Email","Date","Reg","Subtotal","VAT","Total","Status"]];invData.forEach(i=>rows.push(["INV-"+String(i.id||0).slice(-4),i.customer_name,i.customer_email,i.invoice_date,i.car_reg||"",i.subtotal?.toFixed(2)||"0.00",i.vat_amount?.toFixed(2)||"0.00",i.total_amount?.toFixed(2)||"0.00",i.payment_status]));const csv=rows.map(r=>r.map(c=>`"${c||""}"`).join(",")).join("\\n");const a=document.createElement("a");a.href="data:text/csv,"+encodeURIComponent(csv);a.download="invoices.csv";a.click();}
 function pdfInv(id){sessionStorage.setItem("pdf_inv_id",id);window.open("invoice-print.html","_blank");}
+function downloadInvPDF(id){
+  sessionStorage.setItem("pdf_inv_id",id);
+  const w=window.open("invoice-print.html","_blank");
+  setTimeout(()=>w.print(),1000);
+}
 loadInv();
 </script></body></html>

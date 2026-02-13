@@ -1,0 +1,8 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>DeltaV — Payroll</title><link rel="stylesheet" href="theme.css"></head><body><script>if(sessionStorage.getItem('dv_admin')!=='1'){location.href='login.html';}</script>
+<div class="sidebar"><div class="sb-logo">DeltaV <span>Auto</span><small>Admin Panel</small></div>
+<nav><div class="sb-sec">Core</div><a href="dashboard.html"><span class="ni">📊</span>Dashboard</a><a href="payroll.html" class="active"><span class="ni">💷</span>Payroll</a><div class="sb-sec">Management</div><a href="workers.html"><span class="ni">👷</span>Workers</a></nav>
+<div class="sb-foot"><a href="index.html" class="btn-sb-link">🌐 Website</a><button class="btn-sb-out" onclick="if(confirm('Log out?')){sessionStorage.removeItem('dv_admin');location.href='login.html';}">🚪 Logout</button></div></div>
+<div class="main"><div class="topbar"><h1>Payroll</h1><div class="tr"><button class="btn btn-primary" onclick="openM('mNewPay')">+ New Payroll</button><button class="btn btn-info">Import Payslips</button><button class="btn btn-ghost" onclick="loadPays()">🔄 Refresh</button></div></div>
+<div class="body"><div class="card"><div class="card-title">Payroll Actions</div><div class="card-text">Placeholders for payroll operations.</div>
+<div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap"><button class="btn btn-success">Run Payroll</button><button class="btn btn-warning">Generate P60s</button><button class="btn btn-dark">Export CSV</button><button class="btn btn-ghost">Manage Deductions</button></div></div></div></div>
+<script src="shared.js"></script></body></html>

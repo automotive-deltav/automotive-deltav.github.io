@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>DeltaV — CRM</title><link rel="stylesheet" href="theme.css"></head><body><script>if(sessionStorage.getItem('dv_admin')!=='1'){location.href='login.html';}</script>
+<div class="sidebar"><div class="sb-logo">DeltaV <span>Auto</span><small>Admin Panel</small></div>
+<nav><div class="sb-sec">Core</div><a href="dashboard.html"><span class="ni">📊</span>Dashboard</a><a href="admin.html"><span class="ni">📅</span>Bookings</a><a href="crm.html" class="active"><span class="ni">🧾</span>CRM</a><div class="sb-sec">Management</div><a href="customers.html"><span class="ni">👥</span>Customers</a><a href="workers.html"><span class="ni">👷</span>Workers</a>
+<div class="sb-sec">Extra</div><a href="analytics.html"><span class="ni">📈</span>Analytics</a><a href="settings.html"><span class="ni">⚙️</span>Settings</a></nav>
+<div class="sb-foot"><a href="index.html" class="btn-sb-link">🌐 Website</a><button class="btn-sb-out" onclick="if(confirm('Log out?')){sessionStorage.removeItem('dv_admin');location.href='login.html';}">🚪 Logout</button></div></div>
+<div class="main"><div class="topbar"><h1>CRM</h1><div class="tr"><button class="btn btn-primary" onclick="openM('mNewLead')">+ New Lead</button><button class="btn btn-info" onclick="importLeads()">Import</button><button class="btn btn-ghost" onclick="loadLeads()">🔄 Refresh</button></div></div>
+<div class="body">
+<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px">
+<button class="btn btn-success">Export Contacts</button>
+<button class="btn btn-warning">Bulk Email</button>
+<button class="btn btn-dark">Merge Duplicates</button>
+<button class="btn btn-ghost">View Segments</button>
+<button class="btn btn-info">Sync with 3rd-party</button>
+</div>
+<div class="card"><div class="card-title">Recent Interactions</div><div class="card-text">No data — placeholders created. Add CRM functionality here.</div>
+<div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
+<button class="btn btn-primary">Create Task</button>
+<button class="btn btn-link">Open Ticket</button>
+<button class="btn btn-outline-info">Send Reminder</button>
+</div></div>
+</div></div>
+<script src="shared.js"></script>
+</body></html>
