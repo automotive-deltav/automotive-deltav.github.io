@@ -96,17 +96,17 @@ a{text-decoration:none;color:inherit}
 @keyframes spin{to{transform:rotate(360deg)}}
 
 /* Cards */
-.card{background:#fff;border-radius:12px;padding:24px;box-shadow:var(--s2);border:1px solid var(--br);transition:all .2s}
-.card:hover{box-shadow:var(--s3)}
-.card-elevated{box-shadow:var(--s3);border:none}
-.card-subtle{background:#f8f9fb;border:1px solid #e8ecef}
-.card-outlined{background:transparent;border:2px solid var(--br)}
-.card-primary{border-left:4px solid var(--ac)}
-.card-success{border-left:4px solid var(--ok)}
-.card-danger{border-left:4px solid var(--er)}
-.card-warning{border-left:4px solid var(--wa)}
-.card-info{border-left:4px solid var(--in)}
-.card-title{font-weight:700;color:#1b2b3a;margin-bottom:8px;font-size:.95rem}
+.card{background:#fff;border-radius:12px;padding:24px;box-shadow:0 6px 20px rgba(11,22,33,.1);border:2px solid #e2e8f0;transition:all .2s}
+.card:hover{box-shadow:0 12px 32px rgba(11,22,33,.15);transform:translateY(-2px)}
+.card-elevated{box-shadow:0 12px 32px rgba(11,22,33,.15);border:2px solid #e2e8f0}
+.card-subtle{background:#f8f9fb;border:2px solid #e2e8f0}
+.card-outlined{background:transparent;border:2px solid #e2e8f0}
+.card-primary{border-left:6px solid var(--ac);border-top:2px solid #e2e8f0;border-right:2px solid #e2e8f0;border-bottom:2px solid #e2e8f0}
+.card-success{border-left:6px solid var(--ok);border-top:2px solid #e2e8f0;border-right:2px solid #e2e8f0;border-bottom:2px solid #e2e8f0}
+.card-danger{border-left:6px solid var(--er);border-top:2px solid #e2e8f0;border-right:2px solid #e2e8f0;border-bottom:2px solid #e2e8f0}
+.card-warning{border-left:6px solid var(--wa);border-top:2px solid #e2e8f0;border-right:2px solid #e2e8f0;border-bottom:2px solid #e2e8f0}
+.card-info{border-left:6px solid var(--in);border-top:2px solid #e2e8f0;border-right:2px solid #e2e8f0;border-bottom:2px solid #e2e8f0}
+.card-title{font-weight:700;color:#1b2b3a;margin-bottom:12px;font-size:.95rem;text-transform:uppercase;letter-spacing:0.5px}
 .card-text{color:#64748b;font-size:.9rem;margin-bottom:8px}
 .card-sub{color:#94a3b8;font-size:.82rem;margin-top:12px}
 

@@ -99,6 +99,46 @@
   </div>
 </div>
 
+<div class="modal" id="mConfirm">
+  <div class="mbox" style="max-width:480px">
+    <h3>✅ Confirm Booking</h3>
+    <p style="color:#64748b;margin-bottom:16px;font-size:.9rem">Set the final confirmed date, time, and optional notes.</p>
+    <div class="fg">
+      <label>Customer Name</label>
+      <input type="text" id="cfmName" placeholder="Auto-filled" readonly style="background:#f8f9fb">
+    </div>
+    <div class="g2">
+      <div class="fg">
+        <label>Confirmed Date *</label>
+        <input type="date" id="cfmDate" required>
+      </div>
+      <div class="fg">
+        <label>Time Slot *</label>
+        <select id="cfmTime" required>
+          <option value="">Select slot</option>
+          <option value="09:00">09:00 AM</option>
+          <option value="10:00">10:00 AM</option>
+          <option value="11:00">11:00 AM</option>
+          <option value="12:00">12:00 PM</option>
+          <option value="13:00">1:00 PM</option>
+          <option value="14:00">2:00 PM</option>
+          <option value="15:00">3:00 PM</option>
+          <option value="16:00">4:00 PM</option>
+          <option value="17:00">5:00 PM</option>
+        </select>
+      </div>
+    </div>
+    <div class="fg">
+      <label>Confirmation Notes (optional)</label>
+      <textarea id="cfmNotes" placeholder="e.g., Service type, special instructions, customer preferences..." style="max-height:100px"></textarea>
+    </div>
+    <div class="mfoot">
+      <button class="btn btn-ghost" onclick="closeM('mConfirm')">Cancel</button>
+      <button class="btn btn-success" onclick="saveConfirm()">✅ Confirm Booking</button>
+    </div>
+  </div>
+</div>
+
 <script src="shared.js"></script>
 <script>
 let data=[];
@@ -147,6 +187,7 @@ function renderData(){
     </div>
     <div style="display:flex;gap:8px;margin-top:16px">
       <button class="btn btn-primary btn-sm" onclick="viewRow('${r.id}')" style="flex:1">View</button>
+      <button class="btn btn-success btn-sm" onclick="openConfirm('${r.id}','${r.name}')" ${r.status==='confirmed'?'disabled':''}>${r.status==='confirmed'?'✓ Confirmed':'Confirm'}</button>
       <button class="btn btn-info btn-sm" onclick="toggleExpand('exp-${r.id}')" title="More details">▼</button>
       <button class="btn btn-danger btn-sm" onclick="delRow('${r.id}')">🗑️</button>
     </div>`;
@@ -172,6 +213,39 @@ function delRow(id){
     renderData();
     toast("Deleted","in");
   });
+}
+let confirmingBookingId=null;
+function openConfirm(id,name){
+  confirmingBookingId=id;
+  document.getElementById("cfmName").value=name;
+  document.getElementById("cfmDate").value=today();
+  document.getElementById("cfmTime").value="09:00";
+  document.getElementById("cfmNotes").value="";
+  openM("mConfirm");
+}
+async function saveConfirm(){
+  const date=document.getElementById("cfmDate").value;
+  const time=document.getElementById("cfmTime").value;
+  const notes=document.getElementById("cfmNotes").value.trim();
+  if(!date||!time){
+    toast("Date and time are required","er");
+    return;
+  }
+  const booking=data.find(x=>x.id===confirmingBookingId);
+  if(!booking)return;
+  await dbUpd("bookings",confirmingBookingId,{
+    status:"confirmed",
+    date:date,
+    slot:time,
+    notes:notes||(booking.notes||"")
+  });
+  booking.status="confirmed";
+  booking.date=date;
+  booking.slot=time;
+  booking.notes=notes||(booking.notes||"");
+  closeM("mConfirm");
+  renderData();
+  toast("Booking confirmed!","in");
 }
 loadData();
 </script>
