@@ -105,12 +105,13 @@
 <script src="shared.js"></script>
 <script>
 async function loadDash(){
-  const [bookings,suppliers,vehicles,tasks]=await Promise.all([
-    dbGet("bookings","&order=created_at.desc&limit=5"),
-    dbGet("suppliers"),
-    dbGet("vehicles"),
-    dbGet("tasks","&status=eq.Pending")
-  ]);
+  try{
+    const [bookings,suppliers,vehicles,tasks]=await Promise.all([
+      dbGet("bookings","&order=date.desc&limit=5"),
+      dbGet("suppliers"),
+      dbGet("vehicles"),
+      dbGet("tasks","&order=id.desc&limit=5")
+    ]);
   
   // Animate stat values
   animateStat("statBookings",bookings.length);

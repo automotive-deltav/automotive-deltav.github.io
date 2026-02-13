@@ -66,7 +66,7 @@
 let data=[],editId=null;
 async function loadData(){
   try{
-    data=await dbGet("vehicles","&order=created_at.desc");
+    data=await dbGet("vehicles","&order=id.desc");
     renderData();
   }catch(e){showError("Failed to load. Make sure 'vehicles' table exists in Supabase!");}
 }
