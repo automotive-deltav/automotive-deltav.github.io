@@ -100,7 +100,8 @@ body{background:#0d1823}
     <div class="ok-ic">🎉</div>
     <h2>Booking Submitted!</h2>
     <p>We've received your booking. We'll confirm your appointment by email shortly.</p>
-    <div style="display:flex;gap:11px;justify-content:center;flex-wrap:wrap">
+    <div id="bookingCardContainer"></div>
+    <div style="display:flex;gap:11px;justify-content:center;flex-wrap:wrap;margin-top:28px">
       <a href="index.html" class="btn btn-primary btn-lg">← Back to Home</a>
       <a href="services.html" class="btn btn-lg" style="background:rgba(255,255,255,.08);color:#fff;border:1.5px solid rgba(255,255,255,.15)">Our Services</a>
     </div>
@@ -194,6 +195,45 @@ async function submitBooking(){
     if(r.ok){
       document.getElementById("bookForm").style.display="none";
       document.getElementById("okBox").style.display="block";
+      
+      // Display the booking card
+      const card=document.createElement("div");
+      card.style.cssText="background:rgba(255,255,255,.08);border:1.5px solid rgba(255,102,0,.36);border-radius:12px;padding:22px;margin-top:28px;max-width:500px;margin-left:auto;margin-right:auto;animation:slideUp .4s ease-out";
+      card.innerHTML=`
+        <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:14px">
+          <div>
+            <div style="font-size:.85rem;color:rgba(255,255,255,.52);margin-bottom:4px">Booking Reference</div>
+            <div style="font-family:monospace;font-weight:700;color:#ff6600;font-size:1.2rem">REF-${Date.now().toString().slice(-6)}</div>
+          </div>
+          <span style="padding:6px 12px;border-radius:6px;background:rgba(255,102,0,.22);color:#ff9933;font-weight:600;font-size:.78rem">⏳ PENDING</span>
+        </div>
+        
+        <div style="border-top:1px solid rgba(255,255,255,.1);padding-top:14px;padding-bottom:14px;margin-bottom:14px">
+          <div style="color:rgba(255,255,255,.52);font-size:.8rem;margin-bottom:2px">📅 Date</div>
+          <div style="color:#fff;font-weight:600">${data.date}</div>
+        </div>
+        
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid rgba(255,255,255,.1)">
+          <div>
+            <div style="color:rgba(255,255,255,.52);font-size:.8rem;margin-bottom:2px">🚗 Vehicle</div>
+            <div style="color:#fff;font-weight:600">${data.reg}</div>
+            <div style="color:rgba(255,255,255,.42);font-size:.75rem;margin-top:2px">${data.car||'Unknown'}</div>
+          </div>
+          <div>
+            <div style="color:rgba(255,255,255,.52);font-size:.8rem;margin-bottom:2px">🔧 Service</div>
+            <div style="color:#fff;font-weight:600">
+              ${data.service.includes('Other')?'Custom Service':data.service.split('—')[0].trim()}
+            </div>
+          </div>
+        </div>
+        
+        <div>
+          <div style="color:rgba(255,255,255,.52);font-size:.8rem;margin-bottom:4px">👤 Contact</div>
+          <div style="color:#fff;font-weight:600">${data.name}</div>
+          <div style="color:rgba(255,255,255,.52);font-size:.85rem;margin-top:2px">${data.email}</div>
+        </div>
+      `;
+      document.getElementById("bookingCardContainer").appendChild(card);
     }else{
       alert("Failed to save booking. Check Supabase connection.");
     }
