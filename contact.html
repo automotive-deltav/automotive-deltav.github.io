@@ -1,13 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Contact — DeltaV</title>
-<link rel="stylesheet" href="theme.css">
 <style>
 body{
-  background:#0f1e2d;
+  background:#0b1620;
 }
 
 .contact-grid{
@@ -18,8 +11,8 @@ body{
 
 .info-card,
 .form-card{
-  background:#162635;
-  border:1px solid #22384a;
+  background:#111f2b;
+  border:1px solid #1f3546;
   border-radius:14px;
   padding:26px;
 }
@@ -38,22 +31,14 @@ body{
   gap:13px;
   margin-bottom:16px;
   padding:13px;
-  background:#1b2f40;
+  background:#142634;
   border-radius:9px;
-  border:1px solid #243b4f;
-}
-
-.ci .ci-ic{
-  font-size:1.35rem;
-  width:30px;
-  text-align:center;
-  flex-shrink:0;
-  margin-top:1px;
+  border:1px solid #1f3546;
 }
 
 .ci-lbl{
   font-size:.68rem;
-  color:#7fa6c2;
+  color:#6f8da3;
   font-weight:700;
   text-transform:uppercase;
   letter-spacing:1px;
@@ -67,173 +52,32 @@ body{
 }
 
 .form-card .fg label{
-  color:#9fb7cc;
+  color:#8fa9bd;
 }
 
 .form-card .fg input,
 .form-card .fg select,
 .form-card .fg textarea{
-  background:#1b2f40;
-  border:1px solid #27465e;
+  background:#0f1c26;     /* darker than card */
+  border:1px solid #1f3546;
   color:#ffffff;
   border-radius:8px;
 }
 
 .form-card .fg input::placeholder,
 .form-card .fg textarea::placeholder{
-  color:#6f8da3;
+  color:#5f7a90;
 }
 
 .form-card .fg input:focus,
 .form-card .fg select:focus,
 .form-card .fg textarea:focus{
-  background:#21394d;
+  background:#122433;
   border-color:var(--ac);
   outline:none;
 }
 
 .form-card .fg select option{
-  background:#162635;
+  background:#111f2b;
 }
 </style>
-</head>
-
-<body>
-<header class="pub-h">
-  <a href="index.html" class="pub-logo">DeltaV <span>Auto</span></a>
-  <nav class="pub-nav">
-    <a href="services.html">Services</a>
-    <a href="about.html">About</a>
-    <a href="gallery.html">Gallery</a>
-    <a href="faq.html">FAQ</a>
-    <a href="contact.html">Contact</a>
-    <a href="booking.html" class="cta">📅 Book Now</a>
-  </nav>
-</header>
-
-<div class="pub-wrap-wide" style="max-width:960px">
-  <a href="index.html" class="back-btn">← Back to Home</a>
-  <div class="pub-title">Contact Us</div>
-  <div class="pub-sub">We're here to help. Reach us any way you prefer.</div>
-
-  <div class="contact-grid">
-
-    <div class="info-card">
-      <h3>📍 Find Us</h3>
-
-      <div class="ci">
-        <div class="ci-ic">📍</div>
-        <div>
-          <div class="ci-lbl">Address</div>
-          <div class="ci-val">DeltaV Automotive<br>Smethwick, West Midlands</div>
-        </div>
-      </div>
-
-      <div class="ci">
-        <div class="ci-ic">📞</div>
-        <div>
-          <div class="ci-lbl">Phone</div>
-          <div class="ci-val">0121 XXX XXXX</div>
-        </div>
-      </div>
-
-      <div class="ci">
-        <div class="ci-ic">📧</div>
-        <div>
-          <div class="ci-lbl">Email</div>
-          <div class="ci-val">info@deltavautomotive.co.uk</div>
-        </div>
-      </div>
-
-      <div class="ci">
-        <div class="ci-ic">⏰</div>
-        <div>
-          <div class="ci-lbl">Hours</div>
-          <div class="ci-val">Mon–Fri: 8am–6pm<br>Sat: 9am–4pm · Sun: Closed</div>
-        </div>
-      </div>
-
-      <div class="ci">
-        <div class="ci-ic">🚗</div>
-        <div>
-          <div class="ci-lbl">Parking</div>
-          <div class="ci-val">Free customer parking available on site</div>
-        </div>
-      </div>
-
-      <a href="booking.html" class="btn btn-primary btn-fw" style="margin-top:10px">📅 Book Online Instead</a>
-    </div>
-
-    <div class="form-card">
-      <h3>💬 Send a Message</h3>
-
-      <div class="g2">
-        <div class="fg">
-          <label>Your Name *</label>
-          <input type="text" id="cN" placeholder="John Smith">
-        </div>
-        <div class="fg">
-          <label>Phone</label>
-          <input type="tel" id="cP" placeholder="07700 900000">
-        </div>
-      </div>
-
-      <div class="fg">
-        <label>Email *</label>
-        <input type="email" id="cE" placeholder="john@example.com">
-      </div>
-
-      <div class="g2">
-        <div class="fg">
-          <label>Vehicle Reg</label>
-          <input type="text" id="cR" placeholder="AB12 CDE">
-        </div>
-        <div class="fg">
-          <label>Subject</label>
-          <select id="cS">
-            <option>General Enquiry</option>
-            <option>Get a Quote</option>
-            <option>Book a Service</option>
-            <option>Complaint</option>
-            <option>Other</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="fg">
-        <label>Message *</label>
-        <textarea id="cM" placeholder="How can we help?" style="min-height:110px"></textarea>
-      </div>
-
-      <button class="btn btn-primary btn-lg btn-fw" onclick="sendMsg()">Send Message →</button>
-
-      <p id="cOk" style="color:#34ce57;margin-top:11px;display:none;font-weight:600">
-        ✅ Message sent! We'll be in touch soon.
-      </p>
-
-      <p id="cErr" style="color:#e85563;margin-top:11px;display:none;font-weight:600">
-        ❌ Please fill in all required fields.
-      </p>
-    </div>
-
-  </div>
-</div>
-
-<script>
-function sendMsg(){
-  const n=document.getElementById("cN").value;
-  const e=document.getElementById("cE").value;
-  const m=document.getElementById("cM").value;
-
-  if(!n||!e||!m){
-    document.getElementById("cErr").style.display="block";
-    return;
-  }
-
-  document.getElementById("cErr").style.display="none";
-  document.getElementById("cOk").style.display="block";
-}
-</script>
-
-</body>
-</html>
