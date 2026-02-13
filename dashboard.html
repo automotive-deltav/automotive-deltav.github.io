@@ -150,6 +150,13 @@ async function loadDash(){
       ut.appendChild(item);
     });
   }
+}catch(e){
+  console.error("Dashboard load error:",e);
+  document.getElementById("statBookings").textContent="?";
+  document.getElementById("statSuppliers").textContent="?";
+  document.getElementById("statVehicles").textContent="?";
+  document.getElementById("statTasks").textContent="?";
+}
 }
 
 function animateStat(id,target){
