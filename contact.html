@@ -71,30 +71,37 @@ body{
   color:#8fa9bd;
 }
 
-.form-card .fg input,
-.form-card .fg select,
-.form-card .fg textarea{
-  background:#0f1c26;
-  border:1px solid #1f3546;
-  color:#ffffff;
+/* FORCE DARK INPUTS */
+.form-card input,
+.form-card select,
+.form-card textarea{
+  background:#0f1c26 !important;
+  border:1px solid #1f3546 !important;
+  color:#ffffff !important;
   border-radius:8px;
+  box-shadow:none !important;
+  outline:none !important;
 }
 
-.form-card .fg input::placeholder,
-.form-card .fg textarea::placeholder{
-  color:#5f7a90;
+.form-card input::placeholder,
+.form-card textarea::placeholder{
+  color:#5f7a90 !important;
 }
 
-.form-card .fg input:focus,
-.form-card .fg select:focus,
-.form-card .fg textarea:focus{
-  background:#122433;
-  border-color:var(--ac);
-  outline:none;
+.form-card input:focus,
+.form-card select:focus,
+.form-card textarea:focus{
+  background:#122433 !important;
+  border-color:var(--ac) !important;
 }
 
-.form-card .fg select option{
-  background:#111f2b;
+/* Kill Chrome autofill white/yellow */
+input:-webkit-autofill,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+select:-webkit-autofill{
+  -webkit-box-shadow:0 0 0 1000px #0f1c26 inset !important;
+  -webkit-text-fill-color:#ffffff !important;
 }
 </style>
 </head>
