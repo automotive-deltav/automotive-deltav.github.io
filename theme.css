@@ -399,3 +399,29 @@ select::-webkit-scrollbar-thumb:hover{background:#cbd5e0}
 table{min-width:650px}
 .mbox{padding:24px;max-width:100%}
 }
+
+/* Public Website Pages */
+.pub-h{background:#fff;border-bottom:2px solid #e2e8f0;padding:0 40px;height:70px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:50;box-shadow:0 2px 8px rgba(0,0,0,.05)}
+.pub-logo{font-family:'Barlow Condensed',sans-serif;font-size:1.6rem;font-weight:900;color:#1b2b3a;text-decoration:none;display:flex;align-items:center;transition:all .2s;letter-spacing:.5px}
+.pub-logo span{color:var(--ac);margin-left:4px}
+.pub-logo:hover{color:var(--ac);transform:translateY(-2px)}
+.pub-nav{display:flex;gap:28px;align-items:center}
+.pub-nav a{color:#64748b;text-decoration:none;font-weight:500;font-size:.9rem;transition:all .2s;position:relative}
+.pub-nav a:hover{color:var(--ac)}
+.pub-nav a.cta{background:var(--ac);color:#fff;padding:10px 18px;border-radius:8px;font-weight:600}
+.pub-nav a.cta:hover{background:#e55a00;transform:translateY(-2px);box-shadow:0 8px 16px rgba(255,102,0,.3)}
+.pub-wrap{max-width:1000px;margin:0 auto;padding:40px}
+.pub-wrap-wide{max-width:1200px;margin:0 auto;padding:40px}
+.pub-title{font-family:'Barlow Condensed',sans-serif;font-size:2.4rem;font-weight:800;color:#1b2b3a;margin-bottom:12px;letter-spacing:.5px}
+.pub-sub{color:#64748b;font-size:1rem;margin-bottom:28px;max-width:600px}
+.back-btn{display:inline-flex;align-items:center;gap:6px;color:var(--ac);text-decoration:none;font-weight:600;margin-bottom:20px;transition:all .2s}
+.back-btn:hover{transform:translateX(-4px);color:#e55a00}
+
+@media(max-width:768px){
+.pub-h{padding:0 20px;height:60px}
+.pub-logo{font-size:1.3rem}
+.pub-nav{gap:12px;flex-wrap:wrap}
+.pub-nav a{font-size:.85rem;gap:0}
+.pub-wrap,.pub-wrap-wide{padding:20px}
+.pub-title{font-size:1.8rem}
+}
