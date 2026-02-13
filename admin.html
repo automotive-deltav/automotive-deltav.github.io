@@ -20,16 +20,25 @@ async function loadData(){
 }
 
 function renderData(withAnimation=true){
-  const q=document.getElementById("srch").value.toLowerCase();
-  const status=document.getElementById("statusFilter").value;
+  const srchEl=document.getElementById("srch");
+  const statusEl=document.getElementById("statusFilter");
+  const grid=document.getElementById("cardGrid");
+
+  if(!srchEl || !statusEl || !grid) return;
+
+  const q=srchEl.value.toLowerCase();
+  const status=statusEl.value;
+
   let f=data.filter(r=>Object.values(r).some(v=>String(v||"").toLowerCase().includes(q)));
   if(status)f=f.filter(r=>r.status===status);
-  const grid=document.getElementById("cardGrid");
+
   grid.innerHTML="";
+
   if(!f.length){
     grid.innerHTML='<div style="grid-column:1/-1;padding:60px 20px;text-align:center"><div class="empty"><div class="ei">📅</div><h3>No bookings found</h3><p>Bookings will appear here</p></div></div>';
     return;
   }
+
   f.forEach((r,idx)=>{
     const statusColor=r.status==='confirmed'?'var(--ok)':r.status==='pending'?'var(--wa)':'var(--in)';
     const card=document.createElement("div");
@@ -40,10 +49,21 @@ function renderData(withAnimation=true){
     if(withAnimation){
       card.style.animation=`fadeInUp .3s ease-out ${idx*0.05}s backwards`;
     }
-    card.onmouseover=function(){this.style.transform="translateY(-4px)";this.style.boxShadow="0 8px 24px rgba(0,0,0,.12)";}
-    card.onmouseout=function(){this.style.transform="translateY(0)";this.style.boxShadow="var(--s2)";}
+
+    card.onmouseover=function(){
+      this.style.transform="translateY(-4px)";
+      this.style.boxShadow="0 8px 24px rgba(0,0,0,.12)";
+    };
+    card.onmouseout=function(){
+      this.style.transform="translateY(0)";
+      this.style.boxShadow="var(--s2)";
+    };
+
     card.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:12px">
-      <div style="flex:1"><div style="font-weight:700;color:#1b2b3a">${r.name}</div><div style="font-size:.8rem;color:#94a3b8">${r.email}</div></div>
+      <div style="flex:1">
+        <div style="font-weight:700;color:#1b2b3a">${r.name}</div>
+        <div style="font-size:.8rem;color:#94a3b8">${r.email}</div>
+      </div>
       <span style="display:inline-block;padding:4px 8px;border-radius:4px;font-size:.7rem;font-weight:600;background:${statusColor};color:#fff">${r.status||'pending'}</span>
     </div>
     <div style="margin:12px 0;padding:12px;background:#f8f9fb;border-radius:8px;cursor:pointer;transition:all .2s" onclick="this.parentElement.querySelector('[data-expanded]').click()">
@@ -52,26 +72,39 @@ function renderData(withAnimation=true){
       <div style="font-size:.8rem;color:#94a3b8">${r.car||'Unknown'}</div>
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0;font-size:.85rem">
-      <div><span style="color:#94a3b8">📋 Service</span><div style="font-weight:600;color:#1b2b3a">${r.service||'General'}</div></div>
-      <div><span style="color:#94a3b8">📅 Date</span><div style="font-weight:600;color:#1b2b3a">${r.date}</div></div>
+      <div>
+        <span style="color:#94a3b8">📋 Service</span>
+        <div style="font-weight:600;color:#1b2b3a">${r.service||'General'}</div>
+      </div>
+      <div>
+        <span style="color:#94a3b8">📅 Date</span>
+        <div style="font-weight:600;color:#1b2b3a">${r.date}</div>
+      </div>
     </div>
-    <div style="font-size:.85rem;margin:12px 0"><span style="color:#94a3b8">📞 Contact</span><div style="font-weight:600;color:#1b2b3a">${r.phone||'—'}</div></div>
+    <div style="font-size:.85rem;margin:12px 0">
+      <span style="color:#94a3b8">📞 Contact</span>
+      <div style="font-weight:600;color:#1b2b3a">${r.phone||'—'}</div>
+    </div>
     <div data-expanded="false" style="display:none;padding:12px;margin:12px 0;background:#f8f9fb;border-radius:8px;border-left:3px solid var(--ac);max-height:0;overflow:hidden;transition:all .3s" id="exp-${r.id}">
       <div style="font-weight:600;margin-bottom:8px">📝 Additional Info</div>
       <div style="font-size:.8rem;color:#64748b;line-height:1.6">${r.notes||'No additional notes'}</div>
     </div>
     <div style="display:flex;gap:8px;margin-top:16px">
       <button class="btn btn-primary btn-sm" onclick="viewRow('${r.id}')" style="flex:1">View</button>
-      <button class="btn btn-success btn-sm" onclick="openConfirm('${r.id}','${r.name}')" ${r.status==='confirmed'?'disabled':''}>${r.status==='confirmed'?'✓ Confirmed':'Confirm'}</button>
+      <button class="btn btn-success btn-sm" onclick="openConfirm('${r.id}','${r.name}')" ${r.status==='confirmed'?'disabled':''}>
+        ${r.status==='confirmed'?'✓ Confirmed':'Confirm'}
+      </button>
       <button class="btn btn-info btn-sm" onclick="toggleExpand('exp-${r.id}')" title="More details">▼</button>
       <button class="btn btn-danger btn-sm" onclick="delRow('${r.id}')">🗑️</button>
     </div>`;
+
     grid.appendChild(card);
   });
 }
 
 function toggleExpand(id){
   const el=document.getElementById(id);
+  if(!el) return;
   const expanded=el.getAttribute("data-expanded")==="true";
   if(expanded){
     el.style.display="none";
@@ -95,6 +128,7 @@ function delRow(id){
 function viewRow(id){
   const booking=data.find(x=>x.id===id);
   if(!booking)return;
+
   const html=`<div style="display:grid;gap:16px">
     <div style="background:#f8f9fb;border-radius:8px;padding:16px;border-left:4px solid var(--ac)">
       <div style="font-size:.8rem;color:#94a3b8;margin-bottom:4px">👤 Customer</div>
@@ -117,9 +151,14 @@ function viewRow(id){
     </div>`:''}
     <div style="display:flex;gap:8px;align-items:center;padding:12px;background:linear-gradient(135deg,rgba(255,102,0,.08),rgba(255,102,0,.02));border-radius:8px;border:1px solid rgba(255,102,0,.2)">
       <span style="font-size:1.2rem">📌</span>
-      <span style="font-size:.8rem;color:#64748b"><strong>Status:</strong> <span style="color:${booking.status==='confirmed'?'var(--ok)':booking.status==='completed'?'var(--in)':'var(--wa)'}; font-weight:600">${booking.status||'pending'}</span></span>
+      <span style="font-size:.8rem;color:#64748b"><strong>Status:</strong> 
+        <span style="color:${booking.status==='confirmed'?'var(--ok)':booking.status==='completed'?'var(--in)':'var(--wa)'}; font-weight:600">
+          ${booking.status||'pending'}
+        </span>
+      </span>
     </div>
   </div>`;
+
   document.getElementById("viewContent").innerHTML=html;
   openM("mView");
 }
@@ -139,27 +178,32 @@ async function saveConfirm(){
   const date=document.getElementById("cfmDate").value;
   const time=document.getElementById("cfmTime").value;
   const notes=document.getElementById("cfmNotes").value.trim();
+
   if(!date||!time){
     toast("Date and time are required","er");
     return;
   }
+
   const booking=data.find(x=>x.id===confirmingBookingId);
   if(!booking)return;
+
   await dbUpd("bookings",confirmingBookingId,{
     status:"confirmed",
     date:date,
     slot:time,
     notes:notes||(booking.notes||"")
   });
+
   booking.status="confirmed";
   booking.date=date;
   booking.slot=time;
   booking.notes=notes||(booking.notes||"");
+
   closeM("mConfirm");
   renderData(false);
   toast("Booking confirmed!","in");
 }
 
 loadData();
-setInterval(loadData, 5000);
+setInterval(loadData,5000);
 </script>
