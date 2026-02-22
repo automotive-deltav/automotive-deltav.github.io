@@ -185,11 +185,11 @@ function renderData(){
       <div style="font-weight:600;margin-bottom:8px">📝 Additional Info</div>
       <div style="font-size:.8rem;color:#64748b;line-height:1.6">${r.notes||'No additional notes'}</div>
     </div>
-    <div style="display:flex;gap:8px;margin-top:16px">
-      <button class="btn btn-primary btn-sm" onclick="viewRow('${r.id}')" style="flex:1">View</button>
-      <button class="btn btn-success btn-sm" onclick="openConfirm('${r.id}','${r.name}')" ${r.status==='confirmed'?'disabled':''}>${r.status==='confirmed'?'✓ Confirmed':'Confirm'}</button>
-      <button class="btn btn-info btn-sm" onclick="toggleExpand('exp-${r.id}')" title="More details">▼</button>
-      <button class="btn btn-danger btn-sm" onclick="delRow('${r.id}')">🗑️</button>
+    <div style="display:flex;gap:8px;margin-top:16px;align-items:stretch">
+      <button class="btn btn-primary btn-sm" onclick="viewRow('${r.id}')" style="flex:1.5;min-width:60px">View</button>
+      <button class="btn btn-success btn-sm" onclick="openConfirm('${r.id}','${r.name}')" ${r.status==='confirmed'?'disabled':''} style="flex:1;min-width:70px">${r.status==='confirmed'?'✓ Confirmed':'Confirm'}</button>
+      <button class="btn btn-info btn-sm" onclick="toggleExpand('exp-${r.id}')" title="More details" style="min-width:32px">▼</button>
+      <button class="btn btn-danger btn-sm" onclick="delRow('${r.id}')" style="min-width:32px">🗑️</button>
     </div>`;
     grid.appendChild(card);
   });
