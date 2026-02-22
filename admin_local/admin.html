@@ -238,7 +238,7 @@ function viewRow(id){
       <div style="font-size:.8rem;color:#94a3b8;margin-bottom:8px">📝 Notes</div>
       <div style="font-size:.85rem;color:#64748b;line-height:1.6">${booking.notes}</div>
     </div>`:''}
-    <div style="display:flex;gap:8px;align-items:center;padding:12px;background:linear-gradient(135deg,rgba(255,102,0,.08),rgba(255,102,0,.02));border-radius:8px;border:1px solid rgba(255,102,0,.2)">
+    <div style="display:flex;gap:8px;align-items:center;padding:12px;background:linear-gradient(135deg,rgba(96,165,250,.08),rgba(96,165,250,.02));border-radius:8px;border:1px solid rgba(96,165,250,.2)">
       <span style="font-size:1.2rem">📌</span>
       <span style="font-size:.8rem;color:#64748b"><strong>Status:</strong> <span style="color:${booking.status==='confirmed'?'var(--ok)':booking.status==='completed'?'var(--in)':'var(--wa)'}; font-weight:600">${booking.status||'pending'}</span></span>
     </div>

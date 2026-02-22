@@ -24,10 +24,10 @@ body{background:#0d1823}
 .form-card .fg input::placeholder,.form-card .fg textarea::placeholder{color:rgba(255,255,255,.55)}
 .form-card .fg input:focus,.form-card .fg select:focus,.form-card .fg textarea:focus{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.25);box-shadow:0 0 0 2px rgba(59,130,246,.1)}
 .form-card .fg select option{background:rgba(27,43,58,.95);color:#fff}
-.step-h{color:#fff;font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:2px;margin:24px 0 14px;padding:10px 12px;background:rgba(59,130,246,.2);border-left:4px solid var(--ac);border-radius:6px}
+.step-h{color:#fff;font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:2px;margin:24px 0 14px;padding:10px 12px;background:rgba(96,165,250,.2);border-left:4px solid var(--ac);border-radius:6px}
 .step-h:first-child{margin-top:0}
 .div-sec{height:1px;background:rgba(59,130,246,.15);margin:18px 0}
-.ver-box{display:none;background:rgba(255,102,0,.08);border:1.5px solid rgba(255,102,0,.25);border-radius:11px;padding:16px;margin-top:16px}
+.ver-box{display:none;background:rgba(96,165,250,.08);border:1.5px solid rgba(96,165,250,.25);border-radius:11px;padding:16px;margin-top:16px}
 .ver-box p{color:rgba(255,255,255,.75);font-size:.86rem;margin-bottom:10px}
 .ok-box{display:none;text-align:center;padding:50px 20px}
 .ok-box .ok-ic{font-size:4rem;margin-bottom:14px}
@@ -257,14 +257,14 @@ async function submitBooking(){
       
       // Display the booking card
       const card=document.createElement("div");
-      card.style.cssText="background:rgba(255,255,255,.08);border:1.5px solid rgba(255,102,0,.36);border-radius:12px;padding:22px;margin-top:28px;max-width:500px;margin-left:auto;margin-right:auto;animation:slideUp .4s ease-out";
+      card.style.cssText="background:rgba(255,255,255,.08);border:1.5px solid rgba(96,165,250,.36);border-radius:12px;padding:22px;margin-top:28px;max-width:500px;margin-left:auto;margin-right:auto;animation:slideUp .4s ease-out";
       card.innerHTML=`
         <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:14px">
           <div>
             <div style="font-size:.85rem;color:rgba(255,255,255,.52);margin-bottom:4px">Booking Reference</div>
             <div style="font-family:monospace;font-weight:700;color:#ff6600;font-size:1.2rem">REF-${Date.now().toString().slice(-6)}</div>
           </div>
-          <span style="padding:6px 12px;border-radius:6px;background:rgba(255,102,0,.22);color:#ff9933;font-weight:600;font-size:.78rem">⏳ PENDING</span>
+          <span style="padding:6px 12px;border-radius:6px;background:rgba(96,165,250,.22);color:#3b82f6;font-weight:600;font-size:.78rem">⏳ PENDING</span>
         </div>
         
         <div style="border-top:1px solid rgba(255,255,255,.1);padding-top:14px;padding-bottom:14px;margin-bottom:14px">

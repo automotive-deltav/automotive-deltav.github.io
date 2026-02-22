@@ -129,7 +129,7 @@ async function loadDash(){
     bookings.slice(0,5).forEach((b,i)=>{
       const item=document.createElement('div');
       item.style.cssText='padding:14px;border-bottom:1px solid #f1f3f5;display:flex;justify-content:space-between;align-items:center;cursor:pointer;transition:all .2s;animation:fadeInUp .3s ease-out '+(i*0.05)+'s backwards';
-      item.onmouseover=function(){this.style.backgroundColor='rgba(255,102,0,.05)';this.style.paddingLeft='20px';}
+      item.onmouseover=function(){this.style.backgroundColor='rgba(96,165,250,.05)';this.style.paddingLeft='20px';}
       item.onmouseout=function(){this.style.backgroundColor='';this.style.paddingLeft='14px';}
       item.innerHTML=`<div><strong style="color:var(--dk)">${b.name}</strong><br><small style="color:#94a3b8">${b.reg} • ${b.service||'General'}</small></div>
         <span style="font-size:.8rem;color:#64748b;background:#f8f9fb;padding:4px 8px;border-radius:4px">${b.date}</span>`;
@@ -145,7 +145,7 @@ async function loadDash(){
     tasks.slice(0,5).forEach((t,i)=>{
       const item=document.createElement('div');
       item.style.cssText='padding:14px;border-bottom:1px solid #f1f3f5;cursor:pointer;transition:all .2s;animation:fadeInUp .3s ease-out '+(i*0.05)+'s backwards;border-left:3px solid '+(t.priority==='high'?'var(--er)':'var(--ok)')+';margin-bottom:4px';
-      item.onmouseover=function(){this.style.backgroundColor='rgba(255,102,0,.05)';this.style.paddingLeft='20px';}
+      item.onmouseover=function(){this.style.backgroundColor='rgba(96,165,250,.05)';this.style.paddingLeft='20px';}
       item.onmouseout=function(){this.style.backgroundColor='';this.style.paddingLeft='14px';}
       item.innerHTML=`<strong style="color:var(--dk)">${t.task_name}</strong><br>
         <small style="color:#94a3b8">${t.assigned_to||'Unassigned'} • ${t.due_date||'No deadline'}</small>`;

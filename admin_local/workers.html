@@ -12,7 +12,7 @@
   <div class="topbar"><h1>👷 Workers</h1><div class="tr"><button class="btn btn-primary" onclick="openM('mNewW')">+ Add Worker</button><button class="btn btn-info" onclick="exportWorkers()">📥 Export</button><button class="btn btn-ghost" onclick="loadWorkers()">🔄 Refresh</button></div></div>
   <div class="body">
 <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:20px">
-  <div class="stat-card" style="background:linear-gradient(135deg,rgba(255,102,0,.1),rgba(255,102,0,.05))">
+  <div class="stat-card" style="background:linear-gradient(135deg,rgba(96,165,250,.1),rgba(96,165,250,.05))">
     <div class="stat-label">Total Staff</div>
     <div class="stat-value" id="wTotal">0</div>
   </div>
@@ -154,7 +154,7 @@ function renderWorkers(){
     
     card.innerHTML=`
       <div style="background:linear-gradient(135deg,#1b2b3a,#2e4560);padding:16px;display:flex;align-items:center;gap:12px">
-        <div style="width:48px;height:48px;background:var(--ac);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.8rem;flex-shrink:0;box-shadow:0 4px 12px rgba(255,102,0,.3)">👤</div>
+        <div style="width:48px;height:48px;background:var(--ac);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.8rem;flex-shrink:0;box-shadow:0 4px 12px rgba(96,165,250,.3)">👤</div>
         <div style="flex:1">
           <div style="color:#fff;font-weight:700;font-size:.98em">${w.name}</div>
           <div style="color:rgba(255,255,255,.7);font-size:.8em">${w.role||"—"}</div>
