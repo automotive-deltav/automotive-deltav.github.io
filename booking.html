@@ -200,7 +200,7 @@ async function submitBooking(){
           </div>
           <div>
             <div style="color:rgba(255,255,255,.52);font-size:.8rem;margin-bottom:2px">🔧 Service</div>
-            <div style="color:#fff;font-weight:600">${data.slot.includes('Other')?'Custom Service':data.slot.split('—')[0].trim()}</div>
+            <div style="color:#fff;font-weight:600">${(data.slot&&data.slot.includes('Other'))?'Custom Service':(data.slot||'Not specified').split('—')[0].trim()}</div>
           </div>
         </div>
         <div>
