@@ -130,8 +130,24 @@ CREATE TABLE IF NOT EXISTS contact_messages (
 CREATE INDEX IF NOT EXISTS idx_bookings_date ON bookings(date);
 CREATE INDEX IF NOT EXISTS idx_invoices_date ON invoices(invoice_date);
 CREATE INDEX IF NOT EXISTS idx_inventory_code ON inventory(item_code);
-CREATE INDEX IF NOT EXISTS idx_inventory_vin ON inventory(vin_number);
 CREATE INDEX IF NOT EXISTS idx_inventory_reg ON inventory(car_reg);
 CREATE INDEX IF NOT EXISTS idx_payments_invoice ON payments(invoice_id);
+
+-- Add missing columns to inventory if they don't exist
+ALTER TABLE inventory ADD COLUMN IF NOT EXISTS serial_number TEXT;
+ALTER TABLE inventory ADD COLUMN IF NOT EXISTS car_reg TEXT;
+ALTER TABLE inventory ADD COLUMN IF NOT EXISTS vin_number TEXT;
+ALTER TABLE inventory ADD COLUMN IF NOT EXISTS item_code TEXT;
+ALTER TABLE inventory ADD COLUMN IF NOT EXISTS item_name TEXT;
+ALTER TABLE inventory ADD COLUMN IF NOT EXISTS description TEXT;
+ALTER TABLE inventory ADD COLUMN IF NOT EXISTS unit_price NUMERIC(12,2) DEFAULT 0;
+ALTER TABLE inventory ADD COLUMN IF NOT EXISTS cost NUMERIC(12,2) DEFAULT 0;
+ALTER TABLE inventory ADD COLUMN IF NOT EXISTS status TEXT DEFAULT 'active';
+ALTER TABLE inventory ADD COLUMN IF NOT EXISTS purchase_date DATE;
+ALTER TABLE inventory ADD COLUMN IF NOT EXISTS supplier TEXT;
+ALTER TABLE inventory ADD COLUMN IF NOT EXISTS quantity INTEGER DEFAULT 0;
+
+-- Now create the indexes after columns exist
+CREATE INDEX IF NOT EXISTS idx_inventory_vin ON inventory(vin_number);
 
 COMMIT;
