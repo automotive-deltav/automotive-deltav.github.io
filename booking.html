@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Book a car service at DeltaV Automotive. Easy online booking for repairs, servicing, MOT, and diagnostics in Smethwick, West Midlands.">
+<meta name="keywords" content="book car service, online booking, car repair appointment, Smethwick automotive">
+<meta property="og:title" content="Book a Service — DeltaV Automotive">
+<meta property="og:description" content="Book your car service or repair online at DeltaV Automotive in Smethwick.">
+<meta property="og:url" content="https://deltavautomotive.com/booking.html">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+<link rel="canonical" href="https://deltavautomotive.com/booking.html">
+<link rel="sitemap" href="https://deltavautomotive.com/sitemap.xml">
+<title>Book a Service — DeltaV Automotive | Online Appointment</title>
+<link rel="stylesheet" href="theme.css">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"LocalBusiness","name":"DeltaV Automotive","offers":{"@type":"Offer","url":"https://deltavautomotive.com/booking.html","priceCurrency":"GBP"}}</script>
+<style>
+body{background:#0d1823}
+.form-card{background:linear-gradient(135deg,rgba(59,130,246,.12),rgba(59,130,246,.06));border:2px solid rgba(59,130,246,.3);border-radius:16px;padding:28px;box-shadow:0 14px 40px rgba(0,0,0,.3)}
+.form-card .fg{background:transparent !important;border:none !important;box-shadow:none !important;padding:0 !important;margin-bottom:16px}
+.form-card .fg label{color:#fff;font-weight:600;font-size:.85rem;margin-bottom:8px}
+.form-card .fg input,.form-card .fg select,.form-card .fg textarea{background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.15);color:#fff;font-weight:500;padding:10px 12px;font-size:.9rem;width:100%}
+.form-card .fg input::placeholder,.form-card .fg textarea::placeholder{color:rgba(255,255,255,.55)}
+.form-card .fg input:focus,.form-card .fg select:focus,.form-card .fg textarea:focus{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.25);box-shadow:0 0 0 2px rgba(59,130,246,.1)}
+.form-card .fg select option{background:rgba(27,43,58,.95);color:#fff}
+.step-h{color:#fff;font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:2px;margin:24px 0 14px;padding:10px 12px;background:rgba(96,165,250,.2);border-left:4px solid var(--ac);border-radius:6px}
+.step-h:first-child{margin-top:0}
+.div-sec{height:1px;background:rgba(59,130,246,.15);margin:18px 0}
+.ver-box{display:none;background:rgba(96,165,250,.08);border:1.5px solid rgba(96,165,250,.25);border-radius:11px;padding:16px;margin-top:16px}
+.ver-box p{color:rgba(255,255,255,.75);font-size:.86rem;margin-bottom:10px}
+.ok-box{display:none;text-align:center;padding:50px 20px}
+.ok-box .ok-ic{font-size:4rem;margin-bottom:14px}
+.ok-box h2{color:#fff;font-size:1.8rem;margin-bottom:8px;font-family:"Barlow Condensed",sans-serif;font-weight:800}
+.ok-box p{color:rgba(255,255,255,.72);margin-bottom:24px}
+@media(max-width:768px){.pub-h{padding:0 20px;height:60px}.pub-nav{display:none}.pub-wrap{padding:80px 16px 40px}.g2,.g3{grid-template-columns:1fr!important}.form-card{padding:16px}}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+</head>
+<body>
+<header class="pub-h">
+  <a href="index.html" class="pub-logo">DeltaV <span>Auto</span></a>
+  <nav class="pub-nav">
+    <a href="services.html">Services</a>
+    <a href="about.html">About</a>
+    <a href="gallery.html">Gallery</a>
+    <a href="faq.html">FAQ</a>
+    <a href="contact.html">Contact</a>
+    <a href="booking.html" class="cta">📅 Book Now</a>
+  </nav>
+</header>
+
+<div class="pub-wrap">
+  <a href="index.html" class="back-btn">← Back to Home</a>
+  <div class="pub-title">📅 Book a Service</div>
+  <div class="pub-sub">Fill in your details and we'll confirm your appointment.</div>
+
+  <div class="form-card" id="bookForm">
+    <div class="step-h">👤 Step 1: Your Details</div>
+    <div class="g2">
+      <div class="fg"><label>Full Name *</label><input type="text" id="bName" placeholder="John Smith" required></div>
+      <div class="fg"><label>Phone Number *</label><input type="tel" id="bPhone" placeholder="07700 900000" required></div>
+    </div>
+    <div class="fg"><label>Email Address *</label><input type="email" id="bEmail" placeholder="john@example.com" required></div>
+    <div class="div-sec"></div>
+    <div class="step-h">🚗 Step 2: Your Vehicle</div>
+    <div class="g3">
+      <div class="fg"><label>Registration *</label><input type="text" id="bReg" placeholder="AB12 CDE" style="text-transform:uppercase" required></div>
+      <div class="fg"><label>Make & Model</label><input type="text" id="bCar" placeholder="Ford Focus"></div>
+      <div class="fg"><label>Year</label><input type="number" id="bYear" placeholder="2018" min="1990" max="2026"></div>
+    </div>
+    <div class="div-sec"></div>
+    <div class="step-h">🔧 Step 3: Service & Date</div>
+    <div class="g2">
+      <div class="fg"><label>Service Required *</label>
+        <select id="bService" required>
+          <option value="">— Select service —</option>
+          <option>General Service / Oil Change</option>
+          <option>Brake Inspection & Repair</option>
+          <option>Engine Diagnostics</option>
+          <option>Bodywork Repair</option>
+          <option>Electrical / Battery</option>
+          <option>Air Conditioning Service</option>
+          <option>Tyre Fitting & Balancing</option>
+          <option>Exhaust Repair</option>
+          <option>Suspension Check</option>
+          <option>Wheel Alignment</option>
+          <option>Clutch Replacement</option>
+          <option>Full Annual Service</option>
+          <option>Pre-Purchase Inspection</option>
+          <option>Other — Describe below</option>
+        </select>
+      </div>
+      <div class="fg"><label>Preferred Date *</label><input type="date" id="bDate" required></div>
+    </div>
+    <div class="fg"><label>Additional Notes</label><textarea id="bNotes" placeholder="Describe the issue or any extra details..."></textarea></div>
+    <button class="btn btn-primary btn-lg btn-fw" onclick="sendVer()">Send Verification Code →</button>
+    <div class="ver-box" id="verBox">
+      <p>📧 A 6-digit code has been sent to <strong id="sentTo"></strong>. Check your inbox (and spam/junk folder).</p>
+      <div class="g2">
+        <div class="fg"><label>Enter 6-Digit Code</label><input type="text" id="bCode" placeholder="123456" maxlength="6" style="font-size:1.4rem;letter-spacing:6px;text-align:center"></div>
+        <div style="display:flex;align-items:flex-end;padding-bottom:14px">
+          <button class="btn btn-success btn-lg btn-fw" onclick="submitBooking()">✅ Confirm Booking</button>
+        </div>
+      </div>
+      <p id="cErr" style="color:#ff6b6b;font-size:.82rem;display:none;margin-top:8px">❌ Incorrect code. Please try again.</p>
+      <p style="margin-top:10px;font-size:.8rem"><a href="#" onclick="sendVer();return false" style="color:rgba(255,255,255,.5);text-decoration:underline">Didn't receive? Resend code</a></p>
+    </div>
+  </div>
+
+  <div class="ok-box" id="okBox">
+    <div class="ok-ic">🎉</div>
+    <h2>Booking Submitted!</h2>
+    <p>We've received your booking. We'll confirm your appointment by email shortly.</p>
+    <div id="bookingCardContainer"></div>
+    <div style="display:flex;gap:11px;justify-content:center;flex-wrap:wrap;margin-top:28px">
+      <a href="index.html" class="btn btn-primary btn-lg">← Back to Home</a>
+      <a href="services.html" class="btn btn-lg" style="background:rgba(255,255,255,.08);color:#fff;border:1.5px solid rgba(255,255,255,.15)">Our Services</a>
+    </div>
+  </div>
+</div>
+
+<script>
+const SB="https://cxzapvieqzqfxzolqwoh.supabase.co";
+const KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN4emFwdmllcXpxZnh6b2xxd29oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA1NjU4MzgsImV4cCI6MjA4NjE0MTgzOH0.x_F07XpdThY6EqwaP8jJGgdBIMTHdYfTr99IMOpSq_E";
+let vCode="";
+
+const tomorrow=new Date();tomorrow.setDate(tomorrow.getDate()+1);
+document.getElementById("bDate").min=tomorrow.toISOString().split("T")[0];
+
+// Initialize EmailJS - REPLACE WITH YOUR KEY
+emailjs.init("R2O3dhHwzD8kLNqo3");
+
+function validate(){
+  const ids=["bName","bPhone","bEmail","bReg","bDate","bService"];
+  let ok=true;
+  ids.forEach(id=>{
+    const el=document.getElementById(id);
+    if(!el.value.trim()){el.style.borderColor="red";ok=false;}
+    else el.style.borderColor="";
+  });
+  if(!ok){
+    // Show error at top
+    let errEl=document.getElementById("bErr");
+    if(!errEl){
+      errEl=document.createElement("div");
+      errEl.id="bErr";
+      errEl.style.cssText="background:rgba(255,107,107,.15);border:1.5px solid rgba(255,107,107,.35);color:#ff6b6b;padding:12px 14px;border-radius:8px;margin-bottom:14px;font-weight:600";
+      document.getElementById("bookForm").insertBefore(errEl, document.getElementById("bookForm").firstChild);
+    }
+    errEl.textContent="❌ Please fill in all required fields";
+    errEl.style.display="block";
+  }else{
+    const errEl=document.getElementById("bErr");
+    if(errEl) errEl.style.display="none";
+  }
+  return ok;
+}
+
+function sendVer(){
+  if(!validate())return;
+  
+  vCode=Math.floor(100000+Math.random()*900000).toString();
+  const em=document.getElementById("bEmail").value.trim();
+  const nm=document.getElementById("bName").value.trim();
+  
+  console.log("Sending code:",vCode,"to",em);
+  
+  // Show loading state
+  const btn=event.target;
+  const origText=btn.textContent;
+  btn.disabled=true;
+  btn.textContent="📧 Sending...";
+  
+  // CRITICAL: EmailJS template variables MUST EXACTLY match
+  emailjs.send("service_hi4mpao","template_aj5l14u",{
+    to_name: nm,
+    to_email: em,
+    verification_code: vCode,
+    code: vCode,
+    message: "Your DeltaV booking verification code is: " + vCode
+  }).then(()=>{
+    console.log("Email sent successfully! Code is:",vCode);
+    document.getElementById("sentTo").textContent=em;
+    document.getElementById("verBox").style.display="block";
+    document.getElementById("cErr").style.display="none";
+    document.getElementById("cErr").textContent="";
+    btn.disabled=false;
+    btn.textContent=origText;
+    document.getElementById("verBox").scrollIntoView({behavior:"smooth"});
+  }).catch(e=>{
+    console.error("EmailJS error:",e);
+    btn.disabled=false;
+    btn.textContent=origText;
+    const errMsg="Email failed to send. Ensure EmailJS is configured correctly. Error: "+(e.message||e);
+    alert(errMsg);
+    document.getElementById("cErr").style.display="block";
+    document.getElementById("cErr").textContent="❌ "+errMsg;
+  });
+}
+
+async function submitBooking(){
+  const entered=document.getElementById("bCode").value.trim();
+  if(entered!==vCode){
+    document.getElementById("cErr").style.display="block";
+    document.getElementById("cErr").textContent="❌ Incorrect code. Please try again.";
+    document.getElementById("bCode").style.borderColor="red";
+    return;
+  }
+  
+  const data={
+    name:document.getElementById("bName").value.trim(),
+    phone:document.getElementById("bPhone").value.trim(),
+    email:document.getElementById("bEmail").value.trim(),
+    reg:document.getElementById("bReg").value.toUpperCase().trim(),
+    car:document.getElementById("bCar").value.trim(),
+    year:document.getElementById("bYear").value||null,
+    service:document.getElementById("bService").value,
+    date:document.getElementById("bDate").value,
+    notes:document.getElementById("bNotes").value.trim(),
+    status:"pending",
+    viewed:false,
+    created_at:new Date().toISOString()
+  };
+  
+  const btn=event.target;
+  const origText=btn.textContent;
+  btn.disabled=true;
+  btn.textContent="⏳ Processing...";
+  
+  try{
+    const r=await fetch(`${SB}/rest/v1/bookings`,{
+      method:"POST",
+      headers:{
+        "apikey":KEY,
+        "Authorization":`Bearer ${KEY}`,
+        "Content-Type":"application/json",
+        "Prefer":"return=minimal"
+      },
+      body:JSON.stringify(data)
+    });
+    
+    if(r.ok){
+      // Send confirmation email
+      try{
+        await emailjs.send("service_hi4mpao","template_aj5l14u",{
+          to_email:data.email,
+          to_name:data.name,
+          message:"Your booking has been confirmed. Registration: "+data.reg+", Date: "+data.date
+        });
+      }catch(emailErr){
+        console.warn("Confirmation email failed but booking was saved:",emailErr);
+      }
+      
+      document.getElementById("bookForm").style.display="none";
+      document.getElementById("okBox").style.display="block";
+      
+      // Display the booking card
+      const card=document.createElement("div");
+      card.style.cssText="background:rgba(255,255,255,.08);border:1.5px solid rgba(96,165,250,.36);border-radius:12px;padding:22px;margin-top:28px;max-width:500px;margin-left:auto;margin-right:auto;animation:slideUp .4s ease-out";
+      card.innerHTML=`
+        <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:14px">
+          <div>
+            <div style="font-size:.85rem;color:rgba(255,255,255,.52);margin-bottom:4px">Booking Reference</div>
+            <div style="font-family:monospace;font-weight:700;color:#ff6600;font-size:1.2rem">REF-${Date.now().toString().slice(-6)}</div>
+          </div>
+          <span style="padding:6px 12px;border-radius:6px;background:rgba(96,165,250,.22);color:#3b82f6;font-weight:600;font-size:.78rem">⏳ PENDING</span>
+        </div>
+        
+        <div style="border-top:1px solid rgba(255,255,255,.1);padding-top:14px;padding-bottom:14px;margin-bottom:14px">
+          <div style="color:rgba(255,255,255,.52);font-size:.8rem;margin-bottom:2px">📅 Date</div>
+          <div style="color:#fff;font-weight:600">${data.date}</div>
+        </div>
+        
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid rgba(255,255,255,.1)">
+          <div>
+            <div style="color:rgba(255,255,255,.52);font-size:.8rem;margin-bottom:2px">🚗 Vehicle</div>
+            <div style="color:#fff;font-weight:600">${data.reg}</div>
+            <div style="color:rgba(255,255,255,.42);font-size:.75rem;margin-top:2px">${data.car||'Unknown'}</div>
+          </div>
+          <div>
+            <div style="color:rgba(255,255,255,.52);font-size:.8rem;margin-bottom:2px">🔧 Service</div>
+            <div style="color:#fff;font-weight:600">
+              ${data.service.includes('Other')?'Custom Service':data.service.split('—')[0].trim()}
+            </div>
+          </div>
+        </div>
+        
+        <div>
+          <div style="color:rgba(255,255,255,.52);font-size:.8rem;margin-bottom:4px">👤 Contact</div>
+          <div style="color:#fff;font-weight:600">${data.name}</div>
+          <div style="color:rgba(255,255,255,.52);font-size:.85rem;margin-top:2px">${data.email}</div>
+        </div>
+      `;
+      document.getElementById("bookingCardContainer").appendChild(card);
+    }else{
+      const errText=await r.text().catch(()=>"Unknown error");
+      throw new Error("Database error: "+errText);
+    }
+  }catch(e){
+    console.error("Booking error:",e);
+    btn.disabled=false;
+    btn.textContent=origText;
+    document.getElementById("cErr").style.display="block";
+    document.getElementById("cErr").textContent="❌ Error saving booking: "+e.message;
+  }
+}
+</script>
+</body>
+</html>
