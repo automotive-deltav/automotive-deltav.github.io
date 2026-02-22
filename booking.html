@@ -93,24 +93,14 @@ body{background:#0d1823}
       <div class="fg"><label>Preferred Date *</label><input type="date" id="bDate" required></div>
     </div>
     <div class="fg"><label>Additional Notes</label><textarea id="bNotes" placeholder="Describe the issue or any extra details..."></textarea></div>
-    <button class="btn btn-primary btn-lg btn-fw" onclick="sendVer()">Send Verification Code →</button>
-    <div class="ver-box" id="verBox">
-      <p>📧 A 6-digit code has been sent to <strong id="sentTo"></strong>. Check your inbox (and spam/junk folder).</p>
-      <div class="g2">
-        <div class="fg"><label>Enter 6-Digit Code</label><input type="text" id="bCode" placeholder="123456" maxlength="6" style="font-size:1.4rem;letter-spacing:6px;text-align:center"></div>
-        <div style="display:flex;align-items:flex-end;padding-bottom:14px">
-          <button class="btn btn-success btn-lg btn-fw" onclick="submitBooking()">✅ Confirm Booking</button>
-        </div>
-      </div>
-      <p id="cErr" style="color:#ff6b6b;font-size:.82rem;display:none;margin-top:8px">❌ Incorrect code. Please try again.</p>
-      <p style="margin-top:10px;font-size:.8rem"><a href="#" onclick="sendVer();return false" style="color:rgba(255,255,255,.5);text-decoration:underline">Didn't receive? Resend code</a></p>
-    </div>
+    <button class="btn btn-primary btn-lg btn-fw" onclick="submitBooking()">✅ Submit Booking →</button>
+    <div id="bErr" style="display:none;background:rgba(255,107,107,.15);border:1.5px solid rgba(255,107,107,.35);color:#ff6b6b;padding:12px 14px;border-radius:8px;margin-top:14px;font-weight:600"></div>
   </div>
 
   <div class="ok-box" id="okBox">
     <div class="ok-ic">🎉</div>
     <h2>Booking Submitted!</h2>
-    <p>We've received your booking. We'll confirm your appointment by email shortly.</p>
+    <p>We've received your booking. A confirmation email has been sent to <strong id="confEmail"></strong>.</p>
     <div id="bookingCardContainer"></div>
     <div style="display:flex;gap:11px;justify-content:center;flex-wrap:wrap;margin-top:28px">
       <a href="index.html" class="btn btn-primary btn-lg">← Back to Home</a>
@@ -162,64 +152,10 @@ function sendVer(){
   
   console.log("Sending code:",vCode,"to",em);
   
-  // Show loading state
-  const btn=event.target;
-  const origText=btn.textContent;
-  btn.disabled=true;
-  btn.textContent="📧 Sending...";
-  
-  // Send via Supabase Function (Brevo)
-  fetch(`${SB}/functions/v1/brevo-send-email`,{
-    method:"POST",
-    headers:{
-      "Content-Type":"application/json",
-      "Authorization":`Bearer ${KEY}`
-    },
-    body:JSON.stringify({
-      to_email:em,
-      to_name:nm,
-      verificationCode:vCode,
-      subject:"DeltaV Booking - Verification Code"
-    })
-  }).then(async r=>{
-    const data=await r.json();
-    if(!r.ok){
-      console.error("Function returned error:",r.status,data);
-      throw new Error(`Server error: ${data.error||r.statusText}`);
-    }
-    return data;
-  }).then(data=>{
-    if(data.success || data.messageId){
-      console.log("Email sent successfully! Code is:",vCode);
-      document.getElementById("sentTo").textContent=em;
-      document.getElementById("verBox").style.display="block";
-      document.getElementById("cErr").style.display="none";
-      document.getElementById("cErr").textContent="";
-      btn.disabled=false;
-      btn.textContent=origText;
-      document.getElementById("verBox").scrollIntoView({behavior:"smooth"});
-    }else{
-      throw new Error(data.error||"Unknown error");
-    }
-  }).catch(e=>{
-    console.error("Email error:",e);
-    btn.disabled=false;
-    btn.textContent=origText;
-    const errMsg="Email failed: "+(e.message||String(e));
-    alert(errMsg);
-    document.getElementById("cErr").style.display="block";
-    document.getElementById("cErr").textContent="❌ "+errMsg;
-  });
-}
+function sendVer(){} // Removed - no longer needed
 
 async function submitBooking(){
-  const entered=document.getElementById("bCode").value.trim();
-  if(entered!==vCode){
-    document.getElementById("cErr").style.display="block";
-    document.getElementById("cErr").textContent="❌ Incorrect code. Please try again.";
-    document.getElementById("bCode").style.borderColor="red";
-    return;
-  }
+  if(!validate())return;
   
   const data={
     name:document.getElementById("bName").value.trim(),
@@ -239,7 +175,7 @@ async function submitBooking(){
   const btn=event.target;
   const origText=btn.textContent;
   btn.disabled=true;
-  btn.textContent="⏳ Processing...";
+  btn.textContent="⏳ Submitting...";
   
   try{
     const r=await fetch(`${SB}/rest/v1/bookings`,{
@@ -254,62 +190,25 @@ async function submitBooking(){
     });
     
     if(r.ok){
-      // Send confirmation email
-      try{
-        await fetch(`${SB}/functions/v1/brevo-send-email`,{
-          method:"POST",
-          headers:{
-            "Content-Type":"application/json",
-            "Authorization":`Bearer ${KEY}`
-          },
-          body:JSON.stringify({
-            to_email:data.email,
-            to_name:data.name,
-            subject:"📅 Booking Confirmed — DeltaV Automotive",
-            htmlContent:`
-              <html>
-                <body style="font-family:Arial,sans-serif;color:#333;">
-                  <h2>Booking Confirmed!</h2>
-                  <p>Hi ${data.name},</p>
-                  <p>Your booking has been confirmed with the following details:</p>
-                  <div style="background:#f5f5f5;padding:16px;border-radius:8px;margin:20px 0;">
-                    <p><strong>Vehicle:</strong> ${data.reg} ${data.car?'('+data.car+')':''}</p>
-                    <p><strong>Service:</strong> ${data.service}</p>
-                    <p><strong>Date:</strong> ${data.date}</p>
-                    <p><strong>Reference:</strong> REF-${Date.now().toString().slice(-6)}</p>
-                  </div>
-                  <p>We'll call you on <strong>${data.phone}</strong> to confirm the exact time.</p>
-                  <p>Thanks for choosing DeltaV Automotive!</p>
-                  <p style="color:#999;font-size:0.9em;">DeltaV Automotive | Smethwick, West Midlands</p>
-                </body>
-              </html>
-            `
-          })
-        });
-      }catch(emailErr){
-        console.warn("Confirmation email failed but booking was saved:",emailErr);
-      }
-      
       document.getElementById("bookForm").style.display="none";
       document.getElementById("okBox").style.display="block";
+      document.getElementById("confEmail").textContent=data.email;
       
       // Display the booking card
       const card=document.createElement("div");
-      card.style.cssText="background:rgba(255,255,255,.08);border:1.5px solid rgba(96,165,250,.36);border-radius:12px;padding:22px;margin-top:28px;max-width:500px;margin-left:auto;margin-right:auto;animation:slideUp .4s ease-out";
+      card.style.cssText="background:rgba(255,255,255,.08);border:1.5px solid rgba(96,165,250,.36);border-radius:12px;padding:22px;margin-top:28px;max-width:500px;margin-left:auto;margin-right:auto";
       card.innerHTML=`
         <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:14px">
           <div>
             <div style="font-size:.85rem;color:rgba(255,255,255,.52);margin-bottom:4px">Booking Reference</div>
-            <div style="font-family:monospace;font-weight:700;color:#ff6600;font-size:1.2rem">REF-${Date.now().toString().slice(-6)}</div>
+            <div style="font-family:monospace;font-weight:700;color:#60a5fa;font-size:1.2rem">REF-${Date.now().toString().slice(-6)}</div>
           </div>
           <span style="padding:6px 12px;border-radius:6px;background:rgba(96,165,250,.22);color:#3b82f6;font-weight:600;font-size:.78rem">⏳ PENDING</span>
         </div>
-        
         <div style="border-top:1px solid rgba(255,255,255,.1);padding-top:14px;padding-bottom:14px;margin-bottom:14px">
           <div style="color:rgba(255,255,255,.52);font-size:.8rem;margin-bottom:2px">📅 Date</div>
           <div style="color:#fff;font-weight:600">${data.date}</div>
         </div>
-        
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid rgba(255,255,255,.1)">
           <div>
             <div style="color:rgba(255,255,255,.52);font-size:.8rem;margin-bottom:2px">🚗 Vehicle</div>
@@ -318,12 +217,9 @@ async function submitBooking(){
           </div>
           <div>
             <div style="color:rgba(255,255,255,.52);font-size:.8rem;margin-bottom:2px">🔧 Service</div>
-            <div style="color:#fff;font-weight:600">
-              ${data.service.includes('Other')?'Custom Service':data.service.split('—')[0].trim()}
-            </div>
+            <div style="color:#fff;font-weight:600">${data.service.includes('Other')?'Custom Service':data.service.split('—')[0].trim()}</div>
           </div>
         </div>
-        
         <div>
           <div style="color:rgba(255,255,255,.52);font-size:.8rem;margin-bottom:4px">👤 Contact</div>
           <div style="color:#fff;font-weight:600">${data.name}</div>
@@ -339,8 +235,9 @@ async function submitBooking(){
     console.error("Booking error:",e);
     btn.disabled=false;
     btn.textContent=origText;
-    document.getElementById("cErr").style.display="block";
-    document.getElementById("cErr").textContent="❌ Error saving booking: "+e.message;
+    const errEl=document.getElementById("bErr");
+    errEl.style.display="block";
+    errEl.textContent="❌ Error saving booking: "+e.message;
   }
 }
 </script>
