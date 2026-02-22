@@ -64,10 +64,13 @@ async function loadC(){
   cData=Object.values(mp);
   
   // Update stat cards
-  document.getElementById("statCustCount").textContent=cData.length;
+  const el1=document.getElementById("statCustCount");
+  if(el1) el1.textContent=cData.length;
   animateStat("statVehicles",cData.reduce((s,c)=>s+c.regs.length,0));
-  document.getElementById("statRevenue").textContent=fmtGBP(totalSpent);
-  document.getElementById("statActiveBookings").textContent=activeBookings;
+  const el2=document.getElementById("statRevenue");
+  if(el2) el2.textContent=fmtGBP(totalSpent);
+  const el3=document.getElementById("statActiveBookings");
+  if(el3) el3.textContent=activeBookings;
   
   renderC();
 }

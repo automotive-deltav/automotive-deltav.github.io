@@ -102,6 +102,7 @@ async function deleteRow(id){
     showToast("Deleted successfully!","success");
   }catch(e){showError("Failed to delete: "+e.message);}
 }
-loadData();
+async function initExpenseAC(){const categories=[...new Set(data.map(r=>r.category).filter(Boolean))];const suppliers=[...new Set(data.map(r=>r.supplier).filter(Boolean))];attachAC(document.getElementById("inp3"),categories);attachAC(document.getElementById("inp4"),suppliers);}
+loadData();initExpenseAC();
 </script>
 </body></html>

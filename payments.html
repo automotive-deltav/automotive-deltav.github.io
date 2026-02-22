@@ -77,10 +77,14 @@ function updateStats(){
   const mo=payData.filter(p=>(p.payment_date||"").startsWith(mn)).reduce((s,p)=>s+(p.amount||0),0);
   const card=payData.filter(p=>p.method==="Card").reduce((s,p)=>s+(p.amount||0),0);
   const cash=payData.filter(p=>p.method==="Cash").reduce((s,p)=>s+(p.amount||0),0);
-  document.getElementById("pTot").textContent=fmtGBP(tot);
-  document.getElementById("pMo").textContent=fmtGBP(mo);
-  document.getElementById("pCard").textContent=fmtGBP(card);
-  document.getElementById("pCash").textContent=fmtGBP(cash);
+  const el1=document.getElementById("pTot");
+  if(el1) el1.textContent=fmtGBP(tot);
+  const el2=document.getElementById("pMo");
+  if(el2) el2.textContent=fmtGBP(mo);
+  const el3=document.getElementById("pCard");
+  if(el3) el3.textContent=fmtGBP(card);
+  const el4=document.getElementById("pCash");
+  if(el4) el4.textContent=fmtGBP(cash);
 }
 function renderPay(){
   const q=document.getElementById("psrch").value.toLowerCase();

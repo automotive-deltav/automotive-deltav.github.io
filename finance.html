@@ -92,12 +92,19 @@ function updateFinStats(){
   const parts=finData.filter(t=>t.category==="Parts Purchase").reduce((s,t)=>s+(t.amount||0),0);
   const staff=finData.filter(t=>t.category==="Staff Wages").reduce((s,t)=>s+(t.amount||0),0);
   const mo=finData.filter(t=>(t.tx_date||"").startsWith(mn)).reduce((s,t)=>t.type==="income"?s+(t.amount||0):s-(t.amount||0),0);
-  document.getElementById("fIn").textContent=fmtGBP(inc);
-  document.getElementById("fOut").textContent=fmtGBP(exp);
-  const net=inc-exp;document.getElementById("fNet").textContent=fmtGBP(net);document.getElementById("fNet").style.color=net>=0?"var(--ok)":"var(--er)";
-  document.getElementById("fParts").textContent=fmtGBP(parts);
-  document.getElementById("fStaff").textContent=fmtGBP(staff);
-  document.getElementById("fMo").textContent=fmtGBP(mo);document.getElementById("fMo").style.color=mo>=0?"var(--ok)":"var(--er)";
+  const el1=document.getElementById("fIn");
+  if(el1) el1.textContent=fmtGBP(inc);
+  const el2=document.getElementById("fOut");
+  if(el2) el2.textContent=fmtGBP(exp);
+  const net=inc-exp;
+  const el3=document.getElementById("fNet");
+  if(el3) {el3.textContent=fmtGBP(net);el3.style.color=net>=0?"var(--ok)":"var(--er)";}
+  const el4=document.getElementById("fParts");
+  if(el4) el4.textContent=fmtGBP(parts);
+  const el5=document.getElementById("fStaff");
+  if(el5) el5.textContent=fmtGBP(staff);
+  const el6=document.getElementById("fMo");
+  if(el6) {el6.textContent=fmtGBP(mo);el6.style.color=mo>=0?"var(--ok)":"var(--er)";}
 }
 function renderFin(){
   const q=document.getElementById("fsrch").value.toLowerCase();

@@ -125,8 +125,8 @@ function updateWStats(){
   
   animateStat("wTotal",wData.length);
   animateStat("wActive",active);
-  payEl.textContent=fmtGBP(pay);
-  hrsEl.textContent=hours+"h";
+  if(payEl) payEl.textContent=fmtGBP(pay);
+  if(hrsEl) hrsEl.textContent=hours+"h";
 }
 
 function renderWorkers(){

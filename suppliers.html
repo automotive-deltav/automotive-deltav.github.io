@@ -240,7 +240,7 @@ function showError(msg){
 function showToast(msg,type){
   toast(msg,type==="success"?"ok":type);
 }
-
-loadData();
+async function initSupplierAC(){const categories=[...new Set(data.map(r=>r.category).filter(Boolean))];attachAC(document.getElementById("inp4"),categories);}
+loadData();initSupplierAC();
 </script>
 </body></html>

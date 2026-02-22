@@ -143,7 +143,8 @@ function updateStats(){
   
   // Today's appointments
   const todayAppts=bookings.filter(b=>(b.confirmed_date||b.date)===todayStr).length;
-  document.getElementById("statToday").textContent=todayAppts;
+  const el1=document.getElementById("statToday");
+  if(el1) el1.textContent=todayAppts;
   
   // This week's appointments
   const weekStart=new Date(today);
@@ -156,13 +157,16 @@ function updateStats(){
     const apptDate=b.confirmed_date||b.date;
     return apptDate>=formatDate(weekStart)&&apptDate<=formatDate(weekEnd);
   }).length;
-  document.getElementById("statWeek").textContent=weekAppts;
+  const el2=document.getElementById("statWeek");
+  if(el2) el2.textContent=weekAppts;
   
   // Confirmed and pending
   const confirmed=bookings.filter(b=>b.status==="confirmed").length;
   const pending=bookings.filter(b=>b.status!=="confirmed").length;
-  document.getElementById("statConfirmed").textContent=confirmed;
-  document.getElementById("statPending").textContent=pending;
+  const el3=document.getElementById("statConfirmed");
+  if(el3) el3.textContent=confirmed;
+  const el4=document.getElementById("statPending");
+  if(el4) el4.textContent=pending;
 }
 
 function renderUpcoming(){

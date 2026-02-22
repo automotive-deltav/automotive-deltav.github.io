@@ -79,11 +79,15 @@ function renderInv(){
   const list=document.getElementById("invList");list.innerHTML="";
   if(!f.length){list.innerHTML=`<div style="padding:60px 20px;text-align:center"><div class="empty"><div class="ei">💰</div><p>No invoices found</p></div></div>`;return;}
   // Update stats
-  document.getElementById("statTotal").textContent=invData.length;
+  const el1=document.getElementById("statTotal");
+  if(el1) el1.textContent=invData.length;
   const rev=invData.filter(i=>i.payment_status==="paid").reduce((s,i)=>s+(i.total_amount||0),0);
-  document.getElementById("statRev").textContent="£"+rev.toFixed(0);
-  document.getElementById("statUnp").textContent=invData.filter(i=>i.payment_status==="unpaid").length;
-  document.getElementById("statPaid").textContent=invData.filter(i=>i.payment_status==="paid").length;
+  const el2=document.getElementById("statRev");
+  if(el2) el2.textContent="£"+rev.toFixed(0);
+  const el3=document.getElementById("statUnp");
+  if(el3) el3.textContent=invData.filter(i=>i.payment_status==="unpaid").length;
+  const el4=document.getElementById("statPaid");
+  if(el4) el4.textContent=invData.filter(i=>i.payment_status==="paid").length;
   f.forEach(inv=>{
     const num="INV-"+String(inv.id||"0000").slice(-4).padStart(4,"0");
     const pc=(inv.parts||[]).length;

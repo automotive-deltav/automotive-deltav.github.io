@@ -68,10 +68,14 @@ async function loadInvt(){
   const damaged=invtData.filter(i=>i.status==="damaged"||i.status==="sold").length;
   const totalValue=invtData.reduce((s,i)=>s+(i.cost||0),0);
   
-  document.getElementById("statInStock").textContent=inStock;
-  document.getElementById("statTotalItems").textContent=invtData.length;
-  document.getElementById("statStockValue").textContent=fmtGBP(totalValue);
-  document.getElementById("statDamagedSold").textContent=damaged;
+  const el1=document.getElementById("statInStock");
+  if(el1) el1.textContent=inStock;
+  const el2=document.getElementById("statTotalItems");
+  if(el2) el2.textContent=invtData.length;
+  const el3=document.getElementById("statStockValue");
+  if(el3) el3.textContent=fmtGBP(totalValue);
+  const el4=document.getElementById("statDamagedSold");
+  if(el4) el4.textContent=damaged;
   
   renderInvt();
 }

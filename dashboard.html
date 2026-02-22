@@ -162,6 +162,7 @@ async function loadDash(){
 
 function animateStat(id,target){
   const el=document.getElementById(id);
+  if(!el) return; // safety check
   const current=parseInt(el.textContent)||0;
   const step=(target-current)/20;
   let count=current;
