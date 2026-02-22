@@ -178,14 +178,34 @@
     });
   }
   
+  // Save/restore sidebar navigation scroll position
+  DeltaV.saveScrollPosition = function(){
+    const nav = document.querySelector('.sidebar nav');
+    if(nav) sessionStorage.setItem('sidebarScrollPos', nav.scrollTop);
+  };
+  DeltaV.restoreScrollPosition = function(){
+    const nav = document.querySelector('.sidebar nav');
+    if(nav){
+      const pos = sessionStorage.getItem('sidebarScrollPos');
+      if(pos) nav.scrollTop = parseInt(pos);
+    }
+  };
+  
   // Initialize scroll buttons when DOM is ready
   window.addEventListener('DOMContentLoaded', initScrollButtons);
   // Also init immediately in case DOM is already loaded
   if(document.readyState === 'loading'){
-    document.addEventListener('DOMContentLoaded', initScrollButtons);
+    document.addEventListener('DOMContentLoaded', ()=>{
+      initScrollButtons();
+      DeltaV.restoreScrollPosition();
+    });
   }else{
     initScrollButtons();
+    DeltaV.restoreScrollPosition();
   }
+  
+  // Save scroll position before leaving page
+  window.addEventListener('beforeunload', DeltaV.saveScrollPosition);
 
   // Delay creating no-op stubs until DOM is ready so page scripts can define real handlers first
   const _stubs = ['openNewInv','saveInv','loadInv','addPart','calcT','editInv','delInv','exportInv','pdfInv','togPay','dupInv','openNew'];
