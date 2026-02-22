@@ -35,7 +35,6 @@ body{background:#0d1823}
 .ok-box p{color:rgba(255,255,255,.72);margin-bottom:24px}
 @media(max-width:768px){.pub-h{padding:0 20px;height:60px}.pub-nav{display:none}.pub-wrap{padding:80px 16px 40px}.g2,.g3{grid-template-columns:1fr!important}.form-card{padding:16px}}
 </style>
-<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 </head>
 <body>
 <header class="pub-h">
@@ -128,9 +127,6 @@ let vCode="";
 const tomorrow=new Date();tomorrow.setDate(tomorrow.getDate()+1);
 document.getElementById("bDate").min=tomorrow.toISOString().split("T")[0];
 
-// Initialize EmailJS - REPLACE WITH YOUR KEY
-emailjs.init("R2O3dhHwzD8kLNqo3");
-
 function validate(){
   const ids=["bName","bPhone","bEmail","bReg","bDate","bService"];
   let ok=true;
@@ -172,27 +168,37 @@ function sendVer(){
   btn.disabled=true;
   btn.textContent="📧 Sending...";
   
-  // CRITICAL: EmailJS template variables MUST EXACTLY match
-  emailjs.send("service_hi4mpao","template_aj5l14u",{
-    to_name: nm,
-    to_email: em,
-    verification_code: vCode,
-    code: vCode,
-    message: "Your DeltaV booking verification code is: " + vCode
-  }).then(()=>{
-    console.log("Email sent successfully! Code is:",vCode);
-    document.getElementById("sentTo").textContent=em;
-    document.getElementById("verBox").style.display="block";
-    document.getElementById("cErr").style.display="none";
-    document.getElementById("cErr").textContent="";
-    btn.disabled=false;
-    btn.textContent=origText;
-    document.getElementById("verBox").scrollIntoView({behavior:"smooth"});
+  // Send via Supabase Function (Brevo)
+  fetch(`${SB}/functions/v1/brevo-send-email`,{
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json",
+      "Authorization":`Bearer ${KEY}`
+    },
+    body:JSON.stringify({
+      to_email:em,
+      to_name:nm,
+      verificationCode:vCode,
+      subject:"DeltaV Booking - Verification Code"
+    })
+  }).then(r=>r.json()).then(data=>{
+    if(data.success || data.messageId){
+      console.log("Email sent successfully! Code is:",vCode);
+      document.getElementById("sentTo").textContent=em;
+      document.getElementById("verBox").style.display="block";
+      document.getElementById("cErr").style.display="none";
+      document.getElementById("cErr").textContent="";
+      btn.disabled=false;
+      btn.textContent=origText;
+      document.getElementById("verBox").scrollIntoView({behavior:"smooth"});
+    }else{
+      throw new Error(data.error||"Unknown error");
+    }
   }).catch(e=>{
-    console.error("EmailJS error:",e);
+    console.error("Email error:",e);
     btn.disabled=false;
     btn.textContent=origText;
-    const errMsg="Email failed to send. Ensure EmailJS is configured correctly. Error: "+(e.message||e);
+    const errMsg="Email failed to send. Error: "+(e.message||e);
     alert(errMsg);
     document.getElementById("cErr").style.display="block";
     document.getElementById("cErr").textContent="❌ "+errMsg;
@@ -243,10 +249,35 @@ async function submitBooking(){
     if(r.ok){
       // Send confirmation email
       try{
-        await emailjs.send("service_hi4mpao","template_aj5l14u",{
-          to_email:data.email,
-          to_name:data.name,
-          message:"Your booking has been confirmed. Registration: "+data.reg+", Date: "+data.date
+        await fetch(`${SB}/functions/v1/brevo-send-email`,{
+          method:"POST",
+          headers:{
+            "Content-Type":"application/json",
+            "Authorization":`Bearer ${KEY}`
+          },
+          body:JSON.stringify({
+            to_email:data.email,
+            to_name:data.name,
+            subject:"📅 Booking Confirmed — DeltaV Automotive",
+            htmlContent:`
+              <html>
+                <body style="font-family:Arial,sans-serif;color:#333;">
+                  <h2>Booking Confirmed!</h2>
+                  <p>Hi ${data.name},</p>
+                  <p>Your booking has been confirmed with the following details:</p>
+                  <div style="background:#f5f5f5;padding:16px;border-radius:8px;margin:20px 0;">
+                    <p><strong>Vehicle:</strong> ${data.reg} ${data.car?'('+data.car+')':''}</p>
+                    <p><strong>Service:</strong> ${data.service}</p>
+                    <p><strong>Date:</strong> ${data.date}</p>
+                    <p><strong>Reference:</strong> REF-${Date.now().toString().slice(-6)}</p>
+                  </div>
+                  <p>We'll call you on <strong>${data.phone}</strong> to confirm the exact time.</p>
+                  <p>Thanks for choosing DeltaV Automotive!</p>
+                  <p style="color:#999;font-size:0.9em;">DeltaV Automotive | Smethwick, West Midlands</p>
+                </body>
+              </html>
+            `
+          })
         });
       }catch(emailErr){
         console.warn("Confirmation email failed but booking was saved:",emailErr);
