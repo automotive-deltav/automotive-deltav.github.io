@@ -12,7 +12,8 @@
 .msg-body{background:#f8f9fb;border:1px solid #e2e8f0;border-radius:8px;padding:16px;margin:12px 0;line-height:1.8;color:#2d3748}
 </style>
 </head><body>
-<script>if(sessionStorage.getItem("dv_admin")!=="1")location.href="login.html";</script>
+<script src="shared.js"></script>
+<script>DeltaV.requireLogin();</script>
 <div class="sidebar">
   <div class="sb-logo">DeltaV <span>Auto</span><small>Admin Panel</small></div>
   <nav>
@@ -37,7 +38,7 @@
   </nav>
   <div class="sb-foot">
     <a href="index.html" class="btn-sb-link">🌐 Website</a>
-    <button class="btn-sb-out" onclick="if(confirm('Log out?')){sessionStorage.removeItem('dv_admin');location.href='login.html';}">🚪 Log Out</button>
+    <button class="btn-sb-out" onclick="if(confirm('Log out?'))DeltaV.logout()">🚪 Log Out</button>
   </div>
 </div>
 

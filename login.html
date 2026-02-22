@@ -20,17 +20,42 @@ body{background:linear-gradient(135deg,#0d1823 0%,#1b2b3a 100%);min-height:100vh
   <button class="btn btn-primary btn-lg btn-fw" style="margin-top:6px" onclick="login()">Login to Admin Panel →</button>
   <div class="hint">Forgot password? <a href="contact.html">Contact support</a></div>
 </div>
+<script src="shared.js"></script>
 <script>
-if(sessionStorage.getItem("dv_admin")==="1")location.href="dashboard.html";
-function login(){
+if(sessionStorage.getItem("dv_admin_user"))location.href="dashboard.html";
+
+async function login(){
   const u=document.getElementById("u").value.trim();
   const p=document.getElementById("p").value;
-  if(u==="admin"&&p==="DeltaV2026!"){
-    sessionStorage.setItem("dv_admin","1");
+  const e=document.getElementById("err");
+  
+  if(!u||!p){e.textContent="Please enter username and password";e.style.display="block";return;}
+  
+  try{
+    // Fetch user from admin_users table
+    const url=`https://cxzapvieqzqfxzolqwoh.supabase.co/rest/v1/admin_users?username=eq.${encodeURIComponent(u)}&active=eq.true`;
+    const opts={headers:{"apikey":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN4emFwdmllcXpxZnh6b2xxd29oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA1NjU4MzgsImV4cCI6MjA4NjE0MTgzOH0.x_F07XpdThY6EqwaP8jJGgdBIMTHdYfTr99IMOpSq_E","Content-Type":"application/json"}};
+    const res=await fetch(url,opts);
+    const users=await res.json();
+    
+    if(!users.length){e.textContent="Invalid username or password";e.style.display="block";document.getElementById("p").value="";document.getElementById("p").focus();setTimeout(()=>e.style.display="none",3000);return;}
+    
+    const user=users[0];
+    // Simple password check (in production, use bcrypt)
+    if(user.password_hash!==p){e.textContent="Invalid username or password";e.style.display="block";document.getElementById("p").value="";document.getElementById("p").focus();setTimeout(()=>e.style.display="none",3000);return;}
+    
+    // Store user session with role info
+    sessionStorage.setItem("dv_admin_user",JSON.stringify({id:user.id,username:user.username,role:user.role,name:user.full_name}));
+    sessionStorage.setItem("dv_admin","1"); // Legacy flag for compatibility
+    
+    // Update last login
+    fetch(url.split("?")[0]+`?id=eq.${user.id}`,{method:"PATCH",headers:{"apikey":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN4emFwdmllcXpxZnh6b2xxd29oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA1NjU4MzgsImV4cCI6MjA4NjE0MTgzOH0.x_F07XpdThY6EqwaP8jJGgdBIMTHdYfTr99IMOpSq_E","Content-Type":"application/json"},body:JSON.stringify({last_login:new Date().toISOString()})}).catch(()=>{});
+    
     location.href="dashboard.html";
-  } else {
-    const e=document.getElementById("err");e.style.display="block";
-    document.getElementById("p").value="";document.getElementById("p").focus();
+  }catch(err){
+    e.textContent="Login error. Please try again.";
+    e.style.display="block";
+    console.error(err);
     setTimeout(()=>e.style.display="none",3000);
   }
 }

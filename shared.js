@@ -30,6 +30,47 @@
   DeltaV.dbUpd = async function(table,id,data){ return await DeltaV._fetch(`${DeltaV.SB}/rest/v1/${table}?id=eq.${id}`,{method:'PATCH',headers:DeltaV.H,body:JSON.stringify(data)}); };
   DeltaV.dbDel = async function(table,id){ return await DeltaV._fetch(`${DeltaV.SB}/rest/v1/${table}?id=eq.${id}`,{method:'DELETE',headers:DeltaV.H}); };
 
+  // Authentication & Authorization functions
+  DeltaV.getUser = function(){
+    try{
+      const u=sessionStorage.getItem("dv_admin_user");
+      return u?JSON.parse(u):null;
+    }catch(e){return null;}
+  };
+  
+  DeltaV.isLoggedIn = function(){
+    return DeltaV.getUser()!==null;
+  };
+  
+  DeltaV.hasRole = function(allowedRoles){
+    const user=DeltaV.getUser();
+    if(!user) return false;
+    if(typeof allowedRoles==='string') allowedRoles=[allowedRoles];
+    return allowedRoles.includes(user.role);
+  };
+  
+  DeltaV.requireLogin = function(){
+    if(!DeltaV.isLoggedIn()){
+      sessionStorage.removeItem('dv_admin_user');
+      sessionStorage.removeItem('dv_admin');
+      location.href='login.html';
+    }
+  };
+  
+  DeltaV.requireRole = function(allowedRoles){
+    DeltaV.requireLogin();
+    if(!DeltaV.hasRole(allowedRoles)){
+      DeltaV.toast('Access denied: insufficient permissions','error');
+      setTimeout(()=>location.href='dashboard.html',1500);
+    }
+  };
+  
+  DeltaV.logout = function(){
+    sessionStorage.removeItem('dv_admin_user');
+    sessionStorage.removeItem('dv_admin');
+    location.href='login.html';
+  };
+
   // Unified toast (small, non-blocking notifications)
   DeltaV.toast = function(msg, type='success'){
     // normalize legacy type aliases: 'er' -> 'error', 'in' -> 'info'

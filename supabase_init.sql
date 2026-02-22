@@ -152,7 +152,37 @@ ALTER TABLE inventory ADD COLUMN IF NOT EXISTS purchase_date DATE;
 ALTER TABLE inventory ADD COLUMN IF NOT EXISTS supplier TEXT;
 ALTER TABLE inventory ADD COLUMN IF NOT EXISTS quantity INTEGER DEFAULT 0;
 
+-- Admin users table for role-based access control
+CREATE TABLE IF NOT EXISTS admin_users (
+  id BIGSERIAL PRIMARY KEY,
+  username TEXT UNIQUE NOT NULL,
+  password_hash TEXT NOT NULL,
+  full_name TEXT,
+  role TEXT DEFAULT 'viewer', -- admin, manager, viewer
+  email TEXT,
+  active BOOLEAN DEFAULT TRUE,
+  last_login TIMESTAMPTZ,
+  created_at TIMESTAMPTZ DEFAULT now(),
+  updated_at TIMESTAMPTZ DEFAULT now()
+);
+
+-- Insert default admin user (password should be hashed in production)
+INSERT INTO admin_users (username, password_hash, full_name, role, email, active)
+VALUES ('admin', 'DeltaV2026!', 'Administrator', 'admin', 'admin@deltavautomotive.co.uk', TRUE)
+ON CONFLICT (username) DO NOTHING;
+
+-- Insert Andrei admin user
+INSERT INTO admin_users (username, password_hash, full_name, role, email, active)
+VALUES ('andrei', 'Andrei2011', 'Andrei Marin', 'admin', 'andreimad2024@gmail.com', TRUE)
+ON CONFLICT (username) DO NOTHING;
+
+-- Insert Claudia admin user
+INSERT INTO admin_users (username, password_hash, full_name, role, email, active)
+VALUES ('claudia', 'Adrian2020@', 'Claudia Marin', 'admin', 'marinclaudia@yahoo.com', TRUE)
+ON CONFLICT (username) DO NOTHING;
+
 -- Now create the indexes after columns exist
 CREATE INDEX IF NOT EXISTS idx_inventory_vin ON inventory(vin_number);
+CREATE INDEX IF NOT EXISTS idx_admin_users_username ON admin_users(username);
 
 COMMIT;

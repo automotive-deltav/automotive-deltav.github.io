@@ -23,7 +23,8 @@
 </style>
 </head>
 <body>
-<script>if(sessionStorage.getItem("dv_admin")!=="1"){location.href="login.html";}</script>
+<script src="shared.js"></script>
+<script>DeltaV.requireLogin();</script>
 <div class="sidebar">
   <div class="sb-logo">DeltaV <span>Auto</span><small>Admin Panel</small></div>
   <nav>
@@ -54,7 +55,7 @@
   </nav>
   <div class="sb-foot">
     <a href="index.html" class="btn-sb-link">🌐 Website</a>
-    <button class="btn-sb-out" onclick="if(confirm('Log out?')){sessionStorage.removeItem('dv_admin');location.href='login.html';}">🚪 Log Out</button>
+    <button class="btn-sb-out" onclick="if(confirm('Log out?'))DeltaV.logout()">🚪 Log Out</button>
   </div>
 </div>
 
