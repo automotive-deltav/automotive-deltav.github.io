@@ -274,7 +274,7 @@ async function sendMsg(){
 
   try{
     // Save to Supabase
-    const response=await fetch(`${SB}/rest/v1/messages`,{
+    const response=await fetch(`${SB}/rest/v1/contact_messages`,{
       method:"POST",
       headers:{
         "apikey":KEY,
@@ -288,12 +288,15 @@ async function sendMsg(){
         vehicle_reg:reg||null,
         subject:subject,
         message:m,
+        status:"unread",
         created_at:new Date().toISOString()
       })
     });
 
     if(!response.ok){
-      throw new Error("Database save failed");
+      const errText=await response.text().catch(()=>"Unknown error");
+      console.error("Supabase error response:",errText);
+      throw new Error("Failed to save message to database: "+errText);
     }
 
     // Send confirmation email
