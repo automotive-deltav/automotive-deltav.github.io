@@ -12,7 +12,6 @@
 <meta name="twitter:card" content="summary">
 <link rel="canonical" href="https://deltavautomotive.com/contact.html">
 <link rel="sitemap" href="https://deltavautomotive.com/sitemap.xml">
-<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <title>Contact Us — DeltaV Automotive | Smethwick Car Repair</title>
 <link rel="stylesheet" href="theme.css">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"ContactPage","name":"Contact DeltaV Automotive","url":"https://deltavautomotive.com/contact.html"}</script>
@@ -251,12 +250,16 @@ select:-webkit-autofill{
   </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <script>
 const SB="https://cxzapvieqzqfxzolqwoh.supabase.co";
 const KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN4emFwdmllcXpxZnh6b2xxd29oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA1NjU4MzgsImV4cCI6MjA4NjE0MTgzOH0.x_F07XpdThY6EqwaP8jJGgdBIMTHdYfTr99IMOpSq_E";
 
-emailjs.init("R2O3dhHwzD8kLNqo3");
+// Local database for offline support
+function saveToLocalDB(data){
+  let messages=JSON.parse(localStorage.getItem("deltav_contact_messages")||"[]");
+  messages.unshift({...data,local_id:Date.now()});
+  localStorage.setItem("deltav_contact_messages",JSON.stringify(messages));
+}
 
 async function sendMsg(){
   const n=document.getElementById("cN").value.trim();
@@ -273,6 +276,20 @@ async function sendMsg(){
   }
 
   try{
+    const msgData={
+      name:n,
+      email:e,
+      phone:phone||null,
+      vehicle_reg:reg||null,
+      subject:subject,
+      message:m,
+      status:"unread",
+      created_at:new Date().toISOString()
+    };
+
+    // Save to local database first
+    saveToLocalDB(msgData);
+
     // Save to Supabase
     const response=await fetch(`${SB}/rest/v1/contact_messages`,{
       method:"POST",
@@ -281,35 +298,13 @@ async function sendMsg(){
         "Authorization":`Bearer ${KEY}`,
         "Content-Type":"application/json"
       },
-      body:JSON.stringify({
-        name:n,
-        email:e,
-        phone:phone||null,
-        vehicle_reg:reg||null,
-        subject:subject,
-        message:m,
-        status:"unread",
-        created_at:new Date().toISOString()
-      })
+      body:JSON.stringify(msgData)
     });
 
     if(!response.ok){
       const errText=await response.text().catch(()=>"Unknown error");
       console.error("Supabase error response:",errText);
       throw new Error("Failed to save message to database: "+errText);
-    }
-
-    // Send confirmation email
-    try{
-      await emailjs.send("service_hi4mpao","template_aj5l14u",{
-        to_email:e,
-        to_name:n,
-        subject:subject,
-        message:m,
-        reply_to:e
-      });
-    }catch(emailErr){
-      console.warn("Email notification failed but message was saved:",emailErr);
     }
 
     document.getElementById("cErr").style.display="none";

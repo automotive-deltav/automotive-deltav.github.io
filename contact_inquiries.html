@@ -51,21 +51,54 @@
     </div>
   </div>
   <div class="body">
-    <div class="tbl-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>Date</th>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Phone</th>
-            <th>Subject</th>
-            <th>Status</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody id="tbody"></tbody>
-      </table>
+    <div style="margin-bottom:20px">
+      <button class="btn btn-primary" id="btnRemote" onclick="showRemote()" style="margin-right:8px">📡 Remote Messages</button>
+      <button class="btn btn-info" id="btnLocal" onclick="showLocal()">💾 Local Database</button>
+    </div>
+
+    <div id="remoteSection">
+      <div class="tbl-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Phone</th>
+              <th>Subject</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="localSection" style="display:none">
+      <div style="margin-bottom:16px;padding:12px;background:#f0f7ff;border:1px solid #b3d9ff;border-radius:8px">
+        <strong>📦 Local Storage:</strong> Messages stored offline in your browser. <span id="localCount">0</span> messages found.
+        <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn btn-success btn-sm" onclick="syncLocal()" title="Upload local messages to server">⬆️ Sync All</button>
+          <button class="btn btn-info btn-sm" onclick="exportLocal()" title="Download as CSV">📥 Export</button>
+          <button class="btn btn-danger btn-sm" onclick="clearLocal()" title="Delete all local messages">🗑️ Clear All</button>
+        </div>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Phone</th>
+              <th>Subject</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="localTbody"></tbody>
+        </table>
+      </div>
     </div>
   </div>
 </div>
@@ -78,7 +111,7 @@
       <div class="detail-label">Message</div>
       <div class="msg-body" id="msgBody"></div>
     </div>
-    <div class="detail-grid" style="margin-top:20px">
+    <div id="statusWrapper" class="detail-grid" style="margin-top:20px">
       <div>
         <div class="detail-label">Status</div>
         <select id="statusSelect" style="width:100%;padding:8px;border:1px solid #e2e8f0;border-radius:6px;font-weight:600">
@@ -91,8 +124,8 @@
     </div>
     <div class="mfoot">
       <button class="btn btn-ghost" onclick="closeM('mView')">Close</button>
-      <button class="btn btn-primary" onclick="updateStatus()">💾 Update Status</button>
-      <button class="btn btn-danger" onclick="openM('mDel')">🗑️ Delete</button>
+      <button class="btn btn-primary" id="btnUpdateStatus" onclick="updateStatus()" style="display:none">💾 Update Status</button>
+      <button class="btn btn-danger" id="btnDeleteRemote" onclick="openM('mDel')" style="display:none">🗑️ Delete</button>
     </div>
   </div>
 </div>
@@ -121,6 +154,155 @@
 <script src="shared.js"></script>
 <script>
 let data=[],filteredData=[],currentRecord=null;
+let localData=[];
+
+function showRemote(){
+  document.getElementById("remoteSection").style.display="block";
+  document.getElementById("localSection").style.display="none";
+  document.getElementById("btnRemote").style.background="var(--ac)";
+  document.getElementById("btnRemote").style.color="#fff";
+  document.getElementById("btnLocal").style.background="transparent";
+  document.getElementById("btnLocal").style.color="inherit";
+}
+
+function showLocal(){
+  loadLocalData();
+  document.getElementById("remoteSection").style.display="none";
+  document.getElementById("localSection").style.display="block";
+  document.getElementById("btnLocal").style.background="var(--in)";
+  document.getElementById("btnLocal").style.color="#fff";
+  document.getElementById("btnRemote").style.background="transparent";
+  document.getElementById("btnRemote").style.color="inherit";
+}
+
+function loadLocalData(){
+  localData=JSON.parse(localStorage.getItem("deltav_contact_messages")||"[]");
+  document.getElementById("localCount").textContent=localData.length;
+  renderLocalData();
+}
+
+function renderLocalData(){
+  const tb=document.getElementById("localTbody");
+  if(!localData.length){
+    tb.innerHTML='<tr><td colspan="99"><div class="empty"><div class="ei">💾</div><h3>No local messages</h3><p>Messages will be stored here when offline</p></div></td></tr>';
+    return;
+  }
+  tb.innerHTML=localData.map((r,i)=>{
+    const date=new Date(r.created_at).toLocaleDateString();
+    return`<tr><td>${date}</td><td><strong>${r.name||'—'}</strong></td><td><a href="mailto:${r.email}" style="color:#3b82f6">${r.email||'—'}</a></td><td>${r.phone||'—'}</td><td>${(r.subject||'—').substring(0,35)}${(r.subject||'').length>35?'...':''}</td><td><button class="btn btn-primary btn-sm" onclick="viewLocalRecord(${i})">👁️ View</button> <button class="btn btn-danger btn-sm" onclick="deleteLocalRecord(${i})">🗑️</button></td></tr>`;
+  }).join('');
+}
+
+function viewLocalRecord(index){
+  const r=localData[index];
+  currentRecord=r;
+  document.getElementById("detailGrid").innerHTML=`
+    <div class="detail-item">
+      <div class="detail-label">Name</div>
+      <div class="detail-value">${r.name||'—'}</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Email</div>
+      <div class="detail-value"><a href="mailto:${r.email}" style="color:#3b82f6">${r.email||'—'}</a></div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Phone</div>
+      <div class="detail-value">${r.phone||'—'}</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Vehicle Reg</div>
+      <div class="detail-value">${r.vehicle_reg||'—'}</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Subject</div>
+      <div class="detail-value">${r.subject||'—'}</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Date</div>
+      <div class="detail-value">${new Date(r.created_at).toLocaleString()}</div>
+    </div>
+  `;
+  document.getElementById("msgBody").textContent=r.message||'(No message)';
+  document.getElementById("statusWrapper").style.display="none";
+  document.getElementById("btnUpdateStatus").style.display="none";
+  document.getElementById("btnDeleteRemote").style.display="none";
+  openM('mView');
+}
+
+function deleteLocalRecord(index){
+  localData.splice(index,1);
+  localStorage.setItem("deltav_contact_messages",JSON.stringify(localData));
+  DeltaV.toast("Message deleted","success");
+  renderLocalData();
+}
+
+async function syncLocal(){
+  if(!localData.length){
+    DeltaV.toast("No local messages to sync","info");
+    return;
+  }
+  
+  try{
+    let synced=0;
+    for(const msg of localData){
+      try{
+        await DeltaV.dbIns("contact_messages",{
+          name:msg.name,
+          email:msg.email,
+          phone:msg.phone||null,
+          vehicle_reg:msg.vehicle_reg||null,
+          subject:msg.subject,
+          message:msg.message,
+          status:"unread",
+          created_at:msg.created_at
+        });
+        synced++;
+      }catch(e){
+        console.warn("Failed to sync one message:",e);
+      }
+    }
+    DeltaV.toast(`Synced ${synced}/${localData.length} messages to server`,"success");
+    if(synced===localData.length){
+      localStorage.removeItem("deltav_contact_messages");
+      localData=[];
+      renderLocalData();
+    }
+  }catch(e){
+    DeltaV.toast("Sync failed: "+e.message,"error");
+  }
+}
+
+function exportLocal(){
+  const rows=[["Date","Name","Email","Phone","Vehicle","Subject","Message"]];
+  localData.forEach(r=>rows.push([
+    new Date(r.created_at).toLocaleString(),
+    r.name||"",
+    r.email||"",
+    r.phone||"",
+    r.vehicle_reg||"",
+    r.subject||"",
+    r.message||""
+  ]));
+  
+  let csv="";
+  rows.forEach(row=>csv+=row.map(cell=>`"${(cell||'').toString().replace(/"/g,'""')}"`).join(",")+"\n");
+  
+  const blob=new Blob([csv],{type:"text/csv"});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");
+  a.href=url;
+  a.download="local_messages_"+new Date().toISOString().split("T")[0]+".csv";
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function clearLocal(){
+  if(!confirm("Delete all "+localData.length+" local messages? This cannot be undone.")) return;
+  localStorage.removeItem("deltav_contact_messages");
+  localData=[];
+  DeltaV.toast("Local database cleared","success");
+  renderLocalData();
+}
 
 async function loadData(){
   try{
@@ -148,6 +330,7 @@ function renderData(){
     return`<tr><td>${date}</td><td><strong>${r.name||'—'}</strong></td><td><a href="mailto:${r.email}" style="color:#3b82f6">${r.email||'—'}</a></td><td>${r.phone||'—'}</td><td>${(r.subject||'—').substring(0,35)}${(r.subject||'').length>35?'...':''}</td><td>${statusBadge}</td><td><button class="btn btn-primary btn-sm" onclick="viewRecord('${r.id}')">👁️ View</button> <button class="btn btn-danger btn-sm" onclick="prepDelete('${r.id}')">🗑️</button></td></tr>`;
   }).join('');
 }
+
 
 function viewRecord(id){
   currentRecord=data.find(r=>r.id==id);
@@ -180,6 +363,9 @@ function viewRecord(id){
     </div>
   `;
   document.getElementById("msgBody").textContent=currentRecord.message||'(No message)';
+  document.getElementById("statusWrapper").style.display="block";
+  document.getElementById("btnUpdateStatus").style.display="inline-block";
+  document.getElementById("btnDeleteRemote").style.display="inline-block";
   document.getElementById("statusSelect").value=currentRecord.status||'unread';
   openM('mView');
 }
