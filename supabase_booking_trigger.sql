@@ -4,7 +4,7 @@
 -- Create email queue table to track sent emails
 CREATE TABLE IF NOT EXISTS booking_emails (
   id BIGSERIAL PRIMARY KEY,
-  booking_id BIGINT REFERENCES bookings(id) ON DELETE CASCADE,
+  booking_id UUID REFERENCES bookings(id) ON DELETE CASCADE,
   customer_email TEXT NOT NULL,
   sent BOOLEAN DEFAULT FALSE,
   sent_at TIMESTAMPTZ,
