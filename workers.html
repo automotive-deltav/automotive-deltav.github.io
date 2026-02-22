@@ -285,6 +285,7 @@ function exportWorkers(){
 }
 
 document.getElementById("wStart").value=today();
+function animateStat(id,target){const el=document.getElementById(id);if(!el) return;const current=parseInt(el.textContent)||0;const step=(target-current)/20;let count=current;const interval=setInterval(()=>{count+=step;if((step>0&&count>=target)||(step<0&&count<=target)){el.textContent=target;clearInterval(interval);}else{el.textContent=Math.round(count);}},50);}
 loadWorkers();
 </script>
 </body></html>
