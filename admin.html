@@ -259,26 +259,32 @@ async function saveConfirm(){
   const time=document.getElementById("cfmTime").value;
   const notes=document.getElementById("cfmNotes").value.trim();
   if(!date||!time){
-    toast("Date and time are required","er");
+    DeltaV.toast("Date and time are required","error");
     return;
   }
   const booking=data.find(x=>x.id===confirmingBookingId);
   if(!booking)return;
-  await dbUpd("bookings",confirmingBookingId,{
-    status:"confirmed",
-    date:date,
-    slot:time,
-    notes:notes||(booking.notes||"")
-  });
-  booking.status="confirmed";
-  booking.date=date;
-  booking.slot=time;
-  booking.notes=notes||(booking.notes||"");
-  closeM("mConfirm");
-  renderData();
-  toast("Booking confirmed!","in");
+  try{
+    await DeltaV.dbUpd("bookings",confirmingBookingId,{
+      status:"confirmed",
+      date:date,
+      slot:time,
+      notes:notes||(booking.notes||"")
+    });
+    booking.status="confirmed";
+    booking.date=date;
+    booking.slot=time;
+    booking.notes=notes||(booking.notes||"");
+    closeM("mConfirm");
+    renderData();
+    DeltaV.toast("Booking confirmed!","success");
+  }catch(e){
+    console.error("Confirmation error:",e);
+    DeltaV.toast("Error confirming booking: "+e.message,"error");
+  }
 }
 loadData();
-setInterval(loadData, 5000);
+// Don't auto-refresh - it causes animation replay. User can click refresh button.
+// setInterval(loadData, 5000);
 </script>
 </body></html>
