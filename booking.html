@@ -112,7 +112,6 @@ body{background:#0d1823}
 <script>
 const SB="https://cxzapvieqzqfxzolqwoh.supabase.co";
 const KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN4emFwdmllcXpxZnh6b2xxd29oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA1NjU4MzgsImV4cCI6MjA4NjE0MTgzOH0.x_F07XpdThY6EqwaP8jJGgdBIMTHdYfTr99IMOpSq_E";
-let vCode="";
 
 const tomorrow=new Date();tomorrow.setDate(tomorrow.getDate()+1);
 document.getElementById("bDate").min=tomorrow.toISOString().split("T")[0];
@@ -142,17 +141,6 @@ function validate(){
   }
   return ok;
 }
-
-function sendVer(){
-  if(!validate())return;
-  
-  vCode=Math.floor(100000+Math.random()*900000).toString();
-  const em=document.getElementById("bEmail").value.trim();
-  const nm=document.getElementById("bName").value.trim();
-  
-  console.log("Sending code:",vCode,"to",em);
-  
-function sendVer(){} // Removed - no longer needed
 
 async function submitBooking(){
   if(!validate())return;

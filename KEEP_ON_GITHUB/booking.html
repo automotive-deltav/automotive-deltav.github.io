@@ -142,17 +142,6 @@ function validate(){
   return ok;
 }
 
-function sendVer(){
-  if(!validate())return;
-  
-  vCode=Math.floor(100000+Math.random()*900000).toString();
-  const em=document.getElementById("bEmail").value.trim();
-  const nm=document.getElementById("bName").value.trim();
-  
-  console.log("Sending code:",vCode,"to",em);
-  
-function sendVer(){} // Removed - no longer needed
-
 async function submitBooking(){
   if(!validate())return;
   
