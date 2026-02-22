@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Contact Inquiries - DeltaV</title>
+<link rel="stylesheet" href="theme.css">
+<style>
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:16px 0}
+.detail-item{background:#f8f9fb;border:1px solid #e2e8f0;border-radius:8px;padding:12px}
+.detail-label{font-size:.75rem;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.detail-value{color:#1b2b3a;font-weight:600;word-break:break-word}
+.msg-body{background:#f8f9fb;border:1px solid #e2e8f0;border-radius:8px;padding:16px;margin:12px 0;line-height:1.8;color:#2d3748}
+</style>
+</head><body>
+<script>if(sessionStorage.getItem("dv_admin")!=="1")location.href="login.html";</script>
+<div class="sidebar">
+  <div class="sb-logo">DeltaV <span>Auto</span><small>Admin Panel</small></div>
+  <nav>
+    <div class="sb-sec">Core</div>
+    <a href="dashboard.html"><span class="ni">📊</span>Dashboard</a>
+    <a href="admin.html"><span class="ni">📅</span>Bookings</a>
+    <a href="schedule.html"><span class="ni">🗓️</span>Schedule</a>
+    <a href="customers.html"><span class="ni">👥</span>Customers</a>
+    <a href="contact_inquiries.html" class="active"><span class="ni">📧</span>Contact Inquiries</a>
+    <a href="invoices.html"><span class="ni">💰</span>Invoices</a>
+
+    <div class="sb-sec">Stock & Money</div>
+    <a href="inventory.html"><span class="ni">📦</span>Inventory</a>
+    <a href="payments.html"><span class="ni">💳</span>Payments</a>
+    <a href="finance.html"><span class="ni">📈</span>Finance</a>
+    <a href="workers.html"><span class="ni">👷</span>Workers</a>
+
+    <div class="sb-sec">Communication</div>
+    <a href="messages.html"><span class="ni">💬</span>Messages</a>
+    <a href="notes.html"><span class="ni">📝</span>Notes</a>
+    <a href="reminders.html"><span class="ni">🔔</span>Reminders</a>
+  </nav>
+  <div class="sb-foot">
+    <a href="index.html" class="btn-sb-link">🌐 Website</a>
+    <button class="btn-sb-out" onclick="if(confirm('Log out?')){sessionStorage.removeItem('dv_admin');location.href='login.html';}">🚪 Log Out</button>
+  </div>
+</div>
+
+<div class="main">
+  <div class="topbar">
+    <h1>📧 Contact Inquiries</h1>
+    <div class="tr">
+      <input type="text" id="searchBox" placeholder="Search by name, email..." style="padding:8px 12px;border:1.5px solid #e2e8f0;border-radius:8px;width:250px;font-size:.9rem">
+      <button class="btn btn-info" onclick="exportData()">📥 Export CSV</button>
+      <button class="btn btn-ghost" onclick="loadData()">🔄 Refresh</button>
+    </div>
+  </div>
+  <div class="body">
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Subject</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="mView">
+  <div class="mbox" style="max-width:600px;max-height:80vh;overflow-y:auto">
+    <h3>📧 Message Details</h3>
+    <div class="detail-grid" id="detailGrid"></div>
+    <div>
+      <div class="detail-label">Message</div>
+      <div class="msg-body" id="msgBody"></div>
+    </div>
+    <div class="detail-grid" style="margin-top:20px">
+      <div>
+        <div class="detail-label">Status</div>
+        <select id="statusSelect" style="width:100%;padding:8px;border:1px solid #e2e8f0;border-radius:6px;font-weight:600">
+          <option value="unread">🔴 Unread</option>
+          <option value="read">✓ Read</option>
+          <option value="replied">✓✓ Replied</option>
+          <option value="archived">📦 Archived</option>
+        </select>
+      </div>
+    </div>
+    <div class="mfoot">
+      <button class="btn btn-ghost" onclick="closeM('mView')">Close</button>
+      <button class="btn btn-primary" onclick="updateStatus()">💾 Update Status</button>
+      <button class="btn btn-danger" onclick="openM('mDel')">🗑️ Delete</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="mDel">
+  <div class="mbox" style="max-width:400px">
+    <h3>🗑️ Confirm Delete</h3>
+    <p style="color:#64748b;line-height:1.8">Delete this inquiry? This cannot be undone.</p>
+    <div class="mfoot">
+      <button class="btn btn-ghost" onclick="closeM('mDel')">Cancel</button>
+      <button class="btn btn-danger" onclick="deleteRow()">Yes, Delete</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="mError">
+  <div class="mbox" style="max-width:420px">
+    <h3>❌ Error</h3>
+    <p id="errorMsg" style="color:#64748b;line-height:1.8"></p>
+    <div class="mfoot">
+      <button class="btn btn-primary" onclick="closeM('mError')">OK</button>
+    </div>
+  </div>
+</div>
+
+<script src="shared.js"></script>
+<script>
+let data=[],filteredData=[],currentRecord=null;
+
+async function loadData(){
+  try{
+    data=await DeltaV.dbGet("contact_messages","&order=created_at.desc");
+    filteredData=[...data];
+    renderData();
+  }catch(e){
+    DeltaV.showError("Failed to load contact inquiries: "+e.message);
+  }
+}
+
+function renderData(){
+  const tb=document.getElementById("tbody");
+  if(!filteredData.length){
+    tb.innerHTML='<tr><td colspan="99"><div class="empty"><div class="ei">📧</div><h3>No inquiries</h3><p>Contact inquiries from the website will appear here</p></div></td></tr>';
+    return;
+  }
+  tb.innerHTML=filteredData.map(r=>{
+    const date=new Date(r.created_at).toLocaleDateString();
+    let statusBadge='<span style="color:#94a3b8">⚪ Unknown</span>';
+    if(r.status==='unread') statusBadge='<span style="color:#dc3545">🔴 Unread</span>';
+    else if(r.status==='read') statusBadge='<span style="color:#3b82f6">✓ Read</span>';
+    else if(r.status==='replied') statusBadge='<span style="color:#28a745">✓✓ Replied</span>';
+    else if(r.status==='archived') statusBadge='<span style="color:#6c757d">📦 Archived</span>';
+    return`<tr><td>${date}</td><td><strong>${r.name||'—'}</strong></td><td><a href="mailto:${r.email}" style="color:#3b82f6">${r.email||'—'}</a></td><td>${r.phone||'—'}</td><td>${(r.subject||'—').substring(0,35)}${(r.subject||'').length>35?'...':''}</td><td>${statusBadge}</td><td><button class="btn btn-primary btn-sm" onclick="viewRecord('${r.id}')">👁️ View</button> <button class="btn btn-danger btn-sm" onclick="prepDelete('${r.id}')">🗑️</button></td></tr>`;
+  }).join('');
+}
+
+function viewRecord(id){
+  currentRecord=data.find(r=>r.id==id);
+  if(!currentRecord) return;
+  
+  document.getElementById("detailGrid").innerHTML=`
+    <div class="detail-item">
+      <div class="detail-label">Name</div>
+      <div class="detail-value">${currentRecord.name||'—'}</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Email</div>
+      <div class="detail-value"><a href="mailto:${currentRecord.email}" style="color:#3b82f6">${currentRecord.email||'—'}</a></div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Phone</div>
+      <div class="detail-value">${currentRecord.phone||'—'}</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Vehicle Reg</div>
+      <div class="detail-value">${currentRecord.vehicle_reg||'—'}</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Subject</div>
+      <div class="detail-value">${currentRecord.subject||'—'}</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Date</div>
+      <div class="detail-value">${new Date(currentRecord.created_at).toLocaleString()}</div>
+    </div>
+  `;
+  document.getElementById("msgBody").textContent=currentRecord.message||'(No message)';
+  document.getElementById("statusSelect").value=currentRecord.status||'unread';
+  openM('mView');
+}
+
+async function updateStatus(){
+  if(!currentRecord) return;
+  const newStatus=document.getElementById("statusSelect").value;
+  try{
+    await DeltaV.dbUpd("contact_messages",currentRecord.id,{status:newStatus});
+    currentRecord.status=newStatus;
+    DeltaV.toast("Status updated","success");
+    closeM('mView');
+    loadData();
+  }catch(e){
+    DeltaV.showError("Failed to update: "+e.message);
+  }
+}
+
+async function deleteRow(){
+  if(!currentRecord) return;
+  try{
+    await DeltaV.dbDel("contact_messages",currentRecord.id);
+    DeltaV.toast("Deleted","success");
+    closeM('mDel');
+    closeM('mView');
+    loadData();
+  }catch(e){
+    DeltaV.showError("Failed to delete: "+e.message);
+  }
+}
+
+function prepDelete(id){
+  currentRecord=data.find(r=>r.id==id);
+  openM('mDel');
+}
+
+document.getElementById("searchBox").addEventListener("input",(e)=>{
+  const q=e.target.value.toLowerCase();
+  filteredData=data.filter(r=>
+    (r.name||'').toLowerCase().includes(q)||
+    (r.email||'').toLowerCase().includes(q)||
+    (r.phone||'').toLowerCase().includes(q)
+  );
+  renderData();
+});
+
+function exportData(){
+  const rows=[["Date","Name","Email","Phone","Vehicle","Subject","Message","Status"]];
+  data.forEach(r=>rows.push([
+    new Date(r.created_at).toLocaleString(),
+    r.name||"",
+    r.email||"",
+    r.phone||"",
+    r.vehicle_reg||"",
+    r.subject||"",
+    r.message||"",
+    r.status||"unread"
+  ]));
+  
+  let csv="";
+  rows.forEach(row=>csv+=row.map(cell=>`"${(cell||'').toString().replace(/"/g,'""')}"`).join(",")+"\n");
+  
+  const blob=new Blob([csv],{type:"text/csv"});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");
+  a.href=url;
+  a.download="contact_inquiries_"+new Date().toISOString().split("T")[0]+".csv";
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+loadData();
+setInterval(loadData,60000);
+</script>
+</body></html>
