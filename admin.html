@@ -186,10 +186,10 @@ function renderData(){
       <div style="font-size:.8rem;color:#64748b;line-height:1.6">${r.notes||'No additional notes'}</div>
     </div>
     <div style="display:flex;gap:8px;margin-top:16px;align-items:stretch">
-      <button class="btn btn-primary btn-sm" onclick="viewRow('${r.id}')" style="flex:1.5;min-width:60px">View</button>
-      <button class="btn btn-success btn-sm" onclick="openConfirm('${r.id}','${r.name}')" ${r.status==='confirmed'?'disabled':''} style="flex:1;min-width:70px">${r.status==='confirmed'?'✓ Confirmed':'Confirm'}</button>
-      <button class="btn btn-info btn-sm" onclick="toggleExpand('exp-${r.id}')" title="More details" style="min-width:32px">▼</button>
-      <button class="btn btn-danger btn-sm" onclick="delRow('${r.id}')" style="min-width:32px">🗑️</button>
+      <button class="btn btn-primary btn-sm" onclick="viewRow('${r.id}')" style="flex:1.5;min-width:60px;white-space:nowrap">View</button>
+      <button class="btn ${r.status==='confirmed'?'btn-warning':'btn-success'} btn-sm" onclick="toggleConfirm('${r.id}','${r.name}',${r.status==='confirmed'})" style="flex:1.2;min-width:0;white-space:nowrap">${r.status==='confirmed'?'✓ Undo':'Confirm'}</button>
+      <button class="btn btn-info btn-sm" onclick="toggleExpand('exp-${r.id}')" title="More details" style="min-width:32px;width:32px">▼</button>
+      <button class="btn btn-danger btn-sm" onclick="delRow('${r.id}')" style="min-width:32px;width:32px">🗑️</button>
     </div>`;
     grid.appendChild(card);
   });
@@ -246,6 +246,35 @@ function viewRow(id){
   openM("mView");
 }
 let confirmingBookingId=null;
+function toggleConfirm(id,name,isConfirmed){
+  if(isConfirmed){
+    // Unconfirm
+    unconfirm(id);
+  }else{
+    // Open confirm modal
+    openConfirm(id,name);
+  }
+}
+async function unconfirm(id){
+  if(!confirm("Cancel this confirmation?"))return;
+  try{
+    const booking=data.find(x=>x.id===id);
+    if(!booking)return;
+    await DeltaV.dbUpd("bookings",id,{
+      status:"open",
+      date:null,
+      slot:null
+    });
+    booking.status="open";
+    booking.date=null;
+    booking.slot=null;
+    renderData();
+    DeltaV.toast("Confirmation cancelled","success");
+  }catch(e){
+    console.error("Unconfirm error:",e);
+    DeltaV.toast("Error unconfirming: "+e.message,"error");
+  }
+}
 function openConfirm(id,name){
   confirmingBookingId=id;
   document.getElementById("cfmName").value=name;
