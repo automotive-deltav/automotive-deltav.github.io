@@ -149,6 +149,44 @@
   window.addEventListener('error', function(e){ try{ DeltaV.toast(e.message || 'Error occurred','error'); }catch(_){ console.error(e); } });
   window.addEventListener('unhandledrejection', function(ev){ try{ DeltaV.toast((ev.reason && ev.reason.message) || 'Unhandled rejection','error'); }catch(_){ console.error(ev); } });
 
+  // Create custom scroll buttons
+  function initScrollButtons(){
+    if(document.getElementById('scrollControls')) return; // Already created
+    const container = document.createElement('div');
+    container.id = 'scrollControls';
+    container.className = 'scroll-controls';
+    container.innerHTML = `
+      <button class="scroll-btn" id="scrollUp" title="Scroll up">↑</button>
+      <button class="scroll-btn" id="scrollDown" title="Scroll down">↓</button>
+    `;
+    document.body.appendChild(container);
+    
+    const upBtn = document.getElementById('scrollUp');
+    const downBtn = document.getElementById('scrollDown');
+    
+    upBtn.addEventListener('click', () => {
+      window.scrollBy({top: -300, behavior: 'smooth'});
+    });
+    downBtn.addEventListener('click', () => {
+      window.scrollBy({top: 300, behavior: 'smooth'});
+    });
+    
+    // Hide buttons when at top/bottom
+    window.addEventListener('scroll', () => {
+      upBtn.style.opacity = window.scrollY > 100 ? '1' : '0.3';
+      downBtn.style.opacity = (window.scrollY < document.documentElement.scrollHeight - window.innerHeight - 100) ? '1' : '0.3';
+    });
+  }
+  
+  // Initialize scroll buttons when DOM is ready
+  window.addEventListener('DOMContentLoaded', initScrollButtons);
+  // Also init immediately in case DOM is already loaded
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', initScrollButtons);
+  }else{
+    initScrollButtons();
+  }
+
   // Delay creating no-op stubs until DOM is ready so page scripts can define real handlers first
   const _stubs = ['openNewInv','saveInv','loadInv','addPart','calcT','editInv','delInv','exportInv','pdfInv','togPay','dupInv','openNew'];
   window.addEventListener('DOMContentLoaded', ()=>{
