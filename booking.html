@@ -150,14 +150,10 @@ async function submitBooking(){
     phone:document.getElementById("bPhone").value.trim(),
     email:document.getElementById("bEmail").value.trim(),
     reg:document.getElementById("bReg").value.toUpperCase().trim(),
-    car:document.getElementById("bCar").value.trim(),
-    year:document.getElementById("bYear").value||null,
-    service:document.getElementById("bService").value,
     date:document.getElementById("bDate").value,
-    notes:document.getElementById("bNotes").value.trim(),
-    status:"pending",
-    viewed:false,
-    created_at:new Date().toISOString()
+    slot:document.getElementById("bService").value,
+    notes:(document.getElementById("bNotes").value.trim()+" [Vehicle: "+document.getElementById("bCar").value.trim()+" "+document.getElementById("bYear").value+"]").trim(),
+    status:"open"
   };
   
   const btn=event.target;
