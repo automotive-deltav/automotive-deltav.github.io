@@ -133,6 +133,11 @@ CREATE INDEX IF NOT EXISTS idx_inventory_code ON inventory(item_code);
 CREATE INDEX IF NOT EXISTS idx_inventory_reg ON inventory(car_reg);
 CREATE INDEX IF NOT EXISTS idx_payments_invoice ON payments(invoice_id);
 
+-- Add missing columns to bookings if they don't exist
+ALTER TABLE bookings ADD COLUMN IF NOT EXISTS slot TEXT;
+ALTER TABLE bookings ADD COLUMN IF NOT EXISTS status TEXT DEFAULT 'open';
+ALTER TABLE bookings ADD COLUMN IF NOT EXISTS notes TEXT;
+
 -- Add missing columns to inventory if they don't exist
 ALTER TABLE inventory ADD COLUMN IF NOT EXISTS serial_number TEXT;
 ALTER TABLE inventory ADD COLUMN IF NOT EXISTS car_reg TEXT;

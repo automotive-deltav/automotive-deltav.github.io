@@ -160,8 +160,7 @@ async function savePay(){
 }
 function editPay(id){const p=payData.find(x=>x.id===id);if(!p)return;payEdit=id;document.getElementById("pyDt").value=p.payment_date;document.getElementById("pyAmt").value=p.amount;document.getElementById("pyCN").value=p.customer_name||"";document.getElementById("pyRef").value=p.invoice_ref||"";document.getElementById("pyMeth").value=p.method||"Cash";document.getElementById("pyNote").value=p.notes||"";openM("mNewPay");}
 function delPay(id){confirmDel("Delete this payment?",async()=>{await dbDel("payments",id);payData=payData.filter(p=>p.id!==id);renderPay();updateStats();toast("Deleted","in");});}
-function exportPay(){const rows=[["Date","Customer","Invoice Ref","Method","Amount","Notes"]];payData.forEach(p=>rows.push([p.payment_date,p.customer_name||"",p.invoice_ref||"",p.method,p.amount,p.notes||""]));const csv=rows.map(r=>r.map(c=>`"${c||""}"`).join(",")).join("
-");const a=document.createElement("a");a.href="data:text/csv,"+encodeURIComponent(csv);a.download="payments.csv";a.click();}
+function exportPay(){const rows=[["Date","Customer","Invoice Ref","Method","Amount","Notes"]];payData.forEach(p=>rows.push([p.payment_date,p.customer_name||"",p.invoice_ref||"",p.method,p.amount,p.notes||""]));let csv="";rows.forEach(r=>csv+=r.map(c=>`"${(c||"").toString().replace(/"/g,'""')}"`).join(",")+"\\n");const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));a.download="payments.csv";a.click();}
 document.getElementById("mNewPay").querySelector("h3").onclick=()=>{};
 openNewPay;loadPay();
 </script>

@@ -179,8 +179,7 @@ async function saveTx(){
 }
 function editTx(id){const t=finData.find(x=>x.id===id);if(!t)return;finEdit=id;document.getElementById("txDt").value=t.tx_date;document.getElementById("txType").value=t.type;document.getElementById("txCat").value=t.category;document.getElementById("txAmt").value=t.amount;document.getElementById("txDesc").value=t.description||"";document.getElementById("txRef").value=t.reference||"";document.getElementById("txNote").value=t.notes||"";openM("mNewTx");}
 function delTx(id){confirmDel("Delete this transaction?",async()=>{await dbDel("transactions",id);finData=finData.filter(t=>t.id!==id);renderFin();updateFinStats();toast("Deleted","in");});}
-function exportFin(){const rows=[["Date","Type","Category","Description","Amount","Reference"]];finData.forEach(t=>rows.push([t.tx_date,t.type,t.category,t.description,t.amount,t.reference||""]));const csv=rows.map(r=>r.map(c=>`"${c||""}"`).join(",")).join("
-");const a=document.createElement("a");a.href="data:text/csv,"+encodeURIComponent(csv);a.download="finance.csv";a.click();}
+function exportFin(){const rows=[["Date","Type","Category","Description","Amount","Reference"]];finData.forEach(t=>rows.push([t.tx_date,t.type,t.category,t.description,t.amount,t.reference||""]));let csv="";rows.forEach(r=>csv+=r.map(c=>`"${(c||"").toString().replace(/"/g,'""')}"`).join(",")+"\\n");const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));a.download="finance.csv";a.click();}
 document.getElementById("txDt").value=today();loadFin();
 </script>
 </body></html>
