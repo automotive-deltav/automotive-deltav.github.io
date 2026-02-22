@@ -181,7 +181,14 @@ function sendVer(){
       verificationCode:vCode,
       subject:"DeltaV Booking - Verification Code"
     })
-  }).then(r=>r.json()).then(data=>{
+  }).then(async r=>{
+    const data=await r.json();
+    if(!r.ok){
+      console.error("Function returned error:",r.status,data);
+      throw new Error(`Server error: ${data.error||r.statusText}`);
+    }
+    return data;
+  }).then(data=>{
     if(data.success || data.messageId){
       console.log("Email sent successfully! Code is:",vCode);
       document.getElementById("sentTo").textContent=em;
@@ -198,7 +205,7 @@ function sendVer(){
     console.error("Email error:",e);
     btn.disabled=false;
     btn.textContent=origText;
-    const errMsg="Email failed to send. Error: "+(e.message||e);
+    const errMsg="Email failed: "+(e.message||String(e));
     alert(errMsg);
     document.getElementById("cErr").style.display="block";
     document.getElementById("cErr").textContent="❌ "+errMsg;
