@@ -139,6 +139,21 @@ function validate(){
     if(!el.value.trim()){el.style.borderColor="red";ok=false;}
     else el.style.borderColor="";
   });
+  if(!ok){
+    // Show error at top
+    let errEl=document.getElementById("bErr");
+    if(!errEl){
+      errEl=document.createElement("div");
+      errEl.id="bErr";
+      errEl.style.cssText="background:rgba(255,107,107,.15);border:1.5px solid rgba(255,107,107,.35);color:#ff6b6b;padding:12px 14px;border-radius:8px;margin-bottom:14px;font-weight:600";
+      document.getElementById("bookForm").insertBefore(errEl, document.getElementById("bookForm").firstChild);
+    }
+    errEl.textContent="❌ Please fill in all required fields";
+    errEl.style.display="block";
+  }else{
+    const errEl=document.getElementById("bErr");
+    if(errEl) errEl.style.display="none";
+  }
   return ok;
 }
 
@@ -146,10 +161,16 @@ function sendVer(){
   if(!validate())return;
   
   vCode=Math.floor(100000+Math.random()*900000).toString();
-  const em=document.getElementById("bEmail").value;
-  const nm=document.getElementById("bName").value;
+  const em=document.getElementById("bEmail").value.trim();
+  const nm=document.getElementById("bName").value.trim();
   
   console.log("Sending code:",vCode,"to",em);
+  
+  // Show loading state
+  const btn=event.target;
+  const origText=btn.textContent;
+  btn.disabled=true;
+  btn.textContent="📧 Sending...";
   
   // CRITICAL: EmailJS template variables MUST EXACTLY match
   emailjs.send("service_hi4mpao","template_aj5l14u",{
@@ -163,10 +184,18 @@ function sendVer(){
     document.getElementById("sentTo").textContent=em;
     document.getElementById("verBox").style.display="block";
     document.getElementById("cErr").style.display="none";
+    document.getElementById("cErr").textContent="";
+    btn.disabled=false;
+    btn.textContent=origText;
     document.getElementById("verBox").scrollIntoView({behavior:"smooth"});
   }).catch(e=>{
     console.error("EmailJS error:",e);
-    alert("Email failed to send. Please check:\n\n1. Your EmailJS public key is set in booking.html line 105\n2. Service ID and Template ID are correct\n3. Your EmailJS template has these variables:\n   - {{to_email}}\n   - {{to_name}}\n   - {{code}} or {{verification_code}}\n\nError: "+e);
+    btn.disabled=false;
+    btn.textContent=origText;
+    const errMsg="Email failed to send. Ensure EmailJS is configured correctly. Error: "+(e.message||e);
+    alert(errMsg);
+    document.getElementById("cErr").style.display="block";
+    document.getElementById("cErr").textContent="❌ "+errMsg;
   });
 }
 
@@ -174,6 +203,7 @@ async function submitBooking(){
   const entered=document.getElementById("bCode").value.trim();
   if(entered!==vCode){
     document.getElementById("cErr").style.display="block";
+    document.getElementById("cErr").textContent="❌ Incorrect code. Please try again.";
     document.getElementById("bCode").style.borderColor="red";
     return;
   }
@@ -189,8 +219,14 @@ async function submitBooking(){
     date:document.getElementById("bDate").value,
     notes:document.getElementById("bNotes").value.trim(),
     status:"pending",
-    viewed:false
+    viewed:false,
+    created_at:new Date().toISOString()
   };
+  
+  const btn=event.target;
+  const origText=btn.textContent;
+  btn.disabled=true;
+  btn.textContent="⏳ Processing...";
   
   try{
     const r=await fetch(`${SB}/rest/v1/bookings`,{
@@ -205,6 +241,17 @@ async function submitBooking(){
     });
     
     if(r.ok){
+      // Send confirmation email
+      try{
+        await emailjs.send("service_hi4mpao","template_aj5l14u",{
+          to_email:data.email,
+          to_name:data.name,
+          message:"Your booking has been confirmed. Registration: "+data.reg+", Date: "+data.date
+        });
+      }catch(emailErr){
+        console.warn("Confirmation email failed but booking was saved:",emailErr);
+      }
+      
       document.getElementById("bookForm").style.display="none";
       document.getElementById("okBox").style.display="block";
       
@@ -247,10 +294,15 @@ async function submitBooking(){
       `;
       document.getElementById("bookingCardContainer").appendChild(card);
     }else{
-      alert("Failed to save booking. Check Supabase connection.");
+      const errText=await r.text().catch(()=>"Unknown error");
+      throw new Error("Database error: "+errText);
     }
   }catch(e){
-    alert("Error: "+e.message);
+    console.error("Booking error:",e);
+    btn.disabled=false;
+    btn.textContent=origText;
+    document.getElementById("cErr").style.display="block";
+    document.getElementById("cErr").textContent="❌ Error saving booking: "+e.message;
   }
 }
 </script>
