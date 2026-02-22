@@ -197,11 +197,10 @@ async function submitBooking(){
           <div>
             <div style="color:rgba(255,255,255,.52);font-size:.8rem;margin-bottom:2px">🚗 Vehicle</div>
             <div style="color:#fff;font-weight:600">${data.reg}</div>
-            <div style="color:rgba(255,255,255,.42);font-size:.75rem;margin-top:2px">${data.car||'Unknown'}</div>
           </div>
           <div>
             <div style="color:rgba(255,255,255,.52);font-size:.8rem;margin-bottom:2px">🔧 Service</div>
-            <div style="color:#fff;font-weight:600">${data.service.includes('Other')?'Custom Service':data.service.split('—')[0].trim()}</div>
+            <div style="color:#fff;font-weight:600">${data.slot.includes('Other')?'Custom Service':data.slot.split('—')[0].trim()}</div>
           </div>
         </div>
         <div>
