@@ -33,7 +33,6 @@ body{background:#0d1823}
 footer{background:#090f16;color:rgba(255,255,255,.38);padding:32px 40px;display:flex;justify-content:space-between;align-items:center;border-top:1px solid rgba(255,255,255,.06);font-size:.8rem}
 footer strong{font-family:"Barlow Condensed",sans-serif;font-size:1.3rem;color:#fff}
 footer strong span{color:var(--ac)}
-#ah{display:none;position:fixed;bottom:16px;right:16px;background:rgba(27,43,58,.96);color:#fff;padding:11px 16px;border-radius:9px;font-size:.8rem;font-weight:600;z-index:9999;border:1px solid var(--ac)}
 </style></head><body>
 <header class="pub-h">
   <a href="javascript:void(0)" class="pub-logo">DeltaV <span>Auto</span></a>
@@ -107,21 +106,6 @@ footer strong span{color:var(--ac)}
 
 <footer>
   <div><strong>DeltaV <span>Automotive</span></strong><br>Smethwick, West Midlands · info@deltavautomotive.co.uk</div>
-  <div style="text-align:right">© 2026 DeltaV Automotive<br><a href="login.html" id="adminBtn" style="color:rgba(255,255,255,.2);font-size:.72rem;text-decoration:none;display:none">Admin</a></div>
+  <div style="text-align:right">© 2026 DeltaV Automotive</div>
 </footer>
-
-<script>
-// Device fingerprint & approval system
-function genDeviceId(){const c=[navigator.userAgent,screen.resolution||screen.width+'x'+screen.height,new Date().getTimezoneOffset(),navigator.language].join('|');let h=0;for(let i=0;i<c.length;i++){const char=c.charCodeAt(i);h=((h<<5)-h)+char;h=h&h;}return Math.abs(h).toString(16);}
-
-function checkAdminAccess(){const id=genDeviceId();const approved=JSON.parse(localStorage.getItem('dv_approved_devices')||'[]');const isApproved=approved.includes(id);document.getElementById('adminBtn').style.display=isApproved?'inline':'none';window.dvDeviceId=id;window.dvIsApproved=isApproved;}
-
-function approveDevice(){const code=prompt('Enter approval code for this device:');if(code==='deltav2026'){const id=genDeviceId();const approved=JSON.parse(localStorage.getItem('dv_approved_devices')||'[]');if(!approved.includes(id)){approved.push(id);localStorage.setItem('dv_approved_devices',JSON.stringify(approved));alert('Device approved! Admin button is now visible.');checkAdminAccess();}}else if(code!==null){alert('Invalid code');}}
-
-// Click the DeltaV logo 3 times to approve device
-let c=0,t;document.querySelector('.pub-logo').addEventListener('click',e=>{c++;if(c===1)t=setTimeout(()=>{if(c<3)window.location.href='index.html';c=0;},700);if(c===3){clearTimeout(t);c=0;approveDevice();}});
-
-// Check on load
-checkAdminAccess();
-</script>
 </body></html>
