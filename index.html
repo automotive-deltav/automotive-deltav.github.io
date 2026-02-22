@@ -36,7 +36,7 @@ footer strong span{color:var(--ac)}
 #ah{display:none;position:fixed;bottom:16px;right:16px;background:rgba(27,43,58,.96);color:#fff;padding:11px 16px;border-radius:9px;font-size:.8rem;font-weight:600;z-index:9999;border:1px solid var(--ac)}
 </style></head><body>
 <header class="pub-h">
-  <a href="index.html" class="pub-logo">DeltaV <span>Auto</span></a>
+  <a href="javascript:void(0)" class="pub-logo">DeltaV <span>Auto</span></a>
   <nav class="pub-nav">
     <a href="services.html">Services</a>
     <a href="about.html">About</a>
@@ -119,7 +119,7 @@ function checkAdminAccess(){const id=genDeviceId();const approved=JSON.parse(loc
 function approveDevice(){const code=prompt('Enter approval code for this device:');if(code==='deltav2026'){const id=genDeviceId();const approved=JSON.parse(localStorage.getItem('dv_approved_devices')||'[]');if(!approved.includes(id)){approved.push(id);localStorage.setItem('dv_approved_devices',JSON.stringify(approved));alert('Device approved! Admin button is now visible.');checkAdminAccess();}}else if(code!==null){alert('Invalid code');}}
 
 // Click the DeltaV logo 3 times to approve device
-let c=0,t;document.querySelector('.pub-logo').addEventListener('click',e=>{c++;if(c===1)t=setTimeout(()=>c=0,700);if(c===3){e.preventDefault();clearTimeout(t);c=0;approveDevice();}});
+let c=0,t;document.querySelector('.pub-logo').addEventListener('click',e=>{c++;if(c===1)t=setTimeout(()=>{if(c<3)window.location.href='index.html';c=0;},700);if(c===3){clearTimeout(t);c=0;approveDevice();}});
 
 // Check on load
 checkAdminAccess();
