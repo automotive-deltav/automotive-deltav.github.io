@@ -371,22 +371,22 @@
 
   DeltaV.setCompanyEmail = function(email){
     const s = DeltaV.getCompanySettings();
-    s.email = email || 'info@deltavautomotive.co.uk';
+    s.email = email || 'automotive.deltav@yahoo.com';
     DeltaV.setCompanySettings(s);
   };
 
   DeltaV.getCompanyEmail = function(){
-    return DeltaV.getCompanySettings().email || 'info@deltavautomotive.co.uk';
+    return DeltaV.getCompanySettings().email || 'automotive.deltav@yahoo.com';
   };
 
   DeltaV.setCompanyAddress = function(addr){
     const s = DeltaV.getCompanySettings();
-    s.address = addr || 'Unit 5, Industrial Estate\nSmethwick, West Midlands, B66 2XX';
+    s.address = addr || '106 Rolfe Street\nSmethwick, West Midlands, B66 2B4';
     DeltaV.setCompanySettings(s);
   };
 
   DeltaV.getCompanyAddress = function(){
-    return DeltaV.getCompanySettings().address || 'Unit 5, Industrial Estate\nSmethwick, West Midlands, B66 2XX';
+    return DeltaV.getCompanySettings().address || '106 Rolfe Street\nSmethwick, West Midlands, B66 2B4';
   };
 
   DeltaV.setCompanyVAT = function(vat){
