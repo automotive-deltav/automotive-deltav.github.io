@@ -1,0 +1,166 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>DeltaV — 👥 Customers</title><link rel="stylesheet" href="theme.css"><style></style></head><body><script>if(sessionStorage.getItem("dv_admin")!=="1"){location.href="login.html";}</script><div class="sidebar"><div class="sb-logo">DeltaV <span>Auto</span><small>Admin Panel</small></div><nav><div class="sb-sec">Core</div><a href="dashboard.html" class=""><span class="ni">📊</span>Dashboard</a><a href="admin.html" class=""><span class="ni">📅</span>Bookings</a><a href="schedule.html" class=""><span class="ni">🗓️</span>Schedule</a><a href="customers.html" class="active"><span class="ni">👥</span>Customers</a><a href="contact_inquiries.html" class=""><span class="ni">📧</span>Contact Inquiries</a><a href="invoices.html" class=""><span class="ni">💰</span>Invoices</a><div class="sb-sec">Stock & Money</div><a href="inventory.html" class=""><span class="ni">📦</span>Inventory</a><a href="payments.html" class=""><span class="ni">💳</span>Payments</a><a href="finance.html" class=""><span class="ni">📈</span>Finance</a><a href="workers.html" class=""><span class="ni">👷</span>Workers</a><div class="sb-sec">Operations</div><a href="jobs.html" class=""><span class="ni">🔩</span>Job Cards</a><a href="quotes.html" class=""><span class="ni">📋</span>Quotes</a><a href="suppliers.html" class=""><span class="ni">🏭</span>Suppliers</a><a href="expenses.html" class=""><span class="ni">🧾</span>Expenses</a><a href="reports.html" class=""><span class="ni">📉</span>Reports</a><div class="sb-sec">Communication</div><a href="messages.html" class=""><span class="ni">💬</span>Messages</a><a href="notes.html" class=""><span class="ni">📝</span>Notes</a><a href="reminders.html" class=""><span class="ni">🔔</span>Reminders</a><a href="vehicles.html" class=""><span class="ni">🚗</span>Vehicle DB</a><div class="sb-sec">Extra</div><a href="audit.html" class=""><span class="ni">🔍</span>Audit Log</a><a href="tasks.html" class=""><span class="ni">✅</span>Tasks</a><a href="timesheets.html" class=""><span class="ni">⏱️</span>Timesheets</a><a href="warranties.html" class=""><span class="ni">🛡️</span>Warranties</a><a href="promotions.html" class=""><span class="ni">🎁</span>Promotions</a><a href="feedback.html" class=""><span class="ni">⭐</span>Feedback</a><a href="returns.html" class=""><span class="ni">↩️</span>Returns</a><a href="waiting.html" class=""><span class="ni">⏳</span>Waiting List</a><a href="checklist.html" class=""><span class="ni">☑️</span>Checklists</a><a href="gallery_mgr.html" class=""><span class="ni">📸</span>Gallery Mgr</a><a href="targets.html" class=""><span class="ni">🎯</span>Targets</a><a href="settings.html" class=""><span class="ni">⚙️</span>Settings</a></nav><div class="sb-foot"><a href="index.html" class="btn-sb-link">🌐 Website</a><button class="btn-sb-out" onclick="if(confirm('Log out?')){sessionStorage.removeItem('dv_admin');location.href='login.html';}">🚪 Log Out</button></div></div><div class="main"><div class="topbar"><h1>👥 Customers</h1><div class="tr"><button class="btn btn-primary" onclick="openM('mNewC')">➕ Add Customer</button><button class="btn btn-info" onclick="exportC()">📥 Export</button><button class="btn btn-ghost" onclick="loadC()">🔄 Refresh</button></div></div><div class="body"><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:20px">
+  <div class="stat-card" style="background:linear-gradient(135deg,rgba(96,165,250,.1),rgba(96,165,250,.05))">
+    <div class="stat-label">Total Customers</div>
+    <div class="stat-value" id="statCustCount">0</div>
+  </div>
+  <div class="stat-card" style="background:linear-gradient(135deg,rgba(34,197,94,.1),rgba(34,197,94,.05))">
+    <div class="stat-label">Total Vehicles</div>
+    <div class="stat-value" id="statVehicles">0</div>
+  </div>
+  <div class="stat-card" style="background:linear-gradient(135deg,rgba(59,130,246,.1),rgba(59,130,246,.05))">
+    <div class="stat-label">Total Revenue</div>
+    <div class="stat-value" style="font-size:1.3em" id="statRevenue">£0</div>
+  </div>
+  <div class="stat-card" style="background:linear-gradient(135deg,rgba(168,85,247,.1),rgba(168,85,247,.05))">
+    <div class="stat-label">Active Bookings</div>
+    <div class="stat-value" id="statActiveBookings">0</div>
+  </div>
+</div>
+
+<div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;align-items:center">
+  <div class="srch-w" style="flex:1;min-width:200px"><input type="text" id="csrch" placeholder="🔍 Search by name, email, or vehicle..." oninput="renderC()"style="width:100%"></div>
+  <select id="csort" onchange="renderC()" style="padding:8px 12px;border:1px solid #e2e8f0;border-radius:6px;background:#fff;cursor:pointer;font-size:.9em">
+    <option value="name">Sort by Name</option>
+    <option value="spent">Sort by Spent (High to Low)</option>
+    <option value="bookings">Sort by Bookings</option>
+    <option value="last">Sort by Last Visit</option>
+  </select>
+  <button class="btn btn-ghost" onclick="loadC()" title="Refresh data">🔄</button>
+  <button class="btn btn-info btn-sm" onclick="exportC()">📥 CSV</button>
+  <button class="btn btn-warning btn-sm" onclick="window.print()">🖨️ Print</button>
+</div>
+
+<div id="cGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px"></div>
+<div id="cEmpty" style="display:none;text-align:center;padding:60px 20px;color:#94a3b8">
+  <div style="font-size:3em;margin-bottom:12px">👥</div>
+  <p style="font-size:1.1em">No customers found</p>
+</div>
+
+<div class="modal" id="mVwC"><div class="mbox" style="max-width:500px"><h3>👤 Customer Profile</h3><div id="mVwCB" style="max-height:400px;overflow-y:auto"></div>
+<div class="mfoot"><button class="btn btn-ghost" onclick="closeM('mVwC')">Close</button>
+<button class="btn btn-primary" onclick="closeM('mVwC')">💰 New Invoice</button>
+<button class="btn btn-info" onclick="closeM('mVwC');location.href='admin.html'">📅 Bookings</button></div></div></div>
+<div class="modal" id="mNewC"><div class="mbox"><h3>➕ Add Manual Customer</h3>
+<div class="g2"><div class="fg"><label>Name *</label><input type="text" id="ncN"></div><div class="fg"><label>Phone *</label><input type="tel" id="ncP"></div></div>
+<div class="fg"><label>Email *</label><input type="email" id="ncE"></div>
+<div class="g2"><div class="fg"><label>Car Reg</label><input type="text" id="ncR" placeholder="AB12 CDE"></div><div class="fg"><label>Car Make/Model</label><input type="text" id="ncM" placeholder="Ford Focus"></div></div>
+<div class="fg"><label>Notes</label><textarea id="ncX"></textarea></div>
+<div class="mfoot"><button class="btn btn-ghost" onclick="closeM('mNewC')">Cancel</button><button class="btn btn-primary" onclick="saveNewC()">Save</button></div></div></div></div></div><div class="modal" id="mDel"><div class="mbox" style="max-width:370px"><h3>🗑️ Confirm Delete</h3><p id="mDelMsg" style="color:#555;margin-bottom:4px">This cannot be undone.</p><div class="mfoot"><button class="btn btn-ghost" onclick="closeM('mDel')">Cancel</button><button class="btn btn-danger" id="mDelBtn">Yes, Delete</button></div></div></div><script src="shared.js"></script><script>
+let cData=[];
+async function loadC(){
+  const[bk,inv]=await Promise.all([dbGet("bookings"),dbGet("invoices")]);
+  const mp={};
+  let totalSpent=0;
+  let activeBookings=0;
+  bk.forEach(b=>{
+    if(!mp[b.email])mp[b.email]={name:b.name,email:b.email,phone:b.phone||"—",regs:[],bkCount:0,spent:0,lastDate:""};
+    const c=mp[b.email];c.bkCount++;
+    if(!c.regs.includes(b.reg))c.regs.push(b.reg);
+    if(!c.lastDate||b.date>c.lastDate)c.lastDate=b.date;
+    if(b.status==="pending"||b.status==="confirmed")activeBookings++;
+  });
+  inv.forEach(i=>{if(mp[i.customer_email])mp[i.customer_email].spent+=(i.total_amount||0);totalSpent+=i.total_amount||0;});
+  
+  cData=Object.values(mp);
+  
+  // Update stat cards
+  const el1=document.getElementById("statCustCount");
+  if(el1) el1.textContent=cData.length;
+  animateStat("statVehicles",cData.reduce((s,c)=>s+c.regs.length,0));
+  const el2=document.getElementById("statRevenue");
+  if(el2) el2.textContent=fmtGBP(totalSpent);
+  const el3=document.getElementById("statActiveBookings");
+  if(el3) el3.textContent=activeBookings;
+  
+  renderC();
+}
+
+function renderC(){
+  const q=document.getElementById("csrch").value.toLowerCase();
+  const sort=document.getElementById("csort").value;
+  let f=cData.filter(c=>(c.name||"").toLowerCase().includes(q)||(c.email||"").toLowerCase().includes(q)||(c.regs.join(" ")).toLowerCase().includes(q));
+  
+  // Apply sorting
+  if(sort==="spent")f.sort((a,b)=>b.spent-a.spent);
+  else if(sort==="bookings")f.sort((a,b)=>b.bkCount-a.bkCount);
+  else if(sort==="last")f.sort((a,b)=>(b.lastDate||"").localeCompare(a.lastDate||""));
+  else f.sort((a,b)=>(a.name||"").localeCompare(b.name||""));
+  
+  const grid=document.getElementById("cGrid");
+  grid.innerHTML="";
+  
+  if(!f.length){
+    document.getElementById("cEmpty").style.display="";
+    return;
+  }
+  document.getElementById("cEmpty").style.display="none";
+  
+  f.forEach((c,idx)=>{
+    const card=document.createElement("div");
+    card.style.cssText=`background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:16px;animation:fadeInUp .3s ease-out ${idx*0.05}s backwards;cursor:pointer;transition:all .2s;position:relative;overflow:hidden`;
+    
+    card.innerHTML=`
+      <div style="position:absolute;top:0;left:0;width:4px;height:100%;background:var(--ac)"></div>
+      <div style="padding-left:8px">
+        <h4 style="margin:0 0 4px;color:var(--dk);font-size:1.1em">${c.name}</h4>
+        <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap">
+          ${c.regs.map(r=>`<span class="badge b-in" style="font-size:.8em">${r}</span>`).join("")}
+        </div>
+        
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;padding:8px 0;border-top:1px solid #f1f3f5;border-bottom:1px solid #f1f3f5">
+          <div><small style="color:#94a3b8">Bookings</small><div style="font-weight:700;color:var(--ac)">${c.bkCount}</div></div>
+          <div><small style="color:#94a3b8">Spent</small><div style="font-weight:700;color:#22c55e">${fmtGBP(c.spent)}</div></div>
+        </div>
+        
+        <div style="font-size:.85em;color:#64748b;margin-bottom:12px">
+          <div>📧 <a href="mailto:${c.email}" style="color:var(--ac);text-decoration:none">${c.email}</a></div>
+          <div>📞 <a href="tel:${c.phone}" style="color:var(--ac);text-decoration:none">${c.phone}</a></div>
+          ${c.lastDate?`<div style="color:#94a3b8">Last visit: ${fmtD(c.lastDate)}</div>`:""}
+        </div>
+        
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <button class="btn btn-primary btn-sm" onclick="viewC(${JSON.stringify(c).replace(/'/g,"&apos;")})">👤 View</button>
+          <button class="btn btn-success btn-sm" onclick='preInv("${c.name}","${c.email}")'>💰 Invoice</button>
+        </div>
+      </div>
+    `;
+    
+    card.onmouseover=()=>{
+      card.style.boxShadow="0 12px 24px rgba(0,0,0,.1)";
+      card.style.transform="translateY(-4px)";
+    };
+    card.onmouseout=()=>{
+      card.style.boxShadow="";
+      card.style.transform="";
+    };
+    
+    grid.appendChild(card);
+  });
+}
+
+function viewC(c){
+  const revenue=c.spent>0?`<div class="ir hi" style="border-top:1px solid #f1f3f5;padding-top:8px"><span class="lbl">Total Revenue</span><span class="val" style="color:var(--ac);font-weight:700">${fmtGBP(c.spent)}</span></div>`:"";
+  document.getElementById("mVwCB").innerHTML=`
+    <div class="ir"><span class="lbl">Name</span><span class="val">${c.name}</span></div>
+    <div class="ir"><span class="lbl">Email</span><span class="val">${c.email}</span></div>
+    <div class="ir"><span class="lbl">Phone</span><span class="val">${c.phone}</span></div>
+    <div class="ir"><span class="lbl">Vehicles (${c.regs.length})</span><span class="val">${c.regs.join(", ") || "—"}</span></div>
+    <div class="ir"><span class="lbl">Total Bookings</span><span class="val">${c.bkCount}</span></div>
+    ${revenue}
+    <div class="ir"><span class="lbl">Last Visit</span><span class="val">${c.lastDate?fmtD(c.lastDate):"—"}</span></div>
+  `;
+  openM("mVwC");
+}
+
+function preInv(n,e){sessionStorage.setItem("inv_pre",JSON.stringify({customer_name:n,customer_email:e}));location.href="invoices.html";}
+
+function exportC(){
+  const rows=[["Name","Email","Phone","Regs","Bookings","Total Spent","Last Visit"]];
+  cData.forEach(c=>rows.push([c.name,c.email,c.phone,c.regs.join("|"),c.bkCount,c.spent.toFixed(2),c.lastDate||""]));
+  const csv=rows.map(r=>r.map(x=>`"${x||""}"`).join(",")).join("\n");
+  const a=document.createElement("a");a.href="data:text/csv,"+encodeURIComponent(csv);a.download="customers.csv";a.click();
+}
+function animateStat(id,target){const el=document.getElementById(id);if(!el) return;const current=parseInt(el.textContent)||0;const step=(target-current)/20;let count=current;const interval=setInterval(()=>{count+=step;if((step>0&&count>=target)||(step<0&&count<=target)){el.textContent=target;clearInterval(interval);}else{el.textContent=Math.round(count);}},50);}
+
+loadC();
+</script></body></html>

@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DeltaV — Schedule</title>
+<link rel="stylesheet" href="theme.css">
+<style>
+.cal-head{display:grid;grid-template-columns:repeat(7,1fr);background:linear-gradient(135deg,#1b2b3a,#2e4560);border-radius:8px 8px 0 0}
+.cal-head div{padding:14px;text-align:center;color:rgba(255,255,255,.7);font-size:.75rem;font-weight:700;letter-spacing:1.2px}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:1px;background:#e2e8f0;border-radius:0 0 8px 8px;overflow:hidden;border:1px solid #e2e8f0}
+.cal-day{min-height:120px;background:#fff;padding:8px;position:relative;transition:all .2s;display:flex;flex-direction:column}
+.cal-day:hover{background:#f9fafb;box-shadow:inset 0 2px 8px rgba(96,165,250,.05)}
+.cal-day.today{background:linear-gradient(135deg,rgba(96,165,250,.08),rgba(96,165,250,.02));border-left:4px solid var(--ac)}
+.cal-day.other-month{background:#f8f9fb;color:#cbd5e1}
+.day-num{font-weight:700;font-size:.9rem;color:var(--dk);margin-bottom:6px;line-height:1}
+.day-num.today{color:var(--ac);font-size:1rem;font-weight:800}
+.appt{background:#28a745;color:#fff;padding:5px 8px;border-radius:4px;font-size:.7rem;font-weight:600;margin-bottom:2px;cursor:pointer;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,.12);transition:all .15s;border-left:3px solid rgba(255,255,255,.4)}
+.appt:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,.15);border-left-width:4px}
+.appt.pending{background:#ffc107;color:#444;border-left-color:rgba(255,255,255,.5)}
+.appt.confirmed{background:#28a745;color:#fff}
+.appt.other{background:#6366f1;color:#fff}
+.appt-badge{display:inline-block;background:var(--ac);color:#fff;padding:2px 6px;border-radius:3px;font-size:.65rem;font-weight:700;margin-bottom:4px}
+</style>
+</head>
+<body>
+<script src="shared.js"></script>
+<script>DeltaV.requireLogin();</script>
+<div class="sidebar">
+  <div class="sb-logo">DeltaV <span>Auto</span><small>Admin Panel</small></div>
+  <nav>
+    <div class="sb-sec">Core</div>
+    <a href="dashboard.html"><span class="ni">📊</span>Dashboard</a>
+    <a href="admin.html"><span class="ni">📅</span>Bookings</a>
+    <a href="schedule.html" class="active"><span class="ni">🗓️</span>Schedule</a>
+    <a href="customers.html"><span class="ni">👥</span>Customers</a>
+    <a href="contact_inquiries.html"><span class="ni">📧</span>Contact Inquiries</a>
+    <a href="invoices.html"><span class="ni">💰</span>Invoices</a>
+    <div class="sb-sec">Stock & Money</div>
+    <a href="inventory.html"><span class="ni">📦</span>Inventory</a>
+    <a href="payments.html"><span class="ni">💳</span>Payments</a>
+    <a href="finance.html"><span class="ni">📈</span>Finance</a>
+    <a href="workers.html"><span class="ni">👷</span>Workers</a>
+    <div class="sb-sec">Operations</div>
+    <a href="jobs.html"><span class="ni">🔩</span>Job Cards</a>
+    <a href="quotes.html"><span class="ni">📋</span>Quotes</a>
+    <a href="suppliers.html"><span class="ni">🏭</span>Suppliers</a>
+    <a href="expenses.html"><span class="ni">🧾</span>Expenses</a>
+    <a href="reports.html"><span class="ni">📉</span>Reports</a>
+    <div class="sb-sec">Tools</div>
+    <a href="messages.html"><span class="ni">💬</span>Messages</a>
+    <a href="notes.html"><span class="ni">📝</span>Notes</a>
+    <a href="reminders.html"><span class="ni">🔔</span>Reminders</a>
+    <a href="vehicles.html"><span class="ni">🚗</span>Vehicle DB</a>
+    <a href="settings.html"><span class="ni">⚙️</span>Settings</a>
+  </nav>
+  <div class="sb-foot">
+    <a href="index.html" class="btn-sb-link">🌐 Website</a>
+    <button class="btn-sb-out" onclick="if(confirm('Log out?'))DeltaV.logout()">🚪 Log Out</button>
+  </div>
+</div>
+
+<div class="main">
+  <div class="topbar">
+    <h1>🗓️ Schedule</h1>
+    <div class="tr">
+      <button class="btn btn-ghost" onclick="loadSch()">🔄 Refresh</button>
+      <a href="admin.html" class="btn btn-dark">📅 Bookings</a>
+    </div>
+  </div>
+  <div class="body">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:20px">
+      <div class="stat-card" style="background:linear-gradient(135deg,rgba(96,165,250,.1),rgba(96,165,250,.05))">
+        <div class="stat-label">Today's Appointments</div>
+        <div class="stat-value" id="statToday">0</div>
+      </div>
+      <div class="stat-card" style="background:linear-gradient(135deg,rgba(34,197,94,.1),rgba(34,197,94,.05))">
+        <div class="stat-label">This Week</div>
+        <div class="stat-value" id="statWeek">0</div>
+      </div>
+      <div class="stat-card" style="background:linear-gradient(135deg,rgba(59,130,246,.1),rgba(59,130,246,.05))">
+        <div class="stat-label">Confirmed</div>
+        <div class="stat-value" id="statConfirmed">0</div>
+      </div>
+      <div class="stat-card" style="background:linear-gradient(135deg,rgba(255,193,7,.1),rgba(255,193,7,.05))">
+        <div class="stat-label">Pending</div>
+        <div class="stat-value" id="statPending">0</div>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:10px;margin-bottom:18px;align-items:center;justify-content:center;flex-wrap:wrap">
+      <button class="btn btn-dark" onclick="prevMo()" title="Previous month">← Previous</button>
+      <h2 id="moTitle" style="font-family:'Barlow Condensed',sans-serif;font-size:1.6rem;font-weight:700;color:var(--dk);min-width:200px;text-align:center"></h2>
+      <button class="btn btn-dark" onclick="nextMo()" title="Next month">Next →</button>
+      <button class="btn btn-primary" onclick="goToday()" title="Jump to today">📅 Today</button>
+    </div>
+    
+    <div class="cal-head">
+      <div>SUNDAY</div><div>MONDAY</div><div>TUESDAY</div><div>WEDNESDAY</div><div>THURSDAY</div><div>FRIDAY</div><div>SATURDAY</div>
+    </div>
+    <div class="cal-grid" id="calGrid"></div>
+
+    <div style="margin-top:24px;padding:16px;background:#f8f9fb;border-radius:8px;border:1px solid #e2e8f0">
+      <h3 style="margin:0 0 12px;color:var(--dk);font-size:1.1em">📋 Upcoming Appointments (Next 7 Days)</h3>
+      <div id="upcomingList" style="max-height:300px;overflow-y:auto"></div>
+    </div>
+
+    <div class="modal" id="mAppt">
+      <div class="mbox">
+        <h3>📋 Appointment Details</h3>
+        <div id="mApptBody" style="max-height:400px;overflow-y:auto"></div>
+        <div class="mfoot">
+          <button class="btn btn-ghost" onclick="closeM('mAppt')">Close</button>
+          <a href="admin.html" class="btn btn-primary">→ Manage Booking</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="mDel"><div class="mbox" style="max-width:360px"><h3>🗑️ Confirm Delete</h3><p id="mDelMsg" style="color:#555">This cannot be undone.</p><div class="mfoot"><button class="btn btn-ghost" onclick="closeM('mDel')">Cancel</button><button class="btn btn-danger" id="mDelBtn">Yes, Delete</button></div></div></div>
+
+<script src="shared.js"></script>
+<script>
+let curMonth=new Date().getMonth();
+let curYear=new Date().getFullYear();
+let bookings=[];
+const MONTHS=["January","February","March","April","May","June","July","August","September","October","November","December"];
+
+async function loadSch(){
+  try{
+    bookings=await dbGet("bookings");
+    renderCal();
+    updateStats();
+    renderUpcoming();
+  }catch(e){
+    console.error(e);
+    toast("Failed to load schedule","er");
+  }
+}
+
+function updateStats(){
+  const today=new Date();
+  const todayStr=today.toISOString().split("T")[0];
+  
+  // Today's appointments
+  const todayAppts=bookings.filter(b=>(b.confirmed_date||b.date)===todayStr).length;
+  const el1=document.getElementById("statToday");
+  if(el1) el1.textContent=todayAppts;
+  
+  // This week's appointments
+  const weekStart=new Date(today);
+  weekStart.setDate(today.getDate()-today.getDay());
+  const weekEnd=new Date(weekStart);
+  weekEnd.setDate(weekStart.getDate()+6);
+  
+  const formatDate=(d)=>d.toISOString().split("T")[0];
+  const weekAppts=bookings.filter(b=>{
+    const apptDate=b.confirmed_date||b.date;
+    return apptDate>=formatDate(weekStart)&&apptDate<=formatDate(weekEnd);
+  }).length;
+  const el2=document.getElementById("statWeek");
+  if(el2) el2.textContent=weekAppts;
+  
+  // Confirmed and pending
+  const confirmed=bookings.filter(b=>b.status==="confirmed").length;
+  const pending=bookings.filter(b=>b.status!=="confirmed").length;
+  const el3=document.getElementById("statConfirmed");
+  if(el3) el3.textContent=confirmed;
+  const el4=document.getElementById("statPending");
+  if(el4) el4.textContent=pending;
+}
+
+function renderUpcoming(){
+  const today=new Date();
+  const nextWeek=new Date(today);
+  nextWeek.setDate(today.getDate()+7);
+  
+  const formatDate=(d)=>d.toISOString().split("T")[0];
+  const upcoming=bookings
+    .filter(b=>{
+      const apptDate=b.confirmed_date||b.date;
+      return apptDate>=formatDate(today)&&apptDate<=formatDate(nextWeek);
+    })
+    .sort((a,b)=>(a.confirmed_date||a.date).localeCompare(b.confirmed_date||b.date));
+  
+  const list=document.getElementById("upcomingList");
+  if(!upcoming.length){
+    list.innerHTML='<div style="padding:20px;text-align:center;color:#94a3b8">No upcoming appointments</div>';
+    return;
+  }
+  
+  list.innerHTML=upcoming.map((b,i)=>`
+    <div style="padding:12px;border-bottom:1px solid #e2e8f0;display:flex;align-items:center;gap:12px;cursor:pointer;transition:all .2s;animation:fadeInUp .3s ease-out ${i*0.05}s backwards" onmouseover="this.style.backgroundColor='#fff'" onmouseout="this.style.backgroundColor=''" onclick="showAppt('${b.id}')">
+      <div style="width:4px;height:100%;background:${b.status==="confirmed"?"var(--ok)":"var(--wa)"};border-radius:2px"></div>
+      <div style="flex:1">
+        <div style="font-weight:700;color:var(--dk);font-size:.95em">${b.name}</div>
+        <div style="font-size:.85em;color:#64748b">${b.reg} • ${b.service||"General"}</div>
+      </div>
+      <div style="text-align:right;font-size:.85em;color:#94a3b8">
+        <div style="font-weight:700;color:var(--ac)">${b.confirmed_date||b.date}</div>
+        <div>${b.confirmed_time?b.confirmed_time.slice(0,5):"—"}</div>
+      </div>
+      <span class="badge ${b.status==="confirmed"?"b-ok":"b-wa"}" style="white-space:nowrap">${b.status.toUpperCase()}</span>
+    </div>
+  `).join('');
+}
+
+function renderCal(){
+  document.getElementById("moTitle").textContent=`${MONTHS[curMonth]} ${curYear}`;
+  const firstDay=new Date(curYear,curMonth,1).getDay();
+  const daysInMonth=new Date(curYear,curMonth+1,0).getDate();
+  const today=new Date().toISOString().split("T")[0];
+  
+  const grid=document.getElementById("calGrid");
+  grid.innerHTML="";
+  
+  // Empty cells before month starts
+  for(let i=0;i<firstDay;i++){
+    const cell=document.createElement("div");
+    cell.className="cal-day other-month";
+    grid.appendChild(cell);
+  }
+  
+  // Days of month
+  for(let day=1;day<=daysInMonth;day++){
+    const dateStr=`${curYear}-${String(curMonth+1).padStart(2,"0")}-${String(day).padStart(2,"0")}`;
+    const isToday=dateStr===today;
+    
+    const cell=document.createElement("div");
+    cell.className="cal-day"+(isToday?" today":"");
+    
+    const dayNum=document.createElement("div");
+    dayNum.className="day-num"+(isToday?" today":"");
+    dayNum.textContent=day;
+    cell.appendChild(dayNum);
+    
+    // Find appointments for this day
+    const dayBookings=bookings.filter(b=>(b.confirmed_date||b.date)===dateStr);
+    if(dayBookings.length>0){
+      const badge=document.createElement("div");
+      badge.className="appt-badge";
+      badge.textContent=dayBookings.length+" appt"+( dayBookings.length>1?"s":"");
+      cell.appendChild(badge);
+    }
+    
+    dayBookings.slice(0,2).forEach(b=>{
+      const appt=document.createElement("div");
+      appt.className="appt "+(b.status==="confirmed"?"confirmed":"pending");
+      appt.textContent=(b.confirmed_time?b.confirmed_time.slice(0,5)+" ":"")+b.name;
+      appt.title=`${b.name} — ${b.reg} — ${b.service||"General"}`;
+      appt.onclick=(e)=>{e.stopPropagation();showAppt(b.id);};
+      cell.appendChild(appt);
+    });
+    
+    if(dayBookings.length>2){
+      const more=document.createElement("div");
+      more.style.cssText="font-size:.65rem;color:#94a3b8;padding:2px 0;font-weight:600";
+      more.textContent="+"+(dayBookings.length-2)+" more";
+      cell.appendChild(more);
+    }
+    
+    grid.appendChild(cell);
+  }
+}
+
+function showAppt(id){
+  const b=bookings.find(x=>x.id===id);
+  if(!b)return;
+  document.getElementById("mApptBody").innerHTML=`
+    <div class="ir"><span class="lbl">Customer</span><span class="val">${b.name}</span></div>
+    <div class="ir"><span class="lbl">Phone</span><span class="val"><a href="tel:${b.phone}" style="color:var(--ac);text-decoration:none">${b.phone||"—"}</a></span></div>
+    <div class="ir"><span class="lbl">Email</span><span class="val"><a href="mailto:${b.email}" style="color:var(--ac);text-decoration:none">${b.email}</a></span></div>
+    <div class="ir"><span class="lbl">Registration</span><span class="val">${b.reg}</span></div>
+    <div class="ir"><span class="lbl">Service</span><span class="val">${b.service||"General Service"}</span></div>
+    <div class="ir"><span class="lbl">Date</span><span class="val">${b.confirmed_date||b.date}</span></div>
+    <div class="ir"><span class="lbl">Time</span><span class="val">${b.confirmed_time?b.confirmed_time.slice(0,5):"Not set"}</span></div>
+    <div class="ir"><span class="lbl">Status</span><span class="val"><span class="badge ${b.status==="confirmed"?"b-ok":"b-wa"}">${b.status.toUpperCase()}</span></span></div>
+    ${b.notes?`<div class="ir"><span class="lbl">Notes</span><span class="val">${b.notes}</span></div>`:""}
+  `;
+  openM("mAppt");
+}
+
+function prevMo(){
+  curMonth--;
+  if(curMonth<0){curMonth=11;curYear--;}
+  renderCal();
+}
+
+function nextMo(){
+  curMonth++;
+  if(curMonth>11){curMonth=0;curYear++;}
+  renderCal();
+}
+
+function goToday(){
+  const d=new Date();
+  curMonth=d.getMonth();
+  curYear=d.getFullYear();
+  renderCal();
+}
+
+// Keyboard shortcuts for navigation
+document.addEventListener("keydown",e=>{
+  if(e.key==="ArrowLeft")prevMo();
+  if(e.key==="ArrowRight")nextMo();
+  if(e.key==="h")goToday();
+});
+
+loadSch();
+</script>
+</body>
+</html>
