@@ -258,4 +258,31 @@
     });
   });
 
+  // Invoice numbering - continuous sequential counter (never resets)
+  DeltaV.getNextInvoiceNum = function(){
+    let counter = parseInt(localStorage.getItem('dv_invoice_counter') || '0');
+    counter++;
+    localStorage.setItem('dv_invoice_counter', counter.toString());
+    return String(counter).padStart(6, '0');
+  };
+
+  DeltaV.formatInvoiceNum = function(num){
+    return 'INV-' + String(num).slice(-6);
+  };
+
+  // Company phone number sync - stored in localStorage, synced from settings
+  DeltaV.setCompanyPhone = function(phone){
+    localStorage.setItem('dv_company_phone', phone || '0121 XXX XXXX');
+  };
+
+  DeltaV.getCompanyPhone = function(){
+    return localStorage.getItem('dv_company_phone') || '0121 XXX XXXX';
+  };
+
+  // Window exports
+  win.getNextInvoiceNum = DeltaV.getNextInvoiceNum;
+  win.formatInvoiceNum = DeltaV.formatInvoiceNum;
+  win.setCompanyPhone = DeltaV.setCompanyPhone;
+  win.getCompanyPhone = DeltaV.getCompanyPhone;
+
 })(window);

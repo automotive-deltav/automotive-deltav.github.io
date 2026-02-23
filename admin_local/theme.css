@@ -399,6 +399,13 @@ select::-webkit-scrollbar-thumb:hover{background:#cbd5e0}
 .empty h3{color:#94a3b8;font-weight:600;font-size:1.1rem;margin-bottom:8px}
 .empty p{color:#cbd5e0;font-size:.9rem}
 
+/* Search Box Enhancements */
+.srch-w{flex:1;min-width:280px;position:relative}
+.srch-w input{width:100%;padding:14px 18px 14px 42px;border:2px solid #e2e8f0;border-radius:10px;font-size:.95rem;background:#fff;color:#2d3748;transition:all .3s;box-shadow:0 2px 8px rgba(0,0,0,.04)}
+.srch-w input:focus{outline:none;border-color:var(--ac);box-shadow:0 0 0 3px rgba(96,165,250,.1),0 4px 12px rgba(96,165,250,.15)}
+.srch-w input::placeholder{color:#94a3b8;font-weight:500}
+.srch-w::before{content:'🔍';position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:1rem;opacity:.6;pointer-events:none}
+
 /* Mobile */
 @media(max-width:768px){
 .sidebar{width:100%;height:auto;position:relative}
