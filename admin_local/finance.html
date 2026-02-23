@@ -32,6 +32,8 @@
     <div class="stat-sub" id="fMoSub"></div>
   </div>
 </div>
+<div class="divider-lg"></div>
+
 <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;align-items:center">
   <div class="srch-w"><input type="text" id="fsrch" placeholder="Search description..." oninput="renderFin()"></div>
   <select id="fType" class="btn btn-ghost" onchange="renderFin()" style="padding:9px 12px;font-size:.82rem">
@@ -41,7 +43,7 @@
   <button class="btn btn-info btn-sm" onclick="exportFin()">📥 Export</button>
   <button class="btn btn-ghost" onclick="loadFin()">🔄</button>
 </div>
-<div style="display:flex;flex-direction:column;gap:8px" id="finList"></div>
+<div style="display:flex;flex-direction:column;gap:8px;background:#fff;border-radius:12px;padding:20px;box-shadow:0 12px 28px rgba(13,22,33,.16);border:1.5px solid #dfe6ed" id="finList"></div>
 </tr></thead><tbody id="finTb"></tbody></table></div>
 
 <div class="modal" id="mNewTx"><div class="mbox">

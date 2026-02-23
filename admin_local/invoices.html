@@ -17,6 +17,9 @@
     <div class="stat-value" id="statPaid" style="font-size:1.8rem;color:var(--ok)">0</div>
   </div>
 </div>
+
+<div class="divider-lg"></div>
+
 <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;align-items:center">
   <div class="srch-w"><input type="text" id="isrch" placeholder="Search by customer or reg..." oninput="renderInv()"></div>
   <select id="iPSt" class="btn btn-ghost" onchange="renderInv()" style="padding:9px 12px;font-size:.82rem"><option value="">All Status</option><option value="unpaid">Unpaid</option><option value="paid">Paid</option></select>
@@ -24,7 +27,7 @@
   <button class="btn btn-info btn-sm" onclick="exportInv()">📥 CSV</button>
   <button class="btn btn-ghost" onclick="loadInv()">🔄</button>
 </div>
-<div style="display:flex;flex-direction:column;gap:12px" id="invList"></div>
+<div style="display:flex;flex-direction:column;gap:12px;background:#fff;border-radius:12px;padding:20px;box-shadow:0 12px 28px rgba(13,22,33,.16);border:1.5px solid #dfe6ed" id="invList"></div>
 
 <div class="modal" id="mInv"><div class="mbox" style="max-width:800px"><h3 id="mInvTit">✨ New Invoice</h3>
 <div style="background:rgba(96,165,250,.06);border:1.5px solid rgba(96,165,250,.2);border-radius:10px;padding:12px 16px;margin-bottom:16px;font-weight:600;color:#1b2b3a">
