@@ -5,12 +5,12 @@
   // Supabase REST endpoint and key (kept for compatibility)
   DeltaV.SB = "https://cxzapvieqzqfxzolqwoh.supabase.co";
   DeltaV.KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN4emFwdmllcXpxZnh6b2xxd29oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA1NjU4MzgsImV4cCI6MjA4NjE0MTgzOH0.x_F07XpdThY6EqwaP8jJGgdBIMTHdYfTr99IMOpSq_E";
-  DeltaV.H = {"apikey":DeltaV.KEY,"Authorization":`Bearer ${DeltaV.KEY}`,"Content-Type":"application/json"};
+  DeltaV.H = {"apikey":DeltaV.KEY,"Authorization":`Bearer ${DeltaV.KEY}`,"Content-Type":"application/json; charset=utf-8"};
 
   // Central fetch helper with JSON response handling
   DeltaV._fetch = async function(url, opts={}){
     try{
-      const res = await fetch(url, opts);
+      const res = await fetch(url, {...opts, headers: {...opts.headers||{}, 'Accept': 'application/json; charset=utf-8'}});
       if(!res.ok){
         const txt = await res.text().catch(()=>res.statusText||"Error");
         throw new Error(txt || res.statusText || 'Request failed');
@@ -427,82 +427,36 @@
         });
       }
       
-  // SIDEBAR PAGE GUIDE
-  DeltaV.pageGuide = {
-    "dashboard.html": "📊 Dashboard - Overview of bookings, revenue, and key metrics",
-    "admin.html": "📅 Bookings - Manage customer appointments and service bookings",
-    "schedule.html": "🗓️ Schedule - View calendar and schedule appointments",
-    "customers.html": "👥 Customers - Manage customer details and history",
-    "contact_inquiries.html": "📧 Contact - View and respond to customer inquiries",
-    "invoices.html": "💰 Invoices - Create and manage customer invoices",
-    "inventory.html": "📦 Inventory - Track parts, stock levels, and costs",
-    "payments.html": "💳 Payments - Record and track customer payments",
-    "finance.html": "📈 Finance - Income, expenses, and financial reporting",
-    "workers.html": "👷 Workers - Manage staff and team members",
-    "jobs.html": "🔩 Job Cards - Track service jobs and work orders",
-    "quotes.html": "📋 Quotes - Generate and manage customer quotes",
-    "suppliers.html": "🏭 Suppliers - Manage supplier contacts and orders",
-    "expenses.html": "🧾 Expenses - Track business expenses and costs",
-    "reports.html": "📉 Reports - Generate business and operational reports",
-    "messages.html": "💬 Messages - Internal team messaging",
-    "notes.html": "📝 Notes - Create and organize business notes",
-    "reminders.html": "🔔 Reminders - Set and manage reminders and alerts",
-    "vehicles.html": "🚗 Vehicle DB - Manage customer vehicle information",
-    "tasks.html": "✅ Tasks - Assign and track team tasks",
-    "timesheets.html": "⏱️ Timesheets - Track employee hours and time",
-    "warranties.html": "🛡️ Warranties - Manage product and service warranties",
-    "promotions.html": "🎁 Promotions - Create and manage promotional offers",
-    "feedback.html": "⭐ Feedback - Customer feedback and reviews",
-    "returns.html": "↩️ Returns - Manage product returns and refunds",
-    "waiting.html": "⏳ Waiting List - Customers waiting for service",
-    "checklist.html": "☑️ Checklists - Create and track checklists",
-    "targets.html": "🎯 Targets - Team and business targets",
-    "audit.html": "🔍 Audit Log - View system activity and changes",
-    "gallery_mgr.html": "📸 Gallery - Manage website gallery images",
-    "sms.html": "📱 SMS/Email - Send messages to customers",
-    "loyalty.html": "🏅 Loyalty - Manage customer loyalty programs",
-    "parts_orders.html": "🛒 Parts Orders - Order parts from suppliers",
-    "MOT.html": "🔖 MOT Tracker - Track vehicle MOT dates",
-    "service_history.html": "📜 Service History - View customer service records",
-    "staff_rota.html": "📆 Staff Rota - Create staff schedules",
-    "hours.html": "⏰ Opening Hours - Set business opening hours",
-    "settings.html": "⚙️ Settings - Configure business details and preferences"
+      // Sufficient stock - proceed with deduction
+      return await DeltaV._doDeduction(product.id, neededQty, referenceType, referenceId);
+    }catch(e){
+      console.error("Deduction error:", e);
+      DeltaV.toast("Error checking inventory", "error");
+      return {success: false, reason: "error", error: e.message};
+    }
   };
   
-  // Toggle dark mode
-  DeltaV.toggleDarkMode = function(){
-    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-    const newTheme = isDark ? 'light' : 'dark';
-    document.documentElement.setAttribute('data-theme', newTheme);
-    localStorage.setItem('theme', newTheme);
+  // Internal deduction handler
+  DeltaV._doDeduction = async function(inventoryId, quantity, referenceType, referenceId){
+    try{
+      const product = await DeltaV.dbGet("inventory", "&id=eq."+inventoryId+"&limit=1");
+      if(!product || product.length === 0) return {success: false, reason: "not_found"};
+      
+      const p = product[0];
+      const newQty = Math.max(0, (p.quantity || 0) - quantity);
+      
+      // Update inventory
+      await DeltaV.dbUpd("inventory", inventoryId, {quantity: newQty});
+      
+      // Log transaction
+      await DeltaV.logInventoryTransaction(inventoryId, "deduct", quantity, referenceType, referenceId, `Deducted ${quantity} units from sale`);
+      
+      return {success: true, newQuantity: newQty, productName: p.item_name};
+    }catch(e){
+      console.error("Deduction failed:", e);
+      return {success: false, reason: "error", error: e.message};
+    }
   };
-  
-  // Show page guide
-  DeltaV.showPageGuide = function(){
-    const current = window.location.pathname.split('/').pop() || 'dashboard.html';
-    const allPages = Object.entries(DeltaV.pageGuide).map(([page, desc]) => {
-      const isCurrent = page === current;
-      return `${isCurrent ? '→ ' : '   '}${desc}`;
-    }).join('\n');
-    alert('📚 ADMIN PAGE GUIDE\n\n' + allPages);
-  };
-  
-  // Quick nav search
-  DeltaV.quickNav = function(){
-    const query = prompt('🔍 Jump to page (search):');
-    if(!query) return;
-    const search = query.toLowerCase();
-    const match = Object.entries(DeltaV.pageGuide).find(([page, desc]) =>
-      page.toLowerCase().includes(search) || desc.toLowerCase().includes(search)
-    );
-    if(match) window.location.href = match[0];
-    else alert('❌ Page not found. Try part of the name.');
-  };
-  
-  // Expose to window
-  win.toggleDarkMode = DeltaV.toggleDarkMode;
-  win.showPageGuide = DeltaV.showPageGuide;
-  win.quickNav = DeltaV.quickNav;
   
   // Log inventory transactions
   DeltaV.logInventoryTransaction = async function(inventoryId, transactionType, quantityChanged, referenceType, referenceId, notes){
