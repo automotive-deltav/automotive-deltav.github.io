@@ -14,6 +14,7 @@
 <link rel="sitemap" href="https://deltavautomotive.com/sitemap.xml">
 <title>Book a Service — DeltaV Automotive | Online Appointment</title>
 <link rel="stylesheet" href="theme.css">
+<script src="../admin_local/shared.js"></script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"LocalBusiness","name":"DeltaV Automotive","offers":{"@type":"Offer","url":"https://deltavautomotive.com/booking.html","priceCurrency":"GBP"}}</script>
 <style>
 body{background:#0d1823}
@@ -223,6 +224,14 @@ async function submitBooking(){
     errEl.textContent="❌ Error saving booking: "+e.message;
   }
 }
+</script>
+<script>
+window.addEventListener('DOMContentLoaded', function(){
+  setTimeout(function(){
+    const phone = getCompanyPhone();
+    if(typeof updateSchemaPhone === 'function') updateSchemaPhone(phone);
+  }, 50);
+});
 </script>
 </body>
 </html>

@@ -14,6 +14,7 @@
 <link rel="sitemap" href="https://deltavautomotive.com/sitemap.xml">
 <title>Contact Us — DeltaV Automotive | Smethwick Car Repair</title>
 <link rel="stylesheet" href="theme.css">
+<script src="../admin_local/shared.js"></script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"ContactPage","name":"Contact DeltaV Automotive","url":"https://deltavautomotive.com/contact.html"}</script>
 
 <style>
@@ -328,6 +329,25 @@ async function sendMsg(){
     document.getElementById("cErr").textContent="❌ Error sending message. Please try again or call us.";
   }
 }
+
+// Load company details on page load
+window.addEventListener('DOMContentLoaded', function(){
+  // Small delay to ensure shared.js is fully initialized
+  setTimeout(function(){
+    const phone = getCompanyPhone();
+    const email = getCompanyEmail();
+    const addr = getCompanyAddress();
+    
+    const dispPhone = document.getElementById('dispPhone');
+    const dispEmail = document.getElementById('dispEmail');
+    const dispAddr = document.getElementById('dispAddr');
+    
+    if(dispPhone) dispPhone.textContent = phone;
+    if(dispEmail) dispEmail.textContent = email;
+    if(dispAddr) dispAddr.innerHTML = 'DeltaV Automotive<br>' + addr.split('\n')[0];
+    if(typeof updateSchemaPhone === 'function') updateSchemaPhone(phone);
+  }, 50);
+});
 </script>
 
 </body>
