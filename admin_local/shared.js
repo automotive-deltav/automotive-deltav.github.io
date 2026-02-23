@@ -361,12 +361,12 @@
 
   DeltaV.setCompanyPhone = function(phone){
     const s = DeltaV.getCompanySettings();
-    s.phone = phone || '0121 XXX XXXX';
+    s.phone = phone || '0121 5650888';
     DeltaV.setCompanySettings(s);
   };
 
   DeltaV.getCompanyPhone = function(){
-    return DeltaV.getCompanySettings().phone || '0121 XXX XXXX';
+    return DeltaV.getCompanySettings().phone || '0121 5650888';
   };
 
   DeltaV.setCompanyEmail = function(email){
