@@ -58,11 +58,11 @@
 </div>
 <div class="main"><div class="topbar"><h1>📦 Inventory</h1><div class="tr"><button class="btn btn-success" onclick="openNewPart()">+ Add Part</button><button class="btn btn-info" onclick="exportInvt()">📥 Export</button><button class="btn btn-ghost" onclick="loadInvt()">🔄 Refresh</button></div></div><div class="body"><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:20px">
   <div class="stat-card" style="background:linear-gradient(135deg,rgba(34,197,94,.1),rgba(34,197,94,.05))">
-    <div class="stat-label">In Stock</div>
+    <div class="stat-label">Total Units</div>
     <div class="stat-value" id="statInStock">0</div>
   </div>
   <div class="stat-card" style="background:linear-gradient(135deg,rgba(96,165,250,.1),rgba(96,165,250,.05))">
-    <div class="stat-label">Total Items</div>
+    <div class="stat-label">Products</div>
     <div class="stat-value" id="statTotalItems">0</div>
   </div>
   <div class="stat-card" style="background:linear-gradient(135deg,rgba(59,130,246,.1),rgba(59,130,246,.05))">
@@ -70,24 +70,23 @@
     <div class="stat-value" style="font-size:1.3em" id="statStockValue">£0</div>
   </div>
   <div class="stat-card" style="background:linear-gradient(135deg,rgba(239,68,68,.1),rgba(239,68,68,.05))">
-    <div class="stat-label">Damaged/Sold</div>
+    <div class="stat-label">Low Stock</div>
     <div class="stat-value" id="statDamagedSold">0</div>
   </div>
 </div>
 
 <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;align-items:center">
-  <div class="srch-w" style="flex:1;min-width:200px"><input type="text" id="invtsrch" placeholder="🔍 Search parts, codes, suppliers..." oninput="renderInvt()" style="width:100%"></div>
+  <div class="srch-w" style="flex:1;min-width:200px"><input type="text" id="invtsrch" placeholder="🔍 Search products, part numbers, suppliers..." oninput="renderInvt()" style="width:100%"></div>
   <select id="invtSt" onchange="renderInvt()" style="padding:8px 12px;border:1px solid #e2e8f0;border-radius:6px;background:#fff;cursor:pointer;font-size:.9em">
-    <option value="">All Statuses</option>
+    <option value="">All Products</option>
     <option value="active">In Stock</option>
-    <option value="sold">Sold</option>
-    <option value="returned">Returned</option>
-    <option value="damaged">Damaged</option>
+    <option value="sold">Out of Stock</option>
+    <option value="returned">Low Stock</option>
   </select>
   <button class="btn btn-ghost" onclick="loadInvt()" title="Refresh data">🔄</button>
   <button class="btn btn-info btn-sm" onclick="exportInvt()">📥 CSV</button>
   <button class="btn btn-warning btn-sm" onclick="window.print()">🖨️ Print</button>
-  <button class="btn btn-dark btn-sm" onclick="stockReport()">📊 Stock Report</button>
+  <button class="btn btn-dark btn-sm" onclick="stockReport()">📊 Report</button>
 </div>
 
 <div id="invtGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(350px,1fr));gap:12px"></div>
@@ -97,43 +96,49 @@
 </div>
 <div class="modal" id="mPart"><div class="mbox" style="max-width:720px"><h3 id="mPartTit">📦 Add Part</h3>
 <div class="g3">
-  <div class="fg ac-w"><label>Item Code *</label><input type="text" id="ptCode" placeholder="P-001"></div>
-  <div class="fg"><label>Item Name *</label><input type="text" id="ptName" placeholder="Brake Pads — Front Axle"></div>
-  <div class="fg"><label>Purchase Date *</label><input type="date" id="ptDt"></div>
+  <div class="fg ac-w"><label>Part Number *</label><input type="text" id="ptCode" placeholder="P-001"></div>
+  <div class="fg"><label>Product Name *</label><input type="text" id="ptName" placeholder="Brake Pads — Front Axle"></div>
+  <div class="fg"><label>Category</label><input type="text" id="ptCat" placeholder="Brake Parts, Engine Oil, etc"></div>
 </div>
 <div class="g3">
-  <div class="fg ac-w"><label>Supplier</label><input type="text" id="ptSup" placeholder="Euro Car Parts"></div>
-  <div class="fg"><label>Cost Price (£) *</label><input type="number" id="ptCost" placeholder="0.00" min="0" step="0.01"></div>
-  <div class="fg"><label>Status</label><select id="ptStat"><option value="active">In Stock</option><option value="sold">Sold</option><option value="returned">Returned</option><option value="damaged">Damaged</option></select></div>
+  <div class="fg ac-w"><label>Quantity in Stock *</label><input type="number" id="ptQty" placeholder="0" min="0" step="1"></div>
+  <div class="fg"><label>Reorder Level</label><input type="number" id="ptReorder" placeholder="5" min="0" step="1"></div>
+  <div class="fg"><label>Supplier</label><input type="text" id="ptSup" placeholder="Euro Car Parts"></div>
+</div>
+<div class="g3">
+  <div class="fg ac-w"><label>Cost Price (£) *</label><input type="number" id="ptCost" placeholder="15.00" min="0" step="0.01"></div>
+  <div class="fg"><label>Sell Price (£) *</label><input type="number" id="ptSell" placeholder="35.00" min="0" step="0.01"></div>
+  <div class="fg"><label>Purchase Date *</label><input type="date" id="ptDt"></div>
 </div>
 <div class="g3">
   <div class="fg"><label>Serial Number</label><input type="text" id="ptSN" placeholder="SN-XXXXXX"></div>
   <div class="fg"><label>Car Registration (optional)</label><input type="text" id="ptReg" placeholder="AB12 CDE"></div>
   <div class="fg"><label>VIN Number (optional)</label><input type="text" id="ptVIN" placeholder="WBA3A5C50CF256651"></div>
 </div>
-<div class="fg"><label>Notes</label><textarea id="ptNotes" placeholder="Any notes about this part..."></textarea></div>
+<div class="fg"><label>Notes</label><textarea id="ptNotes" placeholder="Any notes about this product..."></textarea></div>
 <div class="mfoot"><button class="btn btn-ghost" onclick="closeM('mPart')">Cancel</button><button class="btn btn-success" onclick="savePart()">💾 Save</button></div></div></div></div></div><div class="modal" id="mDel"><div class="mbox" style="max-width:370px"><h3>🗑️ Confirm Delete</h3><p id="mDelMsg" style="color:#555;margin-bottom:4px">This cannot be undone.</p><div class="mfoot"><button class="btn btn-ghost" onclick="closeM('mDel')">Cancel</button><button class="btn btn-danger" id="mDelBtn">Yes, Delete</button></div></div></div><script src="shared.js"></script><script>
 let invtData=[],invtEdit=null,pCodes=[],pNames=[],pSupps=[];
 async function loadInvt(){
-  invtData=await dbGet("inventory","&order=purchase_date.desc");
+  invtData=await dbGet("inventory","&order=item_name.asc");
   pCodes=[...new Set(invtData.map(i=>i.item_code).filter(Boolean))];
   pNames=[...new Set(invtData.map(i=>i.item_name).filter(Boolean))];
   pSupps=[...new Set(invtData.map(i=>i.supplier).filter(Boolean))];
   setupPAC();
   
-  // Update stats
-  const inStock=invtData.filter(i=>i.status==="active").length;
-  const damaged=invtData.filter(i=>i.status==="damaged"||i.status==="sold").length;
-  const totalValue=invtData.reduce((s,i)=>s+(i.cost||0),0);
+  // Update stats - NOW FOCUSED ON QUANTITIES
+  const totalInStock=invtData.reduce((s,i)=>s+(i.quantity||0),0);
+  const totalQty=invtData.length;
+  const lowStock=invtData.filter(i=>(i.quantity||0)<=(i.reorder_level||5)).length;
+  const totalCostValue=invtData.reduce((s,i)=>s+((i.quantity||0)*(i.cost_price||0)),0);
   
   const el1=document.getElementById("statInStock");
-  if(el1) el1.textContent=inStock;
+  if(el1) el1.textContent=totalInStock;
   const el2=document.getElementById("statTotalItems");
-  if(el2) el2.textContent=invtData.length;
+  if(el2) el2.textContent=totalQty;
   const el3=document.getElementById("statStockValue");
-  if(el3) el3.textContent=fmtGBP(totalValue);
+  if(el3) el3.textContent=fmtGBP(totalCostValue);
   const el4=document.getElementById("statDamagedSold");
-  if(el4) el4.textContent=damaged;
+  if(el4) el4.textContent=lowStock+" low";
   
   renderInvt();
 }
@@ -148,8 +153,12 @@ function setupPAC(){
 function renderInvt(){
   const q=document.getElementById("invtsrch").value.toLowerCase();
   const st=document.getElementById("invtSt").value;
-  let f=invtData.filter(i=>(i.item_code||"").toLowerCase().includes(q)||(i.item_name||"").toLowerCase().includes(q)||(i.supplier||"").toLowerCase().includes(q)||(i.car_reg||"").toLowerCase().includes(q)||(i.serial_number||"").toLowerCase().includes(q));
-  if(st)f=f.filter(i=>i.status===st);
+  let f=invtData.filter(i=>(i.item_code||"").toLowerCase().includes(q)||(i.item_name||"").toLowerCase().includes(q)||(i.supplier||"").toLowerCase().includes(q)||(i.category||"").toLowerCase().includes(q));
+  
+  // Filter by stock status
+  if(st==="active") f=f.filter(i=>(i.quantity||0)>0);
+  else if(st==="sold") f=f.filter(i=>(i.quantity||0)<=0);
+  else if(st==="returned") f=f.filter(i=>(i.quantity||0)<=(i.reorder_level||5));
   
   const grid=document.getElementById("invtGrid");
   grid.innerHTML="";
@@ -161,35 +170,53 @@ function renderInvt(){
   document.getElementById("invtEmpty").style.display="none";
   
   f.forEach((it,idx)=>{
-    const status={active:"In Stock",sold:"Sold",returned:"Returned",damaged:"Damaged"}[it.status]||it.status;
-    const sc={active:"b-ok",sold:"b-wa",damaged:"b-er",returned:"b-in"}[it.status]||"b-dk";
+    const qty=it.quantity||0;
+    const reorder=it.reorder_level||5;
+    let stockColor="var(--ac)";
+    let stockLabel="In Stock";
+    
+    if(qty<=0){stockColor="var(--er)";stockLabel="Out of Stock";}
+    else if(qty<=reorder){stockColor="var(--wa)";stockLabel="Low Stock";}
+    
+    const costPrice=parseFloat(it.cost_price)||0;
+    const sellPrice=parseFloat(it.sell_price)||0;
+    const profit=sellPrice-costPrice;
+    const margin=(costPrice>0)?((profit/costPrice)*100).toFixed(0):0;
+    
     const card=document.createElement("div");
     card.style.cssText=`background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:14px;animation:fadeInUp .3s ease-out ${idx*0.05}s backwards;cursor:pointer;transition:all .2s;position:relative;overflow:hidden`;
     
     card.innerHTML=`
-      <div style="position:absolute;top:0;left:0;width:4px;height:100%;background:${sc==="b-ok"?"var(--ok)":sc==="b-er"?"var(--er)":"var(--ac)"}"></div>
+      <div style="position:absolute;top:0;left:0;width:4px;height:100%;background:${stockColor}"></div>
       <div style="padding-left:8px">
         <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:8px">
           <div>
             <div style="font-family:monospace;font-size:.8em;color:#94a3b8;margin-bottom:2px">${it.item_code}</div>
             <h4 style="margin:0;color:var(--dk);font-size:.95em;line-height:1.3">${it.item_name}</h4>
+            ${it.category?`<small style="color:#94a3b8">${it.category}</small>`:""}
           </div>
-          <span class="badge ${sc}" style="white-space:nowrap;margin-left:8px">${status}</span>
+          <span class="badge ${qty<=0?"b-er":qty<=reorder?"b-wa":"b-ok"}" style="white-space:nowrap;margin-left:8px">${stockLabel}</span>
         </div>
         
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:8px 0;border-top:1px solid #f1f3f5;border-bottom:1px solid #f1f3f5;margin-bottom:10px">
-          <div><small style="color:#94a3b8">Cost</small><div style="font-weight:700;color:var(--ac)">${fmtGBP(it.cost)}</div></div>
-          <div><small style="color:#94a3b8">Date</small><div style="font-weight:700;color:#64748b">${fmtD(it.purchase_date)}</div></div>
+          <div><small style="color:#94a3b8">Quantity</small><div style="font-weight:700;color:${stockColor};font-size:1.1em">${qty}</div></div>
+          <div><small style="color:#94a3b8">Cost/Sell</small><div style="font-weight:700;color:#64748b">${fmtGBP(costPrice)} / ${fmtGBP(sellPrice)}</div></div>
         </div>
         
-        ${it.supplier?`<div style="font-size:.85em;color:#64748b;margin-bottom:8px"><strong>Supplier:</strong> ${it.supplier}</div>`:""}
-        ${it.car_reg?`<div style="font-size:.85em;color:#64748b;margin-bottom:8px"><strong>Vehicle:</strong> <span class="badge b-dk">${it.car_reg}</span></div>`:""}
-        ${it.serial_number?`<div style="font-size:.85em;color:#64748b;margin-bottom:8px"><strong>Serial:</strong> <span style="font-family:monospace">${it.serial_number}</span></div>`:""}
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;padding:8px;background:#f8fafc;border-radius:6px">
+          <div><small style="color:#94a3b8">Stock Value</small><div style="font-weight:700;color:var(--ac)">${fmtGBP(qty*costPrice)}</div></div>
+          <div><small style="color:#94a3b8">Profit/Unit (${margin}%)</small><div style="font-weight:700;color:${profit>0?"var(--ok)":"var(--er)"}">${fmtGBP(profit)}</div></div>
+        </div>
         
-        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:10px">
+        ${it.supplier?`<div style="font-size:.85em;color:#64748b;margin-bottom:6px"><strong>Supplier:</strong> ${it.supplier}</div>`:""}
+        ${it.serial_number?`<div style="font-size:.85em;color:#64748b;margin-bottom:6px"><strong>Serial:</strong> <span style="font-family:monospace">${it.serial_number}</span></div>`:""}
+        
+        <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin-top:10px;align-items:stretch">
+          <button class="btn btn-info btn-sm" onclick="adjustQty('${it.id}',-1)" title="Decrease 1">➖</button>
+          <button class="btn btn-info btn-sm" onclick="adjustQty('${it.id}',-5)" title="Decrease 5">⬇️5</button>
           <button class="btn btn-primary btn-sm" onclick="editPart('${it.id}')">✏️ Edit</button>
-          <button class="btn btn-warning btn-sm" onclick="cycleSt('${it.id}','${it.status}')">🔄 Cycle</button>
-          <button class="btn btn-danger btn-sm" onclick="delPart('${it.id}')">🗑️ Delete</button>
+          <button class="btn btn-warning btn-sm" onclick="adjustQty('${it.id}',5)" title="Increase 5">⬆️5</button>
+          <button class="btn btn-danger btn-sm" onclick="delPart('${it.id}')">🗑️</button>
         </div>
       </div>
     `;
@@ -209,10 +236,10 @@ function renderInvt(){
 
 function openNewPart(){
   invtEdit=null;
-  document.getElementById("mPartTit").textContent="📦 Add Part";
-  ["ptCode","ptName","ptSup","ptCost","ptSN","ptReg","ptVIN","ptNotes"].forEach(id=>document.getElementById(id).value="");
+  document.getElementById("mPartTit").textContent="📦 Add Product";
+  ["ptCode","ptName","ptCat","ptQty","ptReorder","ptSup","ptCost","ptSell","ptSN","ptReg","ptVIN","ptNotes"].forEach(id=>document.getElementById(id).value="");
   document.getElementById("ptDt").value=today();
-  document.getElementById("ptStat").value="active";
+  document.getElementById("ptReorder").value="5";
   openM("mPart");
 }
 
@@ -220,13 +247,16 @@ function editPart(id){
   const it=invtData.find(x=>x.id===id);
   if(!it)return;
   invtEdit=id;
-  document.getElementById("mPartTit").textContent="✏️ Edit Part";
+  document.getElementById("mPartTit").textContent="✏️ Edit Product";
   document.getElementById("ptCode").value=it.item_code||"";
   document.getElementById("ptName").value=it.item_name||"";
+  document.getElementById("ptCat").value=it.category||"";
+  document.getElementById("ptQty").value=it.quantity||0;
+  document.getElementById("ptReorder").value=it.reorder_level||5;
   document.getElementById("ptDt").value=it.purchase_date||"";
   document.getElementById("ptSup").value=it.supplier||"";
-  document.getElementById("ptCost").value=it.cost||"";
-  document.getElementById("ptStat").value=it.status||"active";
+  document.getElementById("ptCost").value=it.cost_price||"";
+  document.getElementById("ptSell").value=it.sell_price||"";
   document.getElementById("ptSN").value=it.serial_number||"";
   document.getElementById("ptReg").value=it.car_reg||"";
   document.getElementById("ptVIN").value=it.vin_number||"";
@@ -235,32 +265,33 @@ function editPart(id){
 }
 
 async function savePart(){
-  const code=document.getElementById("ptCode").value.trim(),name=document.getElementById("ptName").value.trim(),dt=document.getElementById("ptDt").value,cost=document.getElementById("ptCost").value;
-  if(!code||!name||!dt||!cost){toast("Fill required fields","er");return;}
-  const data={item_code:code,item_name:name,purchase_date:dt,supplier:document.getElementById("ptSup").value.trim()||null,cost:parseFloat(cost),status:document.getElementById("ptStat").value,serial_number:document.getElementById("ptSN").value.trim()||null,car_reg:document.getElementById("ptReg").value.trim()||null,vin_number:document.getElementById("ptVIN").value.trim()||null,notes:document.getElementById("ptNotes").value.trim()||null};
+  const code=document.getElementById("ptCode").value.trim(),name=document.getElementById("ptName").value.trim(),qty=document.getElementById("ptQty").value,costPrice=document.getElementById("ptCost").value,sellPrice=document.getElementById("ptSell").value;
+  if(!code||!name||qty===""||!costPrice||!sellPrice){toast("Fill all required fields","er");return;}
+  const data={item_code:code,item_name:name,category:document.getElementById("ptCat").value.trim()||null,quantity:parseInt(qty),reorder_level:parseInt(document.getElementById("ptReorder").value)||5,purchase_date:document.getElementById("ptDt").value,supplier:document.getElementById("ptSup").value.trim()||null,cost_price:parseFloat(costPrice),sell_price:parseFloat(sellPrice),serial_number:document.getElementById("ptSN").value.trim()||null,car_reg:document.getElementById("ptReg").value.trim()||null,vin_number:document.getElementById("ptVIN").value.trim()||null,notes:document.getElementById("ptNotes").value.trim()||null};
   if(invtEdit){
     await dbUpd("inventory",invtEdit,data);
     toast("Updated!");
   }else{
     await dbIns("inventory",data);
-    toast("Part added!");
+    toast("Product added!");
   }
   closeM("mPart");
   loadInvt();
 }
 
-async function cycleSt(id,cur){
-  const c={active:"sold",sold:"returned",returned:"damaged",damaged:"active"};
-  const ns=c[cur]||"active";
-  await dbUpd("inventory",id,{status:ns});
+async function adjustQty(id,amount){
   const it=invtData.find(x=>x.id===id);
-  if(it)it.status=ns;
+  if(!it)return;
+  const newQty=Math.max(0,(it.quantity||0)+amount);
+  await dbUpd("inventory",id,{quantity:newQty});
+  it.quantity=newQty;
   renderInvt();
-  toast(`→ ${ns}`,"in");
+  const change=amount>0?`+${amount}`:amount;
+  toast(`Qty → ${newQty} (${change}),"in");
 }
 
 function delPart(id){
-  confirmDel("Delete this inventory item?",async()=>{
+  confirmDel("Delete this product permanently?",async()=>{
     await dbDel("inventory",id);
     invtData=invtData.filter(i=>i.id!==id);
     renderInvt();
@@ -269,17 +300,36 @@ function delPart(id){
 }
 
 function exportInvt(){
-  const rows=[["Code","Name","Supplier","Car Reg","VIN","Serial","Cost","Date","Status","Notes"]];
-  invtData.forEach(i=>rows.push([i.item_code,i.item_name,i.supplier||"",i.car_reg||"",i.vin_number||"",i.serial_number||"",i.cost,i.purchase_date,i.status,i.notes||""]));
+  const rows=[["Part#","Product Name","Category","Qty in Stock","Reorder Level","Cost Price","Sell Price","Profit/Unit","Supplier","Date Added","Notes"]];
+  invtData.forEach(i=>{
+    const profit=(i.sell_price||0)-(i.cost_price||0);
+    rows.push([
+      i.item_code,
+      i.item_name,
+      i.category||"",
+      i.quantity||0,
+      i.reorder_level||5,
+      i.cost_price||0,
+      i.sell_price||0,
+      profit.toFixed(2),
+      i.supplier||"",
+      i.purchase_date||"",
+      i.notes||""
+    ]);
+  });
   const csv=rows.map(r=>r.map(c=>`"${c||""}"`).join(",")).join("\n");
-  const a=document.createElement("a");a.href="data:text/csv,"+encodeURIComponent(csv);a.download="inventory.csv";a.click();
+  const a=document.createElement("a");a.href="data:text/csv,"+encodeURIComponent(csv);a.download="inventory_"+today()+".csv";a.click();
 }
 
 function stockReport(){
-  const act=invtData.filter(i=>i.status==="active").length;
-  const sold=invtData.filter(i=>i.status==="sold").length;
-  const cost=invtData.reduce((s,i)=>s+(i.cost||0),0);
-  alert(`📦 Stock Report\n\nIn Stock: ${act}\nSold: ${sold}\nTotal Items: ${invtData.length}\nTotal Parts Value: ${fmtGBP(cost)}`);
+  const totalItems=invtData.length;
+  const totalQty=invtData.reduce((s,i)=>s+(i.quantity||0),0);
+  const lowStock=invtData.filter(i=>(i.quantity||0)<=(i.reorder_level||5)).length;
+  const outOfStock=invtData.filter(i=>(i.quantity||0)<=0).length;
+  const totalCost=invtData.reduce((s,i)=>s+((i.quantity||0)*(i.cost_price||0)),0);
+  const totalRetail=invtData.reduce((s,i)=>s+((i.quantity||0)*(i.sell_price||0)),0);
+  const totalProfit=totalRetail-totalCost;
+  alert(`📊 INVENTORY STOCK REPORT\n\n━━━━━━━━━━━━━━━━━━━\n📦 Products: ${totalItems}\n📊 Total Units: ${totalQty}\n⚠️  Low Stock: ${lowStock}\n❌ Out of Stock: ${outOfStock}\n\n━━━━━━━━━━━━━━━━━━━\n💰 Cost Value: ${fmtGBP(totalCost)}\n💵 Retail Value: ${fmtGBP(totalRetail)}\n📈 Total Profit: ${fmtGBP(totalProfit)}`);
 }
 
 loadInvt();

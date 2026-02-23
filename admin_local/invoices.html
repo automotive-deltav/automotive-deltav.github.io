@@ -292,18 +292,49 @@ async function saveInv(){
   const cn=document.getElementById("iCN").value.trim(),ce=document.getElementById("iCE").value.trim(),dt=document.getElementById("iDt").value;
   if(!cn||!ce||!dt){toast("Fill required fields","er");return;}
   const parts=[];document.querySelectorAll("#partsW>div").forEach(r=>{const desc=r.querySelector(".desc")?.value.trim();if(desc)parts.push({part_number:r.querySelector(".pn")?.value.trim(),description:desc,quantity:parseFloat(r.querySelector(".qty")?.value)||1,unit_price:parseFloat(r.querySelector(".prc")?.value)||0});});
+  
   const vatOn=document.getElementById("iVAT").checked;
   const sub=parseFloat(document.getElementById("iSub").textContent)||0;
   const vatAmt=parseFloat(document.getElementById("iVATAmt").textContent)||0;
   const total=parseFloat(document.getElementById("iTotal").textContent)||0;
   const payload={customer_name:cn,customer_email:ce,invoice_date:dt,car_reg:document.getElementById("iReg").value.trim()||null,parts,vat_applied:vatOn,subtotal:sub,vat_amount:vatAmt,total_amount:total,payment_status:document.getElementById("iPay").value,notes:document.getElementById("iNotes").value.trim()||null};
-  if(invEdit){await dbUpd("invoices",invEdit,payload);toast("Updated!");}
-  else{
-    await dbIns("invoices",payload);toast("Invoice created!");
-    // deduct from inventory
-    for(const p of parts){if(p.part_number){const inv=await dbGet("inventory","&item_code=eq."+p.part_number+"&status=eq.active&limit=1").catch(()=>[]);if(inv.length>0)await dbUpd("inventory",inv[0].id,{status:"sold"}).catch(()=>{});}}
+  
+  // Show deduction confirmation
+  if(!invEdit && parts.length > 0){
+    const partList = parts.map(p => `  • ${p.part_number || 'Unknown'} (Qty: ${p.quantity})`).join('\n');
+    const msg = `Deduct from inventory?\n\n${partList}\n\nClick OK to deduct and save invoice`;
+    if(!confirm(msg)){
+      return; // User cancelled deduction
+    }
   }
-  closeM("mInv");loadInv();
+  
+  if(invEdit){
+    await dbUpd("invoices",invEdit,payload);
+    toast("Invoice updated!");
+  } else {
+    const invId = await dbIns("invoices",payload);
+    
+    // Deduct from inventory
+    if(parts.length > 0){
+      try{
+        const result = await deductForSale(parts, "invoice", invId?.id || "unknown");
+        if(result.success && result.deducted.length > 0){
+          toast(`✅ Invoice saved & ${result.deducted.length} item(s) deducted`, "ok");
+        } else if(result.warnings && result.warnings.length > 0){
+          toast("⚠️ Invoice saved but inventory not deducted", "warning");
+        } else {
+          toast("✅ Invoice saved", "ok");
+        }
+      }catch(e){
+        console.error("Deduction error:", e);
+        toast("Invoice saved but deduction failed", "warning");
+      }
+    } else {
+      toast("Invoice created!");
+    }
+  }
+  closeM("mInv");
+  loadInv();
 }
 function editInv(id){const inv=invData.find(x=>x.id===id);if(!inv)return;invEdit=id;document.getElementById("mInvTit").textContent="✏️ Edit Invoice";document.getElementById("iCN").value=inv.customer_name;document.getElementById("iCE").value=inv.customer_email;document.getElementById("iDt").value=inv.invoice_date;document.getElementById("iReg").value=inv.car_reg||"";document.getElementById("iPay").value=inv.payment_status;document.getElementById("iVAT").checked=inv.vat_applied||false;document.getElementById("iNotes").value=inv.notes||"";document.getElementById("partsW").innerHTML="";(inv.parts||[]).forEach(p=>addPart(p));if(!(inv.parts||[]).length)addPart();calcT();openM("mInv");}
 async function togPay(id,cur){const ns=cur==="paid"?"unpaid":"paid";await dbUpd("invoices",id,{payment_status:ns});const inv=invData.find(x=>x.id===id);if(inv)inv.payment_status=ns;renderInv();toast(`Marked ${ns}`,"in");}

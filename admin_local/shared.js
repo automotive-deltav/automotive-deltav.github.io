@@ -399,6 +399,140 @@
     return DeltaV.getCompanySettings().vat || 'GB XXX XXXX XX';
   };
 
+  // INVENTORY DEDUCTION SYSTEM
+  // Main function to deduct from inventory with confirmation
+  DeltaV.deductFromInventory = async function(partNumber, quantity, referenceType, referenceId){
+    try{
+      // Get product from inventory
+      const products = await DeltaV.dbGet("inventory", "&item_code=eq."+encodeURIComponent(partNumber)+"&limit=1");
+      if(!products || products.length === 0){
+        DeltaV.toast("⚠️ Product not in inventory: "+partNumber, "warning");
+        return {success: false, reason: "not_found"};
+      }
+      
+      const product = products[0];
+      const currentQty = product.quantity || 0;
+      const neededQty = parseInt(quantity) || 1;
+      
+      // Check if sufficient stock
+      if(currentQty < neededQty){
+        return new Promise((resolve)=>{
+          const msg = `⚠️ WARNING: Only ${currentQty} units of "${product.item_name}" in stock, but selling ${neededQty}. Continue anyway?`;
+          if(confirm(msg)){
+            // User confirmed to continue anyway (oversell)
+            DeltaV._doDeduction(product.id, neededQty, referenceType, referenceId).then(resolve);
+          } else {
+            resolve({success: false, reason: "user_cancelled"});
+          }
+        });
+      }
+      
+      // Sufficient stock - proceed with deduction
+      return await DeltaV._doDeduction(product.id, neededQty, referenceType, referenceId);
+    }catch(e){
+      console.error("Deduction error:", e);
+      DeltaV.toast("Error checking inventory", "error");
+      return {success: false, reason: "error", error: e.message};
+    }
+  };
+  
+  // Internal deduction handler
+  DeltaV._doDeduction = async function(inventoryId, quantity, referenceType, referenceId){
+    try{
+      const product = await DeltaV.dbGet("inventory", "&id=eq."+inventoryId+"&limit=1");
+      if(!product || product.length === 0) return {success: false, reason: "not_found"};
+      
+      const p = product[0];
+      const newQty = Math.max(0, (p.quantity || 0) - quantity);
+      
+      // Update inventory
+      await DeltaV.dbUpd("inventory", inventoryId, {quantity: newQty});
+      
+      // Log transaction
+      await DeltaV.logInventoryTransaction(inventoryId, "deduct", quantity, referenceType, referenceId, `Deducted ${quantity} units from sale`);
+      
+      return {success: true, newQuantity: newQty, productName: p.item_name};
+    }catch(e){
+      console.error("Deduction failed:", e);
+      return {success: false, reason: "error", error: e.message};
+    }
+  };
+  
+  // Log inventory transactions
+  DeltaV.logInventoryTransaction = async function(inventoryId, transactionType, quantityChanged, referenceType, referenceId, notes){
+    try{
+      const data = {
+        inventory_id: inventoryId,
+        transaction_type: transactionType,
+        quantity_changed: quantityChanged,
+        reference_type: referenceType || null,
+        reference_id: referenceId || null,
+        notes: notes || null,
+        created_by: (DeltaV.getUser() || {}).name || "System"
+      };
+      await DeltaV.dbIns("inventory_transactions", data);
+    }catch(e){
+      console.warn("Could not log transaction:", e);
+      // Non-critical, don't throw
+    }
+  };
+  
+  // Bulk deduction for invoice/finance (checks all items)
+  DeltaV.deductForSale = async function(parts, referenceType, referenceId){
+    if(!Array.isArray(parts) || parts.length === 0){
+      return {success: true, deducted: []};
+    }
+    
+    const results = [];
+    const warnings = [];
+    
+    // Pre-check all items
+    for(const part of parts){
+      if(!part.part_number || !part.quantity) continue;
+      try{
+        const products = await DeltaV.dbGet("inventory", "&item_code=eq."+encodeURIComponent(part.part_number)+"&limit=1");
+        if(!products || products.length === 0){
+          warnings.push(`❌ ${part.part_number} not in inventory`);
+        } else {
+          const available = products[0].quantity || 0;
+          const needed = parseInt(part.quantity) || 1;
+          if(available < needed){
+            warnings.push(`⚠️ ${products[0].item_name}: only ${available} available (need ${needed})`);
+          }
+        }
+      }catch(e){}
+    }
+    
+    // Show warnings if any
+    if(warnings.length > 0){
+      const msg = "Stock Issues:\n\n" + warnings.join("\n") + "\n\nContinue with deduction?";
+      const proceed = await new Promise(resolve => {
+        resolve(confirm(msg));
+      });
+      
+      if(!proceed){
+        return {success: false, reason: "user_cancelled", warnings: warnings};
+      }
+    }
+    
+    // Deduct all items
+    for(const part of parts){
+      if(!part.part_number || !part.quantity) continue;
+      try{
+        const result = await DeltaV.deductFromInventory(part.part_number, part.quantity, referenceType, referenceId);
+        if(result.success){
+          results.push({partNumber: part.part_number, quantity: part.quantity, newQty: result.newQuantity});
+        } else if(result.reason !== "user_cancelled"){
+          // Already handled with warning
+        }
+      }catch(e){
+        console.error(`Failed to deduct ${part.part_number}:`, e);
+      }
+    }
+    
+    return {success: true, deducted: results, warnings: warnings};
+  };
+
   // Update schema.org telephone in JSON-LD
   DeltaV.updateSchemaPhone = function(phone){
     const schemas = document.querySelectorAll('script[type="application/ld+json"]');
@@ -435,6 +569,9 @@
   win.updateSchemaPhone = DeltaV.updateSchemaPhone;
   win.getCompanySettingsFromDB = DeltaV.getCompanySettingsFromDB;
   win.saveCompanySettingsToDB = DeltaV.saveCompanySettingsToDB;
+  win.deductFromInventory = DeltaV.deductFromInventory;
+  win.deductForSale = DeltaV.deductForSale;
+  win.logInventoryTransaction = DeltaV.logInventoryTransaction;
 
   // Initialize dark mode on page load
   if(document.readyState === 'loading'){

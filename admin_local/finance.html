@@ -66,7 +66,7 @@
   </div>
 </div>
 <div class="main">
-  <div class="topbar"><h1>📈 Finance</h1><div class="tr"><button class="btn btn-primary" onclick="openM('mNewTx')">+ Add Transaction</button><button class="btn btn-info" onclick="exportFin()">📥 Export</button><button class="btn btn-ghost" onclick="loadFin()">🔄 Refresh</button></div></div>
+  <div class="topbar"><h1>📈 Finance</h1><div class="tr"><button class="btn btn-primary" onclick="openNewTx()">+ Add Transaction</button><button class="btn btn-info" onclick="exportFin()">📥 Export</button><button class="btn btn-ghost" onclick="loadFin()">🔄 Refresh</button></div></div>
   <div class="body">
 <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:28px">
   <div class="stat-card stat-card-success">
@@ -97,7 +97,7 @@
   <select id="fType" class="btn btn-ghost" onchange="renderFin()" style="padding:9px 12px;font-size:.82rem">
     <option value="">All Types</option><option value="income">Income</option><option value="expense">Expense</option>
   </select>
-  <button class="btn btn-primary" onclick="openM('mNewTx')">+ Add</button>
+  <button class="btn btn-primary" onclick="openNewTx()">+ Add</button>
   <button class="btn btn-info btn-sm" onclick="exportFin()">📥 Export</button>
   <button class="btn btn-ghost" onclick="loadFin()">🔄</button>
 </div>
@@ -126,6 +126,15 @@
   </div>
   <div class="fg"><label>Description *</label><input type="text" id="txDesc" placeholder="Brief description"></div>
   <div class="fg"><label>Reference</label><input type="text" id="txRef" placeholder="Invoice ref, receipt no..."></div>
+  <div id="invDeductWidget" style="display:none;background:rgba(251,146,60,.08);border:1.5px solid rgba(251,146,60,.2);border-radius:10px;padding:12px 16px;margin:12px 0">
+    <div style="margin-bottom:8px">
+      <label style="display:flex;align-items:center;gap:8px;cursor:pointer"><input type="checkbox" id="invDeduct"><span style="font-weight:600;color:#1b2b3a">Deduct from inventory</span></label>
+    </div>
+    <div id="deductFields" style="display:none;padding-top:10px;border-top:1px solid rgba(251,146,60,.3)">
+      <div class="fg" style="margin-bottom:8px"><label>Product Part # *</label><input type="text" id="deductPart" placeholder="P-001"></div>
+      <div class="fg"><label>Quantity *</label><input type="number" id="deductQty" placeholder="1" min="1" step="1"></div>
+    </div>
+  </div>
   <div class="fg"><label>Notes</label><textarea id="txNote"></textarea></div>
   <div class="mfoot">
     <button class="btn btn-ghost" onclick="closeM('mNewTx')">Cancel</button>
@@ -195,10 +204,14 @@ function renderFin(){
 function updateCategories(){
   const type = document.getElementById("txType").value;
   const catSelect = document.getElementById("txCat");
+  const invWidget = document.getElementById("invDeductWidget");
+  
   if(type === "income"){
     catSelect.innerHTML = `<option>Invoice Payment</option><option>Service Revenue</option><option>Other Income</option>`;
+    invWidget.style.display = "none";
   } else {
     catSelect.innerHTML = `<option>Parts Purchase</option><option>Staff Wages</option><option>Overheads</option><option>Equipment</option><option>Rent/Utilities</option><option>Insurance</option><option>Tools</option><option>Marketing</option><option>Other</option>`;
+    invWidget.style.display = "block"; // Show deduction widget for expenses
   }
 }
 function calcDeductions(){
@@ -218,13 +231,92 @@ function calcDeductions(){
 async function saveTx(){
   const dt=document.getElementById("txDt").value,amt=document.getElementById("txAmt").value,desc=document.getElementById("txDesc").value.trim();
   if(!dt||!amt||!desc){toast("Fill required fields","er");return;}
+  
+  // Check inventory deduction fields if enabled
+  const deductCheck = document.getElementById("invDeduct");
+  let partNum = null, deductQty = null;
+  if(deductCheck && deductCheck.checked){
+    partNum = document.getElementById("deductPart").value.trim();
+    deductQty = parseInt(document.getElementById("deductQty").value);
+    if(!partNum || !deductQty || deductQty < 1){
+      toast("Fill part number and quantity for inventory deduction", "er");
+      return;
+    }
+  }
+  
   const d={tx_date:dt,type:document.getElementById("txType").value,category:document.getElementById("txCat").value,description:desc,amount:parseFloat(amt),reference:document.getElementById("txRef").value.trim()||null,notes:document.getElementById("txNote").value.trim()||null};
-  if(finEdit){await dbUpd("transactions",finEdit,d);toast("Updated!");}else{await dbIns("transactions",d);toast("Transaction saved!");}
-  closeM("mNewTx");loadFin();
+  
+  if(finEdit){
+    await dbUpd("transactions",finEdit,d);
+    toast("Updated!");
+  } else {
+    const txId = await dbIns("transactions",d);
+    
+    // Handle inventory deduction
+    if(partNum && deductQty && deductCheck.checked){
+      try{
+        const msg = `Deduct ${deductQty} unit(s) of ${partNum} from inventory?\n\nClick OK to confirm.`;
+        if(confirm(msg)){
+          const result = await deductFromInventory(partNum, deductQty, "finance", txId?.id || "unknown");
+          if(result.success){
+            toast(`✅ Transaction saved & stock deducted`, "ok");
+          } else {
+            toast(`Transaction saved but deduction failed: ${result.reason}`, "warning");
+          }
+        } else {
+          toast("Transaction saved (no deduction)", "ok");
+        }
+      }catch(e){
+        console.error("Deduction error:", e);
+        toast("Transaction saved but deduction failed", "warning");
+      }
+    } else {
+      toast("Transaction saved!");
+    }
+  }
+  closeM("mNewTx");
+  loadFin();
 }
-function editTx(id){const t=finData.find(x=>x.id===id);if(!t)return;finEdit=id;document.getElementById("txDt").value=t.tx_date;document.getElementById("txType").value=t.type;document.getElementById("txCat").value=t.category;document.getElementById("txAmt").value=t.amount;document.getElementById("txDesc").value=t.description||"";document.getElementById("txRef").value=t.reference||"";document.getElementById("txNote").value=t.notes||"";openM("mNewTx");}
+function editTx(id){
+  const t=finData.find(x=>x.id===id);
+  if(!t)return;
+  finEdit=id;
+  document.getElementById("txDt").value=t.tx_date;
+  document.getElementById("txType").value=t.type;
+  updateCategories();
+  document.getElementById("txCat").value=t.category;
+  document.getElementById("txAmt").value=t.amount;
+  document.getElementById("txDesc").value=t.description||"";
+  document.getElementById("txRef").value=t.reference||"";
+  document.getElementById("txNote").value=t.notes||"";
+  document.getElementById("invDeduct").checked=false;
+  document.getElementById("deductFields").style.display="none";
+  document.getElementById("deductPart").value="";
+  document.getElementById("deductQty").value="";
+  openM("mNewTx");
+}
 function delTx(id){confirmDel("Delete this transaction?",async()=>{await dbDel("transactions",id);finData=finData.filter(t=>t.id!==id);renderFin();updateFinStats();toast("Deleted","in");});}
-function exportFin(){const rows=[["Date","Type","Category","Description","Amount","Reference"]];finData.forEach(t=>rows.push([t.tx_date,t.type,t.category,t.description,t.amount,t.reference||""]));let csv="";rows.forEach(r=>csv+=r.map(c=>`"${(c||"").toString().replace(/"/g,'""')}"`).join(",")+"\\n");const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));a.download="finance.csv";a.click();}
-document.getElementById("txDt").value=today();loadFin();
+function openNewTx(){
+  finEdit=null;
+  document.getElementById("txDt").value=today();
+  document.getElementById("txType").value="income";
+  updateCategories();
+  document.getElementById("txCat").value="Invoice Payment";
+  document.getElementById("txAmt").value="";
+  document.getElementById("txDesc").value="";
+  document.getElementById("txRef").value="";
+  document.getElementById("txNote").value="";
+  document.getElementById("invDeduct").checked=false;
+  document.getElementById("deductFields").style.display="none";
+  document.getElementById("deductPart").value="";
+  document.getElementById("deductQty").value="1";
+  calcDeductions();
+  openM("mNewTx");
+}function exportFin(){const rows=[["Date","Type","Category","Description","Amount","Reference"]];finData.forEach(t=>rows.push([t.tx_date,t.type,t.category,t.description,t.amount,t.reference||""]));let csv="";rows.forEach(r=>csv+=r.map(c=>`"${(c||"").toString().replace(/"/g,'""')}"`).join(",")+"\\n");const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));a.download="finance.csv";a.click();}
+document.getElementById("txDt").value=today();
+document.getElementById("invDeduct").addEventListener("change", function(){
+  document.getElementById("deductFields").style.display = this.checked ? "block" : "none";
+});
+loadFin();
 </script>
 </body></html>
