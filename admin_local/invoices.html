@@ -27,6 +27,9 @@
 <div style="display:flex;flex-direction:column;gap:12px" id="invList"></div>
 
 <div class="modal" id="mInv"><div class="mbox" style="max-width:800px"><h3 id="mInvTit">✨ New Invoice</h3>
+<div style="background:rgba(96,165,250,.06);border:1.5px solid rgba(96,165,250,.2);border-radius:10px;padding:12px 16px;margin-bottom:16px;font-weight:600;color:#1b2b3a">
+  <span style="font-size:.85rem;color:#64748b">Invoice Number:</span> <span id="iNum" style="font-family:monospace;font-size:1.2rem;color:var(--ac)">INV-000001</span>
+</div>
 <div class="g2">
   <div class="fg ac-w"><label>Customer Name *</label><input type="text" id="iCN" placeholder="John Smith"></div>
   <div class="fg"><label>Customer Email *</label><input type="email" id="iCE" placeholder="john@example.com"></div>
@@ -123,18 +126,97 @@ function delInv(id){
     toast("Deleted","in");
   });
 }
-function openNewInv(){invEdit=null;document.getElementById("mInvTit").textContent="✨ New Invoice";document.getElementById("iCN").value="";document.getElementById("iCE").value="";document.getElementById("iDt").value=today();document.getElementById("iReg").value="";document.getElementById("iPay").value="unpaid";document.getElementById("iVAT").checked=false;document.getElementById("iNotes").value="";document.getElementById("partsW").innerHTML="";document.getElementById("iVATR").style.display="none";calcT();addPart();openM("mInv");}
+function openNewInv(){
+  invEdit=null;
+  document.getElementById("mInvTit").textContent="✨ New Invoice";
+  const nextNum = getNextInvoiceNum();
+  document.getElementById("iNum").textContent = formatInvoiceNum(nextNum);
+  document.getElementById("iCN").value="";
+  document.getElementById("iCE").value="";
+  document.getElementById("iDt").value=today();
+  document.getElementById("iReg").value="";
+  document.getElementById("iPay").value="unpaid";
+  document.getElementById("iVAT").checked=false;
+  document.getElementById("iNotes").value="";
+  document.getElementById("partsW").innerHTML="";
+  document.getElementById("iVATR").style.display="none";
+  calcT();
+  addPart();
+  openM("mInv");
+}
 function addPart(d={}){
   const w=document.getElementById("partsW"),r=document.createElement("div");
   r.style="display:grid;grid-template-columns:1fr 2.2fr .5fr .8fr .8fr 26px;gap:5px;margin-bottom:6px;padding:9px;background:#fff;border-radius:8px;border:1.5px solid var(--br);box-shadow:var(--s1);align-items:center";
-  r.innerHTML=`<input class="pn" type="text" placeholder="P-001" value="${d.part_number||""}" style="padding:8px;border:1.5px solid var(--br);border-radius:7px;font-family:Montserrat,sans-serif;font-size:.8rem;width:100%">
-    <input class="desc" type="text" placeholder="Description" value="${d.description||""}" style="padding:8px;border:1.5px solid var(--br);border-radius:7px;font-family:Montserrat,sans-serif;font-size:.8rem;width:100%">
-    <input class="qty" type="number" value="${d.quantity||1}" min="1" step="1" onchange="calcT()" style="padding:8px;border:1.5px solid var(--br);border-radius:7px;font-family:Montserrat,sans-serif;font-size:.8rem;width:100%;text-align:center">
-    <input class="prc" type="number" value="${d.unit_price||""}" placeholder="0.00" min="0" step="0.01" onchange="calcT()" style="padding:8px;border:1.5px solid var(--br);border-radius:7px;font-family:Montserrat,sans-serif;font-size:.8rem;width:100%">
-    <span class="sdt" style="font-weight:700;color:var(--ac);text-align:center;font-size:.86rem">£0.00</span>
-    <button onclick="this.closest('div').remove();calcT()" style="background:#dc3545;color:#fff;border:none;border-radius:6px;width:26px;height:26px;cursor:pointer;font-size:.9rem;display:flex;align-items:center;justify-content:center">×</button>`;
-  r.querySelectorAll("input").forEach(inp=>{inp.onfocus=()=>r.style.borderColor="var(--ac)";inp.onblur=()=>r.style.borderColor="var(--br)";});
-  w.appendChild(r);calcT();
+  const pn = document.createElement("input");
+  pn.className = "pn";
+  pn.type = "text";
+  pn.placeholder = "P-001";
+  pn.value = d.part_number || "";
+  pn.style = "padding:8px;border:1.5px solid var(--br);border-radius:7px;font-family:Montserrat,sans-serif;font-size:.8rem;width:100%";
+  // Auto-fill part details from inventory
+  pn.addEventListener("change", async function(){
+    if(this.value.trim()){
+      try{
+        const parts = await dbGet("inventory","&item_code=eq."+this.value.trim()+"&limit=1");
+        if(parts.length > 0){
+          const part = parts[0];
+          r.querySelector(".desc").value = part.item_name || part.description || "";
+          r.querySelector(".prc").value = (part.unit_price || 0).toFixed(2);
+          calcT();
+        }
+      }catch(e){}
+    }
+  });
+  
+  const desc = document.createElement("input");
+  desc.className = "desc";
+  desc.type = "text";
+  desc.placeholder = "Description";
+  desc.value = d.description || "";
+  desc.style = "padding:8px;border:1.5px solid var(--br);border-radius:7px;font-family:Montserrat,sans-serif;font-size:.8rem;width:100%";
+  
+  const qty = document.createElement("input");
+  qty.className = "qty";
+  qty.type = "number";
+  qty.value = d.quantity || 1;
+  qty.min = "1";
+  qty.step = "1";
+  qty.onchange = () => calcT();
+  qty.style = "padding:8px;border:1.5px solid var(--br);border-radius:7px;font-family:Montserrat,sans-serif;font-size:.8rem;width:100%;text-align:center";
+  
+  const prc = document.createElement("input");
+  prc.className = "prc";
+  prc.type = "number";
+  prc.value = d.unit_price || "";
+  prc.placeholder = "0.00";
+  prc.min = "0";
+  prc.step = "0.01";
+  prc.onchange = () => calcT();
+  prc.style = "padding:8px;border:1.5px solid var(--br);border-radius:7px;font-family:Montserrat,sans-serif;font-size:.8rem;width:100%";
+  
+  const sdt = document.createElement("span");
+  sdt.className = "sdt";
+  sdt.style = "font-weight:700;color:var(--ac);text-align:center;font-size:.86rem";
+  sdt.textContent = "£0.00";
+  
+  const btn = document.createElement("button");
+  btn.onclick = function(){ r.remove(); calcT(); };
+  btn.style = "background:#dc3545;color:#fff;border:none;border-radius:6px;width:26px;height:26px;cursor:pointer;font-size:.9rem;display:flex;align-items:center;justify-content:center";
+  btn.textContent = "×";
+  
+  r.appendChild(pn);
+  r.appendChild(desc);
+  r.appendChild(qty);
+  r.appendChild(prc);
+  r.appendChild(sdt);
+  r.appendChild(btn);
+  
+  r.querySelectorAll("input").forEach(inp=>{
+    inp.onfocus=()=>r.style.borderColor="var(--ac)";
+    inp.onblur=()=>r.style.borderColor="var(--br)";
+  });
+  w.appendChild(r);
+  calcT();
 }
 function calcT(){
   let sub=0;

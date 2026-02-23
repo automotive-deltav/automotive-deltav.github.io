@@ -109,7 +109,17 @@ footer strong span{color:var(--ac)}
 </div>
 
 <footer>
-  <div><strong>DeltaV <span>Automotive</span></strong><br>Smethwick, West Midlands · info@deltavautomotive.co.uk</div>
+  <div><strong>DeltaV <span>Automotive</span></strong><br><span id="footerLocation">Smethwick, West Midlands</span> · <span id="footerEmail">info@deltavautomotive.co.uk</span></div>
   <div style="text-align:right">© 2026 DeltaV Automotive</div>
 </footer>
+<script>
+window.addEventListener('DOMContentLoaded', function(){
+  const email = getCompanyEmail();
+  const addr = getCompanyAddress();
+  const footerEmail = document.getElementById('footerEmail');
+  const footerLocation = document.getElementById('footerLocation');
+  if(footerEmail) footerEmail.textContent = email;
+  if(footerLocation && addr) footerLocation.textContent = addr.split('\n')[0] || 'Smethwick, West Midlands';
+});
+</script>
 </body></html>

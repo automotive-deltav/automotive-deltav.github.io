@@ -270,19 +270,81 @@
     return 'INV-' + String(num).slice(-6);
   };
 
-  // Company phone number sync - stored in localStorage, synced from settings
+  // Company settings sync - all company data stored in localStorage, synced from settings.html
+  DeltaV.setCompanySettings = function(data){
+    localStorage.setItem('dv_company_settings', JSON.stringify(data || {}));
+  };
+
+  DeltaV.getCompanySettings = function(){
+    try{
+      return JSON.parse(localStorage.getItem('dv_company_settings') || '{}');
+    }catch(e){ return {}; }
+  };
+
+  DeltaV.setCompanyName = function(name){
+    const s = DeltaV.getCompanySettings();
+    s.name = name || 'DeltaV Automotive';
+    DeltaV.setCompanySettings(s);
+  };
+
+  DeltaV.getCompanyName = function(){
+    return DeltaV.getCompanySettings().name || 'DeltaV Automotive';
+  };
+
   DeltaV.setCompanyPhone = function(phone){
-    localStorage.setItem('dv_company_phone', phone || '0121 XXX XXXX');
+    const s = DeltaV.getCompanySettings();
+    s.phone = phone || '0121 XXX XXXX';
+    DeltaV.setCompanySettings(s);
   };
 
   DeltaV.getCompanyPhone = function(){
-    return localStorage.getItem('dv_company_phone') || '0121 XXX XXXX';
+    return DeltaV.getCompanySettings().phone || '0121 XXX XXXX';
+  };
+
+  DeltaV.setCompanyEmail = function(email){
+    const s = DeltaV.getCompanySettings();
+    s.email = email || 'info@deltavautomotive.co.uk';
+    DeltaV.setCompanySettings(s);
+  };
+
+  DeltaV.getCompanyEmail = function(){
+    return DeltaV.getCompanySettings().email || 'info@deltavautomotive.co.uk';
+  };
+
+  DeltaV.setCompanyAddress = function(addr){
+    const s = DeltaV.getCompanySettings();
+    s.address = addr || 'Unit 5, Industrial Estate\nSmethwick, West Midlands, B66 2XX';
+    DeltaV.setCompanySettings(s);
+  };
+
+  DeltaV.getCompanyAddress = function(){
+    return DeltaV.getCompanySettings().address || 'Unit 5, Industrial Estate\nSmethwick, West Midlands, B66 2XX';
+  };
+
+  DeltaV.setCompanyVAT = function(vat){
+    const s = DeltaV.getCompanySettings();
+    s.vat = vat || 'GB XXX XXXX XX';
+    DeltaV.setCompanySettings(s);
+  };
+
+  DeltaV.getCompanyVAT = function(){
+    return DeltaV.getCompanySettings().vat || 'GB XXX XXXX XX';
   };
 
   // Window exports
   win.getNextInvoiceNum = DeltaV.getNextInvoiceNum;
   win.formatInvoiceNum = DeltaV.formatInvoiceNum;
+  win.setCompanySettings = DeltaV.setCompanySettings;
+  win.getCompanySettings = DeltaV.getCompanySettings;
+  win.setCompanyName = DeltaV.setCompanyName;
+  win.getCompanyName = DeltaV.getCompanyName;
   win.setCompanyPhone = DeltaV.setCompanyPhone;
   win.getCompanyPhone = DeltaV.getCompanyPhone;
+  win.setCompanyEmail = DeltaV.setCompanyEmail;
+  win.getCompanyEmail = DeltaV.getCompanyEmail;
+  win.setCompanyAddress = DeltaV.setCompanyAddress;
+  win.getCompanyAddress = DeltaV.getCompanyAddress;
+  win.setCompanyVAT = DeltaV.setCompanyVAT;
+  win.getCompanyVAT = DeltaV.getCompanyVAT;
 
 })(window);

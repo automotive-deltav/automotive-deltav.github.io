@@ -60,8 +60,14 @@ function saveSettings(){
     email_confirm:document.getElementById("sEmailConf").checked
   };
   localStorage.setItem("dv_settings",JSON.stringify(settings));
-  // Sync phone number globally
-  setCompanyPhone(settings.phone);
+  // Sync ALL company data globally
+  setCompanySettings({
+    name: settings.name,
+    phone: settings.phone,
+    email: settings.email,
+    address: settings.address,
+    vat: settings.vat
+  });
   toast("Settings saved!","ok");
   
   const newPass=document.getElementById("sPass").value;
@@ -87,10 +93,17 @@ if(saved){
     const s=JSON.parse(saved);
     if(s.name)document.getElementById("sName").value=s.name;
     if(s.phone)document.getElementById("sPhone").value=s.phone;
-    if(s.phone)setCompanyPhone(s.phone);
     if(s.email)document.getElementById("sEmail").value=s.email;
     if(s.address)document.getElementById("sAddr").value=s.address;
     if(s.vat)document.getElementById("sVAT").value=s.vat;
+    // Sync company data from settings
+    setCompanySettings({
+      name: s.name,
+      phone: s.phone,
+      email: s.email,
+      address: s.address,
+      vat: s.vat
+    });
     if(s.vat_default!==undefined)document.getElementById("sVATDef").checked=s.vat_default;
     if(s.bank)document.getElementById("sBank").value=s.bank;
     if(s.sort)document.getElementById("sSort").value=s.sort;

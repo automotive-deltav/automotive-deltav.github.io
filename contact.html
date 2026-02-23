@@ -14,6 +14,7 @@
 <link rel="sitemap" href="https://deltavautomotive.com/sitemap.xml">
 <title>Contact Us — DeltaV Automotive | Smethwick Car Repair</title>
 <link rel="stylesheet" href="theme.css">
+<script src="admin_local/shared.js"></script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"ContactPage","name":"Contact DeltaV Automotive","url":"https://deltavautomotive.com/contact.html"}</script>
 
 <style>
@@ -152,7 +153,7 @@ select:-webkit-autofill{
         <div class="ci-ic">📍</div>
         <div>
           <div class="ci-lbl">Address</div>
-          <div class="ci-val">DeltaV Automotive<br>Smethwick, West Midlands</div>
+          <div class="ci-val" id="dispAddr">DeltaV Automotive<br>Smethwick, West Midlands</div>
         </div>
       </div>
 
@@ -160,7 +161,7 @@ select:-webkit-autofill{
         <div class="ci-ic">📞</div>
         <div>
           <div class="ci-lbl">Phone</div>
-          <div class="ci-val">0121 XXX XXXX</div>
+          <div class="ci-val" id="dispPhone">0121 XXX XXXX</div>
         </div>
       </div>
 
@@ -168,7 +169,7 @@ select:-webkit-autofill{
         <div class="ci-ic">📧</div>
         <div>
           <div class="ci-lbl">Email</div>
-          <div class="ci-val">info@deltavautomotive.co.uk</div>
+          <div class="ci-val" id="dispEmail">info@deltavautomotive.co.uk</div>
         </div>
       </div>
 
@@ -250,6 +251,7 @@ select:-webkit-autofill{
   </div>
 </div>
 
+<script src="admin_local/shared.js"></script>
 <script>
 const SB="https://cxzapvieqzqfxzolqwoh.supabase.co";
 const KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN4emFwdmllcXpxZnh6b2xxd29oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA1NjU4MzgsImV4cCI6MjA4NjE0MTgzOH0.x_F07XpdThY6EqwaP8jJGgdBIMTHdYfTr99IMOpSq_E";
@@ -328,6 +330,21 @@ async function sendMsg(){
     document.getElementById("cErr").textContent="❌ Error sending message. Please try again or call us.";
   }
 }
+
+// Load company details on page load
+window.addEventListener('DOMContentLoaded', function(){
+  const phone = getCompanyPhone();
+  const email = getCompanyEmail();
+  const addr = getCompanyAddress();
+  
+  const dispPhone = document.getElementById('dispPhone');
+  const dispEmail = document.getElementById('dispEmail');
+  const dispAddr = document.getElementById('dispAddr');
+  
+  if(dispPhone) dispPhone.textContent = phone;
+  if(dispEmail) dispEmail.textContent = email;
+  if(dispAddr) dispAddr.innerHTML = 'DeltaV Automotive<br>' + addr.split('\n')[0];
+});
 </script>
 
 </body>
