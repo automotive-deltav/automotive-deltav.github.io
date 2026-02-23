@@ -150,6 +150,28 @@
   win.openM = DeltaV.openM; win.closeM = DeltaV.closeM; win.attachAC = DeltaV.attachAC;
   win.fmtD = DeltaV.fmtD; win.fmtGBP = DeltaV.fmtGBP; win.today = DeltaV.today;
 
+  // Dark Mode Theme Toggle
+  DeltaV.toggleDarkMode = function(){
+    const isDark = document.body.classList.toggle('dark-mode');
+    localStorage.setItem('dv_theme', isDark ? 'dark' : 'light');
+    const btn = document.getElementById('darkModeToggle');
+    if(btn) btn.textContent = isDark ? '☀️' : '🌙';
+    return isDark;
+  };
+
+  DeltaV.initDarkMode = function(){
+    const savedTheme = localStorage.getItem('dv_theme') || 'light';
+    if(savedTheme === 'dark'){
+      document.body.classList.add('dark-mode');
+      const btn = document.getElementById('darkModeToggle');
+      if(btn) btn.textContent = '☀️';
+    }
+  };
+
+  // Window exports for dark mode
+  win.toggleDarkMode = DeltaV.toggleDarkMode;
+  win.initDarkMode = DeltaV.initDarkMode;
+
   // Other helpers preserved as DeltaV methods
   DeltaV.enhanceSearch = function(inputId, selector){
     const input = document.getElementById(inputId); if(!input) return;
@@ -346,5 +368,12 @@
   win.getCompanyAddress = DeltaV.getCompanyAddress;
   win.setCompanyVAT = DeltaV.setCompanyVAT;
   win.getCompanyVAT = DeltaV.getCompanyVAT;
+
+  // Initialize dark mode on page load
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', DeltaV.initDarkMode);
+  } else {
+    DeltaV.initDarkMode();
+  }
 
 })(window);

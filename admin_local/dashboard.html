@@ -59,6 +59,7 @@
   <div class="topbar">
     <h1>📊 Dashboard</h1>
     <div class="tr">
+      <button class="btn btn-ghost" id="darkModeToggle" onclick="toggleDarkMode()" title="Toggle dark mode">🌙</button>
       <button class="btn btn-ghost" onclick="loadDash()">🔄 Refresh</button>
       <button class="btn btn-ghost" onclick="showKeyboardHelp()">⌨️ Shortcuts</button>
     </div>
@@ -90,6 +91,8 @@
         <div class="stat-sub">⏳ Pending</div>
       </div>
     </div>
+    
+    <div class="divider-lg"></div>
     
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:28px">
       <div class="card">

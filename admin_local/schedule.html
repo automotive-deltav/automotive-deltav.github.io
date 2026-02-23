@@ -5,18 +5,21 @@
 <title>DeltaV — Schedule</title>
 <link rel="stylesheet" href="theme.css">
 <style>
-.cal-head{display:grid;grid-template-columns:repeat(7,1fr);background:linear-gradient(135deg,#1b2b3a,#2e4560);border-radius:8px 8px 0 0}
-.cal-head div{padding:14px;text-align:center;color:rgba(255,255,255,.7);font-size:.75rem;font-weight:700;letter-spacing:1.2px}
-.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:1px;background:#e2e8f0;border-radius:0 0 8px 8px;overflow:hidden;border:1px solid #e2e8f0}
-.cal-day{min-height:120px;background:#fff;padding:8px;position:relative;transition:all .2s;display:flex;flex-direction:column}
-.cal-day:hover{background:#f9fafb;box-shadow:inset 0 2px 8px rgba(96,165,250,.05)}
-.cal-day.today{background:linear-gradient(135deg,rgba(96,165,250,.08),rgba(96,165,250,.02));border-left:4px solid var(--ac)}
+.cal-head{display:grid;grid-template-columns:repeat(7,1fr);background:linear-gradient(135deg,#1b2b3a,#2e4560);border-radius:12px 12px 0 0;border:2px solid #cbd5e0}
+.cal-head div{padding:14px;text-align:center;color:rgba(255,255,255,.8);font-size:.75rem;font-weight:700;letter-spacing:1.2px;border-right:2px solid rgba(255,255,255,.15)}
+.cal-head div:last-child{border-right:none}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:0;background:#fff;border-radius:0 0 12px 12px;overflow:hidden;border:2px solid #cbd5e0;border-top:1px solid #cbd5e0;box-shadow:0 12px 28px rgba(13,22,33,.16)}
+.cal-day{min-height:120px;background:#fff;padding:8px;position:relative;transition:all .2s;display:flex;flex-direction:column;border-right:1.5px solid #dfe6ed;border-bottom:1.5px solid #dfe6ed}
+.cal-day:nth-child(7n){border-right:none}
+.cal-day:nth-child(n+36){border-bottom:none}
+.cal-day:hover{background:#f0f4ff;box-shadow:inset 0 0 0 2px rgba(96,165,250,.2)}
+.cal-day.today{background:linear-gradient(135deg,rgba(96,165,250,.15),rgba(96,165,250,.08));border-left:5px solid var(--ac);padding-left:3px}
 .cal-day.other-month{background:#f8f9fb;color:#cbd5e1}
 .day-num{font-weight:700;font-size:.9rem;color:var(--dk);margin-bottom:6px;line-height:1}
 .day-num.today{color:var(--ac);font-size:1rem;font-weight:800}
-.appt{background:#28a745;color:#fff;padding:5px 8px;border-radius:4px;font-size:.7rem;font-weight:600;margin-bottom:2px;cursor:pointer;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,.12);transition:all .15s;border-left:3px solid rgba(255,255,255,.4)}
-.appt:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,.15);border-left-width:4px}
-.appt.pending{background:#ffc107;color:#444;border-left-color:rgba(255,255,255,.5)}
+.appt{background:#28a745;color:#fff;padding:5px 8px;border-radius:4px;font-size:.7rem;font-weight:600;margin-bottom:2px;cursor:pointer;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;box-shadow:0 3px 8px rgba(0,0,0,.16);transition:all .15s;border-left:3px solid rgba(255,255,255,.4)}
+.appt:hover{transform:translateY(-2px);box-shadow:0 6px 14px rgba(0,0,0,.2);border-left-width:4px}
+.appt.pending{background:#ffc107;color:#333;border-left-color:rgba(255,255,255,.6)}
 .appt.confirmed{background:#28a745;color:#fff}
 .appt.other{background:#6366f1;color:#fff}
 .appt-badge{display:inline-block;background:var(--ac);color:#fff;padding:2px 6px;border-radius:3px;font-size:.65rem;font-weight:700;margin-bottom:4px}
@@ -62,6 +65,7 @@
   <div class="topbar">
     <h1>🗓️ Schedule</h1>
     <div class="tr">
+      <button class="btn btn-ghost" id="darkModeToggle" onclick="toggleDarkMode()" title="Toggle dark mode">🌙</button>
       <button class="btn btn-ghost" onclick="loadSch()">🔄 Refresh</button>
       <a href="admin.html" class="btn btn-dark">📅 Bookings</a>
     </div>
@@ -85,6 +89,8 @@
         <div class="stat-value" id="statPending">0</div>
       </div>
     </div>
+
+    <div class="divider-lg"></div>
 
     <div style="display:flex;gap:10px;margin-bottom:18px;align-items:center;justify-content:center;flex-wrap:wrap">
       <button class="btn btn-dark" onclick="prevMo()" title="Previous month">← Previous</button>

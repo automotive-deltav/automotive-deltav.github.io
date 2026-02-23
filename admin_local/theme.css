@@ -1,5 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;700;900&family=Inter:wght@400;600;700&display=swap');
-:root{--dk:#1b2b3a;--dkk:#0d1621;--ac:#60a5fa;--ok:#28a745;--wa:#ffc107;--er:#dc3545;--in:#17a2b8;--br:#e8ecef;--bg:#f8f9fb;--s1:0 2px 8px rgba(0,0,0,.06);--s2:0 4px 16px rgba(0,0,0,.1);--s3:0 8px 32px rgba(0,0,0,.15);--r:10px;--sw:280px}
+:root{--dk:#1b2b3a;--dkk:#0d1621;--ac:#60a5fa;--ok:#28a745;--wa:#ffc107;--er:#dc3545;--in:#17a2b8;--br:#e8ecef;--bg:#f8f9fb;--s1:0 2px 8px rgba(0,0,0,.06);--s2:0 4px 16px rgba(0,0,0,.1);--s3:0 8px 32px rgba(0,0,0,.15);--r:10px;--sw:280px;--text:#2d3748;--text-light:#64748b;--text-lighter:#94a3b8;--bg-card:#fff;--bg-section:var(--bg);--border:#e8ecf1}
+
+/* Dark Mode Theme */
+body.dark-mode{--dk:#e0e7ff;--text:#e0e7ff;--text-light:#cbd5e0;--text-lighter:#a0aec0;--bg-section:#0f1419;--bg-card:#1a2332;--border:#2e3e4f;--br:#1a2f3f;--bg:#0b1420}
+body.dark-mode,body.dark-mode *{color-scheme:dark}
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:Inter,sans-serif;font-size:14px;color:#2d3748;background:var(--bg);line-height:1.6}
 a{text-decoration:none;color:inherit}
@@ -560,6 +564,30 @@ body{overflow-x:hidden}
 /* Prominent Section Headers with Underline */
 .section-header{border-bottom:3px solid #e2e8f0;padding-bottom:12px;margin-bottom:20px;font-weight:700;color:#1b2b3a}
 .section-header::after{content:'';display:block;position:absolute;bottom:-3px;left:0;width:40px;height:3px;background:var(--ac);border-radius:2px}
+
+/* Calendar & Chart Grid Lines - Make Visible */
+table{border-collapse:collapse;width:100%}
+table th{background:#f8f9fb;border:1.5px solid #cbd5e0;padding:12px;font-weight:700;color:#1b2b3a}
+table td{border:1.5px solid #dfe6ed;padding:12px;background:#fff}
+table tbody tr:hover{background:#f9fafb;box-shadow:inset 0 0 0 2px rgba(96,165,250,.1)}
+
+/* Calendar specific - darker, visible lines */
+.calendar{border:2px solid #cbd5e0;border-radius:12px;overflow:hidden;box-shadow:0 8px 24px rgba(13,22,33,.12)}
+.calendar th{background:linear-gradient(135deg,#f0f4f8,#f8f9fb);border-right:2px solid #cbd5e0;border-bottom:2px solid #cbd5e0}
+.calendar td{border-right:1.5px solid #dfe6ed;border-bottom:1.5px solid #dfe6ed;position:relative}
+.calendar td:hover{background:rgba(96,165,250,.04);box-shadow:inset 0 0 0 2px rgba(96,165,250,.15)}
+
+/* Grid lines for data tables */
+.data-table{border:1.5px solid #cbd5e0;border-radius:10px;overflow:hidden;box-shadow:0 10px 26px rgba(13,22,33,.14)}
+.data-table thead{background:linear-gradient(135deg,#f0f4f8,#f8f9fb);border-bottom:2px solid #cbd5e0}
+.data-table tbody tr{border-bottom:1.5px solid #dfe6ed}
+.data-table tbody tr:last-child{border-bottom:none}
+.data-table td,.data-table th{border-right:1.5px solid #dfe6ed;padding:14px}
+.data-table td:last-child,.data-table th:last-child{border-right:none}
+
+/* Visible borders for sections */
+.section{border:1.5px solid #dfe6ed;border-radius:12px;padding:20px;margin-bottom:20px;background:#fff;box-shadow:0 8px 20px rgba(13,22,33,.1)}
+.section:hover{box-shadow:0 12px 28px rgba(13,22,33,.14)}
 }
 
 @media(max-width:768px){
