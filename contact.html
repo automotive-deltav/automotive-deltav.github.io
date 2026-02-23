@@ -333,18 +333,21 @@ async function sendMsg(){
 
 // Load company details on page load
 window.addEventListener('DOMContentLoaded', function(){
-  const phone = getCompanyPhone();
-  const email = getCompanyEmail();
-  const addr = getCompanyAddress();
-  
-  const dispPhone = document.getElementById('dispPhone');
-  const dispEmail = document.getElementById('dispEmail');
-  const dispAddr = document.getElementById('dispAddr');
-  
-  if(dispPhone) dispPhone.textContent = phone;
-  if(dispEmail) dispEmail.textContent = email;
-  if(dispAddr) dispAddr.innerHTML = 'DeltaV Automotive<br>' + addr.split('\n')[0];
-  updateSchemaPhone(phone);
+  // Small delay to ensure shared.js is fully initialized
+  setTimeout(function(){
+    const phone = getCompanyPhone();
+    const email = getCompanyEmail();
+    const addr = getCompanyAddress();
+    
+    const dispPhone = document.getElementById('dispPhone');
+    const dispEmail = document.getElementById('dispEmail');
+    const dispAddr = document.getElementById('dispAddr');
+    
+    if(dispPhone) dispPhone.textContent = phone;
+    if(dispEmail) dispEmail.textContent = email;
+    if(dispAddr) dispAddr.innerHTML = 'DeltaV Automotive<br>' + addr.split('\n')[0];
+    if(typeof updateSchemaPhone === 'function') updateSchemaPhone(phone);
+  }, 50);
 });
 </script>
 

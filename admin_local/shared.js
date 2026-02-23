@@ -292,14 +292,60 @@
     return 'INV-' + String(num).slice(-6);
   };
 
-  // Company settings sync - all company data stored in localStorage, synced from settings.html
+  // Company settings sync - now uses Supabase as source of truth
+  DeltaV.getCompanySettingsFromDB = async function(){
+    try{
+      const res = await DeltaV._fetch(`${DeltaV.SB}/rest/v1/company_settings?id=eq.1&limit=1`,{headers:DeltaV.H});
+      return res && res.length > 0 ? res[0] : null;
+    }catch(e){
+      console.error('Error fetching settings from DB',e);
+      return null;
+    }
+  };
+
+  DeltaV.saveCompanySettingsToDB = async function(data){
+    try{
+      const existing = await DeltaV.getCompanySettingsFromDB();
+      if(existing){
+        // Update existing
+        return await DeltaV._fetch(`${DeltaV.SB}/rest/v1/company_settings?id=eq.1`,{
+          method:'PATCH',
+          headers:DeltaV.H,
+          body:JSON.stringify(data)
+        });
+      }else{
+        // Create new with id=1
+        return await DeltaV._fetch(`${DeltaV.SB}/rest/v1/company_settings`,{
+          method:'POST',
+          headers:{...DeltaV.H,'Prefer':'return=representation'},
+          body:JSON.stringify({id:1,...data})
+        });
+      }
+    }catch(e){
+      console.error('Error saving settings to DB',e);
+      throw e;
+    }
+  };
+
+  // Backwards-compatible getters (now fetch from Supabase)
+  let _cachedSettings = null;
+
+  DeltaV.getCompanySettingsAsync = async function(){
+    if(!_cachedSettings){
+      const dbSettings = await DeltaV.getCompanySettingsFromDB();
+      _cachedSettings = dbSettings || {};
+    }
+    return _cachedSettings;
+  };
+
   DeltaV.setCompanySettings = function(data){
-    localStorage.setItem('dv_company_settings', JSON.stringify(data || {}));
+    _cachedSettings = data || {};
+    DeltaV.saveCompanySettingsToDB(data).catch(e=>console.error('DB save failed',e));
   };
 
   DeltaV.getCompanySettings = function(){
     try{
-      return JSON.parse(localStorage.getItem('dv_company_settings') || '{}');
+      return _cachedSettings || JSON.parse(localStorage.getItem('dv_company_settings') || '{}');
     }catch(e){ return {}; }
   };
 
@@ -387,6 +433,8 @@
   win.setCompanyVAT = DeltaV.setCompanyVAT;
   win.getCompanyVAT = DeltaV.getCompanyVAT;
   win.updateSchemaPhone = DeltaV.updateSchemaPhone;
+  win.getCompanySettingsFromDB = DeltaV.getCompanySettingsFromDB;
+  win.saveCompanySettingsToDB = DeltaV.saveCompanySettingsToDB;
 
   // Initialize dark mode on page load
   if(document.readyState === 'loading'){
@@ -394,5 +442,17 @@
   } else {
     DeltaV.initDarkMode();
   }
+
+  // Auto-load company settings from Supabase on page load
+  window.addEventListener('DOMContentLoaded', async function(){
+    try{
+      const dbSettings = await DeltaV.getCompanySettingsFromDB();
+      if(dbSettings){
+        _cachedSettings = dbSettings;
+      }
+    }catch(e){
+      console.warn('Could not load settings from Supabase, using defaults',e);
+    }
+  });
 
 })(window);

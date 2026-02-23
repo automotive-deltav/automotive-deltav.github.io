@@ -115,14 +115,16 @@ footer strong span{color:var(--ac)}
 <script src="admin_local/shared.js"></script>
 <script>
 window.addEventListener('DOMContentLoaded', function(){
-  const phone = getCompanyPhone();
-  const email = getCompanyEmail();
-  const addr = getCompanyAddress();
-  const footerEmail = document.getElementById('footerEmail');
-  const footerLocation = document.getElementById('footerLocation');
-  if(footerEmail) footerEmail.textContent = email;
-  if(footerLocation && addr) footerLocation.textContent = addr.split('\n')[0] || 'Smethwick, West Midlands';
-  updateSchemaPhone(phone);
+  setTimeout(function(){
+    const phone = getCompanyPhone();
+    const email = getCompanyEmail();
+    const addr = getCompanyAddress();
+    const footerEmail = document.getElementById('footerEmail');
+    const footerLocation = document.getElementById('footerLocation');
+    if(footerEmail) footerEmail.textContent = email;
+    if(footerLocation && addr) footerLocation.textContent = addr.split('\n')[0] || 'Smethwick, West Midlands';
+    if(typeof updateSchemaPhone === 'function') updateSchemaPhone(phone);
+  }, 50);
 });
 </script>
 </body></html>

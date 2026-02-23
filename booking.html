@@ -228,8 +228,10 @@ async function submitBooking(){
 </script>
 <script>
 window.addEventListener('DOMContentLoaded', function(){
-  const phone = getCompanyPhone();
-  updateSchemaPhone(phone);
+  setTimeout(function(){
+    const phone = getCompanyPhone();
+    if(typeof updateSchemaPhone === 'function') updateSchemaPhone(phone);
+  }, 50);
 });
 </script>
 </body>

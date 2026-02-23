@@ -118,16 +118,21 @@ function saveSettings(){
     email_confirm:document.getElementById("sEmailConf").checked
   };
   localStorage.setItem("dv_settings",JSON.stringify(settings));
-  // Sync ALL company data globally
-  setCompanySettings({
+  // Sync ALL company data to Supabase
+  const companyData = {
     name: settings.name,
     phone: settings.phone,
     email: settings.email,
     address: settings.address,
     vat: settings.vat
+  };
+  saveCompanySettingsToDB(companyData).then(()=>{
+    toast("Settings saved to Supabase!","ok");
+  }).catch(err=>{
+    toast("Error saving to Supabase: "+err.message,"error");
+    console.error('Supabase save failed',err);
   });
-  setCompanyPhone(settings.phone);
-  toast("Settings saved!","ok");
+  setCompanySettings(companyData);
   
   const newPass=document.getElementById("sPass").value;
   if(newPass){
