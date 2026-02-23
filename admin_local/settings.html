@@ -126,6 +126,7 @@ function saveSettings(){
     address: settings.address,
     vat: settings.vat
   });
+  setCompanyPhone(settings.phone);
   toast("Settings saved!","ok");
   
   const newPass=document.getElementById("sPass").value;

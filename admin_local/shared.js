@@ -353,6 +353,24 @@
     return DeltaV.getCompanySettings().vat || 'GB XXX XXXX XX';
   };
 
+  // Update schema.org telephone in JSON-LD
+  DeltaV.updateSchemaPhone = function(phone){
+    const schemas = document.querySelectorAll('script[type="application/ld+json"]');
+    schemas.forEach(script=>{
+      try{
+        const data = JSON.parse(script.textContent);
+        if(data.telephone) data.telephone = phone;
+        if(data.mainEntity && data.mainEntity.telephone) data.mainEntity.telephone = phone;
+        if(Array.isArray(data.service)){
+          data.service.forEach(s=>{
+            if(s.provider && s.provider.telephone) s.provider.telephone = phone;
+          });
+        }
+        script.textContent = JSON.stringify(data);
+      }catch(e){}
+    });
+  };
+
   // Window exports
   win.getNextInvoiceNum = DeltaV.getNextInvoiceNum;
   win.formatInvoiceNum = DeltaV.formatInvoiceNum;
@@ -368,6 +386,7 @@
   win.getCompanyAddress = DeltaV.getCompanyAddress;
   win.setCompanyVAT = DeltaV.setCompanyVAT;
   win.getCompanyVAT = DeltaV.getCompanyVAT;
+  win.updateSchemaPhone = DeltaV.updateSchemaPhone;
 
   // Initialize dark mode on page load
   if(document.readyState === 'loading'){

@@ -14,6 +14,7 @@
 <link rel="sitemap" href="https://deltavautomotive.com/sitemap.xml">
 <title>Book a Service — DeltaV Automotive | Online Appointment</title>
 <link rel="stylesheet" href="theme.css">
+<script src="admin_local/shared.js"></script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://deltavautomotive.com/"},{"@type":"ListItem","position":2,"name":"Book Now","item":"https://deltavautomotive.com/booking.html"}]}</script><script type="application/ld+json">{"@context":"https://schema.org","@type":"LocalBusiness","name":"DeltaV Automotive","url":"https://deltavautomotive.com/booking.html","offers":[{"@type":"Offer","name":"General Service & Repairs","url":"https://deltavautomotive.com/booking.html","priceCurrency":"GBP","availability":"https://schema.org/InStock"},{"@type":"Offer","name":"Brakes & Tyres","url":"https://deltavautomotive.com/booking.html","priceCurrency":"GBP","availability":"https://schema.org/InStock"},{"@type":"Offer","name":"Engine Diagnostics","url":"https://deltavautomotive.com/booking.html","priceCurrency":"GBP","availability":"https://schema.org/InStock"},{"@type":"Offer","name":"Bodywork","url":"https://deltavautomotive.com/booking.html","priceCurrency":"GBP","availability":"https://schema.org/InStock"},{"@type":"Offer","name":"Electrical & Battery","url":"https://deltavautomotive.com/booking.html","priceCurrency":"GBP","availability":"https://schema.org/InStock"},{"@type":"Offer","name":"Air Conditioning","url":"https://deltavautomotive.com/booking.html","priceCurrency":"GBP","availability":"https://schema.org/InStock"}]}</script>
 <style>
 body{background:#0d1823}
@@ -35,6 +36,7 @@ body{background:#0d1823}
 .ok-box p{color:rgba(255,255,255,.72);margin-bottom:24px}
 @media(max-width:768px){.pub-h{padding:0 20px;height:60px}.pub-nav{display:none}.pub-wrap{padding:80px 16px 40px}.g2,.g3{grid-template-columns:1fr!important}.form-card{padding:16px}}
 </style>
+<script src="admin_local/shared.js"></script>
 </head>
 <body>
 <header class="pub-h">
@@ -223,6 +225,12 @@ async function submitBooking(){
     errEl.textContent="❌ Error saving booking: "+e.message;
   }
 }
+</script>
+<script>
+window.addEventListener('DOMContentLoaded', function(){
+  const phone = getCompanyPhone();
+  updateSchemaPhone(phone);
+});
 </script>
 </body>
 </html>
