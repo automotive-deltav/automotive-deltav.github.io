@@ -1,5 +1,11 @@
-﻿<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>DeltaV â€” 🔩 Job Cards</title><link rel="stylesheet" href="theme.css"><style></style></head><body><div class="sidebar">
+﻿<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>DeltaV — 🔩 Job Cards</title><link rel="stylesheet" href="theme.css"><style></style></head><body><div class="sidebar">
   <div class="sb-logo">DeltaV <span>Auto</span><small>Admin Panel</small></div>
+  <div style="padding:8px;margin-bottom:12px">
+    <div style="position:relative">
+      <input type="text" id="quickNavSearch" placeholder="🔍 Go to page..." style="width:100%;padding:8px;border:1px solid #cbd5e1;border-radius:6px;font-size:.85rem;background:#f8fafc;color:#1e293b" oninput="DeltaV._updateNavSuggestions()" onkeypress="if(event.key==='Enter') quickNav()" onclick="if(this.value) DeltaV._showNavSuggestions()">
+      <div id="navSuggestionsDropdown" style="position:absolute;top:100%;left:0;right:0;background:white;border:1px solid #cbd5e1;border-top:none;border-radius:0 0 6px 6px;max-height:300px;overflow-y:auto;display:none;z-index:1000;box-shadow:0 4px 6px rgba(0,0,0,.1)"></div>
+    </div>
+  </div>
   <nav>
     <div class="sb-sec">Core</div>
     <a href="dashboard.html" class=""><span class="ni">📊</span>Dashboard</a>
@@ -51,12 +57,12 @@
     <a href="hours.html" class=""><span class="ni">⏰</span>Opening Hours</a>
     <a href="settings.html" class=""><span class="ni">⚙️</span>Settings</a>
   </nav>
-  <div class="sb-foot">
-    <a href="index.html" class="btn-sb-link">ðŸŒ Website</a>
-    <button class="btn-sb-out" onclick="if(confirm('Log out?')){sessionStorage.removeItem('dv_admin');location.href='login.html';}">ðŸšª Log Out</button>
+    <div class="sb-foot" style="display:flex;flex-direction:column;gap:8px">
+
+    <button class="btn btn-ghost btn-sm" onclick="showPageGuide()" style="border:1px solid #e2e8f0" title="📚 View all pages">📚 Guide</button>
   </div>
 </div>
-<div class="main"><div class="topbar"><h1>🔩 Job Cards</h1><div class="tr"><button class="btn btn-primary" onclick="openM('mJob')">+ New Job Card</button><button class="btn btn-info" onclick="exportJobs()">ðŸ“¥ Export</button><button class="btn btn-ghost" onclick="loadJobs()">ðŸ”„ Refresh</button></div></div><div class="body"><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px" id="jobGrid"></div>
+<div class="main"><div class="topbar"><h1>🔩 Job Cards</h1><div class="tr"><button class="btn btn-primary" onclick="openM('mJob')">+ New Job Card</button><button class="btn btn-info" onclick="exportJobs()">📥 Export</button><button class="btn btn-ghost" onclick="loadJobs()">🔄 Refresh</button></div></div><div class="body"><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px" id="jobGrid"></div>
 <div class="empty" id="jobEmpty" style="display:none"><div class="ei">🔩</div><h3>No Job Cards</h3></div>
 <div class="modal" id="mJob"><div class="mbox" style="max-width:680px"><h3 id="mJobTit">🔩 New Job Card</h3>
 <div class="g2">
@@ -72,11 +78,11 @@
 <div class="fg"><label>Parts Required</label><input type="text" id="jParts" placeholder="Comma-separated list"></div>
 <div class="g2">
   <div class="fg"><label>Est. Time (hours)</label><input type="number" id="jHrs" placeholder="2.5" min="0" step="0.5"></div>
-  <div class="fg"><label>Est. Cost (Â£)</label><input type="number" id="jCost" placeholder="0.00" min="0" step="0.01"></div>
+  <div class="fg"><label>Est. Cost (£)</label><input type="number" id="jCost" placeholder="0.00" min="0" step="0.01"></div>
 </div>
 <div class="fg"><label>Internal Notes</label><textarea id="jNote"></textarea></div>
-<div class="mfoot"><button class="btn btn-ghost" onclick="closeM('mJob')">Cancel</button><button class="btn btn-primary" onclick="saveJob()">ðŸ’¾ Save</button></div>
-</div></div></div></div><div class="modal" id="mDel"><div class="mbox" style="max-width:360px"><h3>ðŸ—‘ï¸ Confirm Delete</h3><p id="mDelMsg" style="color:#555">This cannot be undone.</p><div class="mfoot"><button class="btn btn-ghost" onclick="closeM('mDel')">Cancel</button><button class="btn btn-danger" id="mDelBtn">Yes, Delete</button></div></div></div><script src="shared.js"></script><script>
+<div class="mfoot"><button class="btn btn-ghost" onclick="closeM('mJob')">Cancel</button><button class="btn btn-primary" onclick="saveJob()">💾 Save</button></div>
+</div></div></div></div><div class="modal" id="mDel"><div class="mbox" style="max-width:360px"><h3>🗑️ Confirm Delete</h3><p id="mDelMsg" style="color:#555">This cannot be undone.</p><div class="mfoot"><button class="btn btn-ghost" onclick="closeM('mDel')">Cancel</button><button class="btn btn-danger" id="mDelBtn">Yes, Delete</button></div></div></div><script src="shared.js"></script><script>
 let jobData=[],jobEdit=null;
 async function loadJobs(){jobData=await dbGet("job_cards","&order=job_date.desc");renderJobs();}
 function renderJobs(){
@@ -88,26 +94,26 @@ function renderJobs(){
     c.style="background:#fff;border-radius:var(--r);border:1.5px solid var(--br);box-shadow:var(--s2);overflow:hidden";
     c.innerHTML=`<div style="background:linear-gradient(135deg,#1b2b3a,#2e4560);padding:14px;color:#fff">
       <div style="font-weight:700;font-size:.92rem">${j.customer_name}</div>
-      <div style="color:rgba(255,255,255,.6);font-size:.78rem;margin-top:2px">${j.car_reg} â€¢ ${j.job_date||""}</div>
+      <div style="color:rgba(255,255,255,.6);font-size:.78rem;margin-top:2px">${j.car_reg} • ${j.job_date||""}</div>
     </div>
     <div style="padding:14px">
       <div class="ir"><span class="lbl">👷 Assigned</span><span class="val">${j.assigned_to||"Unassigned"}</span></div>
-      <div class="ir"><span class="lbl">📝 Job</span><span class="val">${j.job_description||"â€”"}</span></div>
-      ${j.parts_required?`<div class="ir"><span class="lbl">ðŸ”§ Parts</span><span class="val">${j.parts_required}</span></div>`:""}
-      <div class="ir"><span class="lbl">⏱️ Est. Time</span><span class="val">${j.estimated_hours?j.estimated_hours+"h":"â€”"}</span></div>
+      <div class="ir"><span class="lbl">📝 Job</span><span class="val">${j.job_description||"—"}</span></div>
+      ${j.parts_required?`<div class="ir"><span class="lbl">🔧 Parts</span><span class="val">${j.parts_required}</span></div>`:""}
+      <div class="ir"><span class="lbl">⏱️ Est. Time</span><span class="val">${j.estimated_hours?j.estimated_hours+"h":"—"}</span></div>
       <div style="margin-top:8px"><span class="badge ${sc}">${j.status||"Booked In"}</span></div>
     </div>
     <div style="padding:10px 14px;border-top:1.5px solid #eef0f3;display:flex;gap:6px;flex-wrap:wrap">
-      <button class="btn btn-warning btn-sm" onclick="editJob('${j.id}')">âœï¸ Edit</button>
-      <button class="btn btn-success btn-sm" onclick="nextStatus('${j.id}','${j.status||""}')">âž¡ï¸ Next</button>
-      <button class="btn btn-danger btn-sm" onclick="delJob('${j.id}')">ðŸ—‘ï¸</button>
+      <button class="btn btn-warning btn-sm" onclick="editJob('${j.id}')">✏️ Edit</button>
+      <button class="btn btn-success btn-sm" onclick="nextStatus('${j.id}','${j.status||""}')">➡️ Next</button>
+      <button class="btn btn-danger btn-sm" onclick="delJob('${j.id}')">🗑️</button>
     </div>`;
     g.appendChild(c);
   });
 }
-function editJob(id){const j=jobData.find(x=>x.id===id);if(!j)return;jobEdit=id;document.getElementById("mJobTit").textContent="âœï¸ Edit Job Card";document.getElementById("jCust").value=j.customer_name;document.getElementById("jReg").value=j.car_reg;document.getElementById("jDate").value=j.job_date;document.getElementById("jWrkr").value=j.assigned_to||"";document.getElementById("jStat").value=j.status||"Booked In";document.getElementById("jDesc").value=j.job_description||"";document.getElementById("jParts").value=j.parts_required||"";document.getElementById("jHrs").value=j.estimated_hours||"";document.getElementById("jCost").value=j.estimated_cost||"";document.getElementById("jNote").value=j.notes||"";openM("mJob");}
+function editJob(id){const j=jobData.find(x=>x.id===id);if(!j)return;jobEdit=id;document.getElementById("mJobTit").textContent="✏️ Edit Job Card";document.getElementById("jCust").value=j.customer_name;document.getElementById("jReg").value=j.car_reg;document.getElementById("jDate").value=j.job_date;document.getElementById("jWrkr").value=j.assigned_to||"";document.getElementById("jStat").value=j.status||"Booked In";document.getElementById("jDesc").value=j.job_description||"";document.getElementById("jParts").value=j.parts_required||"";document.getElementById("jHrs").value=j.estimated_hours||"";document.getElementById("jCost").value=j.estimated_cost||"";document.getElementById("jNote").value=j.notes||"";openM("mJob");}
 async function saveJob(){const cn=document.getElementById("jCust").value.trim(),reg=document.getElementById("jReg").value.trim(),dt=document.getElementById("jDate").value,desc=document.getElementById("jDesc").value.trim();if(!cn||!reg||!dt||!desc){toast("Fill required fields","er");return;}const d={customer_name:cn,car_reg:reg,job_date:dt,assigned_to:document.getElementById("jWrkr").value.trim()||null,status:document.getElementById("jStat").value,job_description:desc,parts_required:document.getElementById("jParts").value.trim()||null,estimated_hours:parseFloat(document.getElementById("jHrs").value)||null,estimated_cost:parseFloat(document.getElementById("jCost").value)||null,notes:document.getElementById("jNote").value.trim()||null};if(jobEdit){await dbUpd("job_cards",jobEdit,d);toast("Updated!");}else{await dbIns("job_cards",d);toast("Job card created!");}jobEdit=null;closeM("mJob");loadJobs();}
-async function nextStatus(id,cur){const cycle={"Booked In":"In Progress","In Progress":"Awaiting Parts","Awaiting Parts":"Ready for Collection","Ready for Collection":"Completed","Completed":"Completed"};const ns=cycle[cur]||"In Progress";await dbUpd("job_cards",id,{status:ns});const j=jobData.find(x=>x.id===id);if(j)j.status=ns;renderJobs();toast(`Status â†’ ${ns}`,"in");}
+async function nextStatus(id,cur){const cycle={"Booked In":"In Progress","In Progress":"Awaiting Parts","Awaiting Parts":"Ready for Collection","Ready for Collection":"Completed","Completed":"Completed"};const ns=cycle[cur]||"In Progress";await dbUpd("job_cards",id,{status:ns});const j=jobData.find(x=>x.id===id);if(j)j.status=ns;renderJobs();toast(`Status → ${ns}`,"in");}
 function delJob(id){confirmDel("Delete this job card?",async()=>{await dbDel("job_cards",id);jobData=jobData.filter(j=>j.id!==id);renderJobs();toast("Deleted","in");});}
 function exportJobs(){const rows=[["Date","Customer","Reg","Assigned To","Description","Parts","Hours","Cost","Status"]];jobData.forEach(j=>rows.push([j.job_date,j.customer_name,j.car_reg,j.assigned_to||"",j.job_description||"",j.parts_required||"",j.estimated_hours||"",j.estimated_cost||"",j.status||""]));let csv="";rows.forEach(r=>csv+=r.map(c=>`"${(c||"").toString().replace(/"/g,'""')}"`).join(",")+"\\n");const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));a.download="job_cards.csv";a.click();}
 document.getElementById("jDate").value=new Date().toISOString().split("T")[0];async function initJobAC(){const bks=await dbGet("bookings")||[];const custNms=[...new Set(bks.map(b=>b.name).filter(Boolean))];const wrkrs=await dbGet("workers")||[];const wrkrNms=[...new Set(wrkrs.map(w=>w.name).filter(Boolean))];attachAC(document.getElementById("jCust"),custNms);attachAC(document.getElementById("jWrkr"),wrkrNms);}loadJobs();initJobAC();

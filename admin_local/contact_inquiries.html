@@ -15,6 +15,12 @@
 <script src="shared.js"></script>
 <div class="sidebar">
   <div class="sb-logo">DeltaV <span>Auto</span><small>Admin Panel</small></div>
+  <div style="padding:8px;margin-bottom:12px">
+    <div style="position:relative">
+      <input type="text" id="quickNavSearch" placeholder="🔍 Go to page..." style="width:100%;padding:8px;border:1px solid #cbd5e1;border-radius:6px;font-size:.85rem;background:#f8fafc;color:#1e293b" oninput="DeltaV._updateNavSuggestions()" onkeypress="if(event.key==='Enter') quickNav()" onclick="if(this.value) DeltaV._showNavSuggestions()">
+      <div id="navSuggestionsDropdown" style="position:absolute;top:100%;left:0;right:0;background:white;border:1px solid #cbd5e1;border-top:none;border-radius:0 0 6px 6px;max-height:300px;overflow-y:auto;display:none;z-index:1000;box-shadow:0 4px 6px rgba(0,0,0,.1)"></div>
+    </div>
+  </div>
   <nav>
     <div class="sb-sec">Core</div>
     <a href="dashboard.html" class=""><span class="ni">📊</span>Dashboard</a>
@@ -66,9 +72,9 @@
     <a href="hours.html" class=""><span class="ni">⏰</span>Opening Hours</a>
     <a href="settings.html" class=""><span class="ni">⚙️</span>Settings</a>
   </nav>
-  <div class="sb-foot">
-    <a href="index.html" class="btn-sb-link">ðŸŒ Website</a>
-    <button class="btn-sb-out" onclick="if(confirm('Log out?')){sessionStorage.removeItem('dv_admin');location.href='login.html';}">ðŸšª Log Out</button>
+    <div class="sb-foot" style="display:flex;flex-direction:column;gap:8px">
+
+    <button class="btn btn-ghost btn-sm" onclick="showPageGuide()" style="border:1px solid #e2e8f0" title="📚 View all pages">📚 Guide</button>
   </div>
 </div>
 <div class="main">
@@ -76,14 +82,14 @@
     <h1>📧 Contact Inquiries</h1>
     <div class="tr">
       <input type="text" id="searchBox" placeholder="Search by name, email..." style="padding:8px 12px;border:1.5px solid #e2e8f0;border-radius:8px;width:250px;font-size:.9rem">
-      <button class="btn btn-info" onclick="exportData()">ðŸ“¥ Export CSV</button>
-      <button class="btn btn-ghost" onclick="loadData()">ðŸ”„ Refresh</button>
+      <button class="btn btn-info" onclick="exportData()">📥 Export CSV</button>
+      <button class="btn btn-ghost" onclick="loadData()">🔄 Refresh</button>
     </div>
   </div>
   <div class="body">
     <div style="margin-bottom:20px">
-      <button class="btn btn-primary" id="btnRemote" onclick="showRemote()" style="margin-right:8px">ðŸ“¡ Remote Messages</button>
-      <button class="btn btn-info" id="btnLocal" onclick="showLocal()">ðŸ’¾ Local Database</button>
+      <button class="btn btn-primary" id="btnRemote" onclick="showRemote()" style="margin-right:8px">📡 Remote Messages</button>
+      <button class="btn btn-info" id="btnLocal" onclick="showLocal()">💾 Local Database</button>
     </div>
 
     <div id="remoteSection">
@@ -109,9 +115,9 @@
       <div style="margin-bottom:16px;padding:12px;background:#f0f7ff;border:1px solid #b3d9ff;border-radius:8px">
         <strong>📦 Local Storage:</strong> Messages stored offline in your browser. <span id="localCount">0</span> messages found.
         <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap">
-          <button class="btn btn-success btn-sm" onclick="syncLocal()" title="Upload local messages to server">â¬†ï¸ Sync All</button>
-          <button class="btn btn-info btn-sm" onclick="exportLocal()" title="Download as CSV">ðŸ“¥ Export</button>
-          <button class="btn btn-danger btn-sm" onclick="clearLocal()" title="Delete all local messages">ðŸ—‘ï¸ Clear All</button>
+          <button class="btn btn-success btn-sm" onclick="syncLocal()" title="Upload local messages to server">⬆️ Sync All</button>
+          <button class="btn btn-info btn-sm" onclick="exportLocal()" title="Download as CSV">📥 Export</button>
+          <button class="btn btn-danger btn-sm" onclick="clearLocal()" title="Delete all local messages">🗑️ Clear All</button>
         </div>
       </div>
       <div class="tbl-wrap">
@@ -145,24 +151,24 @@
       <div>
         <div class="detail-label">Status</div>
         <select id="statusSelect" style="width:100%;padding:8px;border:1px solid #e2e8f0;border-radius:6px;font-weight:600">
-          <option value="unread">ðŸ”´ Unread</option>
-          <option value="read">âœ“ Read</option>
-          <option value="replied">âœ“âœ“ Replied</option>
+          <option value="unread">🔴 Unread</option>
+          <option value="read">✓ Read</option>
+          <option value="replied">✓✓ Replied</option>
           <option value="archived">📦 Archived</option>
         </select>
       </div>
     </div>
     <div class="mfoot">
       <button class="btn btn-ghost" onclick="closeM('mView')">Close</button>
-      <button class="btn btn-primary" id="btnUpdateStatus" onclick="updateStatus()" style="display:none">ðŸ’¾ Update Status</button>
-      <button class="btn btn-danger" id="btnDeleteRemote" onclick="openM('mDel')" style="display:none">ðŸ—‘ï¸ Delete</button>
+      <button class="btn btn-primary" id="btnUpdateStatus" onclick="updateStatus()" style="display:none">💾 Update Status</button>
+      <button class="btn btn-danger" id="btnDeleteRemote" onclick="openM('mDel')" style="display:none">🗑️ Delete</button>
     </div>
   </div>
 </div>
 
 <div class="modal" id="mDel">
   <div class="mbox" style="max-width:400px">
-    <h3>ðŸ—‘ï¸ Confirm Delete</h3>
+    <h3>🗑️ Confirm Delete</h3>
     <p style="color:#64748b;line-height:1.8">Delete this inquiry? This cannot be undone.</p>
     <div class="mfoot">
       <button class="btn btn-ghost" onclick="closeM('mDel')">Cancel</button>
@@ -173,7 +179,7 @@
 
 <div class="modal" id="mError">
   <div class="mbox" style="max-width:420px">
-    <h3>âŒ Error</h3>
+    <h3>❌ Error</h3>
     <p id="errorMsg" style="color:#64748b;line-height:1.8"></p>
     <div class="mfoot">
       <button class="btn btn-primary" onclick="closeM('mError')">OK</button>
@@ -214,12 +220,12 @@ function loadLocalData(){
 function renderLocalData(){
   const tb=document.getElementById("localTbody");
   if(!localData.length){
-    tb.innerHTML='<tr><td colspan="99"><div class="empty"><div class="ei">ðŸ’¾</div><h3>No local messages</h3><p>Messages will be stored here when offline</p></div></td></tr>';
+    tb.innerHTML='<tr><td colspan="99"><div class="empty"><div class="ei">💾</div><h3>No local messages</h3><p>Messages will be stored here when offline</p></div></td></tr>';
     return;
   }
   tb.innerHTML=localData.map((r,i)=>{
     const date=new Date(r.created_at).toLocaleDateString();
-    return`<tr><td>${date}</td><td><strong>${r.name||'â€”'}</strong></td><td><a href="mailto:${r.email}" style="color:#3b82f6">${r.email||'â€”'}</a></td><td>${r.phone||'â€”'}</td><td>${(r.subject||'â€”').substring(0,35)}${(r.subject||'').length>35?'...':''}</td><td><button class="btn btn-primary btn-sm" onclick="viewLocalRecord(${i})">ðŸ‘ï¸ View</button> <button class="btn btn-danger btn-sm" onclick="deleteLocalRecord(${i})">ðŸ—‘ï¸</button></td></tr>`;
+    return`<tr><td>${date}</td><td><strong>${r.name||'—'}</strong></td><td><a href="mailto:${r.email}" style="color:#3b82f6">${r.email||'—'}</a></td><td>${r.phone||'—'}</td><td>${(r.subject||'—').substring(0,35)}${(r.subject||'').length>35?'...':''}</td><td><button class="btn btn-primary btn-sm" onclick="viewLocalRecord(${i})">👁️ View</button> <button class="btn btn-danger btn-sm" onclick="deleteLocalRecord(${i})">🗑️</button></td></tr>`;
   }).join('');
 }
 
@@ -229,23 +235,23 @@ function viewLocalRecord(index){
   document.getElementById("detailGrid").innerHTML=`
     <div class="detail-item">
       <div class="detail-label">Name</div>
-      <div class="detail-value">${r.name||'â€”'}</div>
+      <div class="detail-value">${r.name||'—'}</div>
     </div>
     <div class="detail-item">
       <div class="detail-label">Email</div>
-      <div class="detail-value"><a href="mailto:${r.email}" style="color:#3b82f6">${r.email||'â€”'}</a></div>
+      <div class="detail-value"><a href="mailto:${r.email}" style="color:#3b82f6">${r.email||'—'}</a></div>
     </div>
     <div class="detail-item">
       <div class="detail-label">Phone</div>
-      <div class="detail-value">${r.phone||'â€”'}</div>
+      <div class="detail-value">${r.phone||'—'}</div>
     </div>
     <div class="detail-item">
       <div class="detail-label">Vehicle Reg</div>
-      <div class="detail-value">${r.vehicle_reg||'â€”'}</div>
+      <div class="detail-value">${r.vehicle_reg||'—'}</div>
     </div>
     <div class="detail-item">
       <div class="detail-label">Subject</div>
-      <div class="detail-value">${r.subject||'â€”'}</div>
+      <div class="detail-value">${r.subject||'—'}</div>
     </div>
     <div class="detail-item">
       <div class="detail-label">Date</div>
@@ -352,12 +358,12 @@ function renderData(){
   }
   tb.innerHTML=filteredData.map(r=>{
     const date=new Date(r.created_at).toLocaleDateString();
-    let statusBadge='<span style="color:#94a3b8">âšª Unknown</span>';
-    if(r.status==='unread') statusBadge='<span style="color:#dc3545">ðŸ”´ Unread</span>';
-    else if(r.status==='read') statusBadge='<span style="color:#3b82f6">âœ“ Read</span>';
-    else if(r.status==='replied') statusBadge='<span style="color:#28a745">âœ“âœ“ Replied</span>';
+    let statusBadge='<span style="color:#94a3b8">⚪ Unknown</span>';
+    if(r.status==='unread') statusBadge='<span style="color:#dc3545">🔴 Unread</span>';
+    else if(r.status==='read') statusBadge='<span style="color:#3b82f6">✓ Read</span>';
+    else if(r.status==='replied') statusBadge='<span style="color:#28a745">✓✓ Replied</span>';
     else if(r.status==='archived') statusBadge='<span style="color:#6c757d">📦 Archived</span>';
-    return`<tr><td>${date}</td><td><strong>${r.name||'â€”'}</strong></td><td><a href="mailto:${r.email}" style="color:#3b82f6">${r.email||'â€”'}</a></td><td>${r.phone||'â€”'}</td><td>${(r.subject||'â€”').substring(0,35)}${(r.subject||'').length>35?'...':''}</td><td>${statusBadge}</td><td><button class="btn btn-primary btn-sm" onclick="viewRecord('${r.id}')">ðŸ‘ï¸ View</button> <button class="btn btn-danger btn-sm" onclick="prepDelete('${r.id}')">ðŸ—‘ï¸</button></td></tr>`;
+    return`<tr><td>${date}</td><td><strong>${r.name||'—'}</strong></td><td><a href="mailto:${r.email}" style="color:#3b82f6">${r.email||'—'}</a></td><td>${r.phone||'—'}</td><td>${(r.subject||'—').substring(0,35)}${(r.subject||'').length>35?'...':''}</td><td>${statusBadge}</td><td><button class="btn btn-primary btn-sm" onclick="viewRecord('${r.id}')">👁️ View</button> <button class="btn btn-danger btn-sm" onclick="prepDelete('${r.id}')">🗑️</button></td></tr>`;
   }).join('');
 }
 
@@ -369,23 +375,23 @@ function viewRecord(id){
   document.getElementById("detailGrid").innerHTML=`
     <div class="detail-item">
       <div class="detail-label">Name</div>
-      <div class="detail-value">${currentRecord.name||'â€”'}</div>
+      <div class="detail-value">${currentRecord.name||'—'}</div>
     </div>
     <div class="detail-item">
       <div class="detail-label">Email</div>
-      <div class="detail-value"><a href="mailto:${currentRecord.email}" style="color:#3b82f6">${currentRecord.email||'â€”'}</a></div>
+      <div class="detail-value"><a href="mailto:${currentRecord.email}" style="color:#3b82f6">${currentRecord.email||'—'}</a></div>
     </div>
     <div class="detail-item">
       <div class="detail-label">Phone</div>
-      <div class="detail-value">${currentRecord.phone||'â€”'}</div>
+      <div class="detail-value">${currentRecord.phone||'—'}</div>
     </div>
     <div class="detail-item">
       <div class="detail-label">Vehicle Reg</div>
-      <div class="detail-value">${currentRecord.vehicle_reg||'â€”'}</div>
+      <div class="detail-value">${currentRecord.vehicle_reg||'—'}</div>
     </div>
     <div class="detail-item">
       <div class="detail-label">Subject</div>
-      <div class="detail-value">${currentRecord.subject||'â€”'}</div>
+      <div class="detail-value">${currentRecord.subject||'—'}</div>
     </div>
     <div class="detail-item">
       <div class="detail-label">Date</div>

@@ -1,6 +1,12 @@
-﻿<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>DeltaV â€” Returns</title><link rel="stylesheet" href="theme.css"></head><body>
+﻿<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>DeltaV — Returns</title><link rel="stylesheet" href="theme.css"></head><body>
 <div class="sidebar">
   <div class="sb-logo">DeltaV <span>Auto</span><small>Admin Panel</small></div>
+  <div style="padding:8px;margin-bottom:12px">
+    <div style="position:relative">
+      <input type="text" id="quickNavSearch" placeholder="🔍 Go to page..." style="width:100%;padding:8px;border:1px solid #cbd5e1;border-radius:6px;font-size:.85rem;background:#f8fafc;color:#1e293b" oninput="DeltaV._updateNavSuggestions()" onkeypress="if(event.key==='Enter') quickNav()" onclick="if(this.value) DeltaV._showNavSuggestions()">
+      <div id="navSuggestionsDropdown" style="position:absolute;top:100%;left:0;right:0;background:white;border:1px solid #cbd5e1;border-top:none;border-radius:0 0 6px 6px;max-height:300px;overflow-y:auto;display:none;z-index:1000;box-shadow:0 4px 6px rgba(0,0,0,.1)"></div>
+    </div>
+  </div>
   <nav>
     <div class="sb-sec">Core</div>
     <a href="dashboard.html" class=""><span class="ni">📊</span>Dashboard</a>
@@ -52,11 +58,11 @@
     <a href="hours.html" class=""><span class="ni">⏰</span>Opening Hours</a>
     <a href="settings.html" class=""><span class="ni">⚙️</span>Settings</a>
   </nav>
-  <div class="sb-foot">
-    <a href="index.html" class="btn-sb-link">ðŸŒ Website</a>
-    <button class="btn-sb-out" onclick="if(confirm('Log out?')){sessionStorage.removeItem('dv_admin');location.href='login.html';}">ðŸšª Log Out</button>
+    <div class="sb-foot" style="display:flex;flex-direction:column;gap:8px">
+
+    <button class="btn btn-ghost btn-sm" onclick="showPageGuide()" style="border:1px solid #e2e8f0" title="📚 View all pages">📚 Guide</button>
   </div>
 </div>
-<div class="main"><div class="topbar"><h1>Returns Management</h1><div class="tr"><button class="btn btn-primary" onclick="openM('mNewReturn')">+ New Return</button><button class="btn btn-info">Process Batch</button><button class="btn btn-ghost" onclick="loadReturns()">ðŸ”„</button></div></div>
+<div class="main"><div class="topbar"><h1>Returns Management</h1><div class="tr"><button class="btn btn-primary" onclick="openM('mNewReturn')">+ New Return</button><button class="btn btn-info">Process Batch</button><button class="btn btn-ghost" onclick="loadReturns()">🔄</button></div></div>
 <div class="body"><div class="card"><div class="card-title">Tools</div><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px"><button class="btn btn-success">Mark Restocked</button><button class="btn btn-warning">Create RMA</button><button class="btn btn-dark">Refund</button></div></div></div></div>
 <script src="shared.js"></script></body></html>

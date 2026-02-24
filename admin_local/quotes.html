@@ -1,5 +1,11 @@
-﻿<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>DeltaV â€” 📋 Quotes</title><link rel="stylesheet" href="theme.css"><style></style></head><body><div class="sidebar">
+﻿<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>DeltaV — 📋 Quotes</title><link rel="stylesheet" href="theme.css"><style></style></head><body><div class="sidebar">
   <div class="sb-logo">DeltaV <span>Auto</span><small>Admin Panel</small></div>
+  <div style="padding:8px;margin-bottom:12px">
+    <div style="position:relative">
+      <input type="text" id="quickNavSearch" placeholder="🔍 Go to page..." style="width:100%;padding:8px;border:1px solid #cbd5e1;border-radius:6px;font-size:.85rem;background:#f8fafc;color:#1e293b" oninput="DeltaV._updateNavSuggestions()" onkeypress="if(event.key==='Enter') quickNav()" onclick="if(this.value) DeltaV._showNavSuggestions()">
+      <div id="navSuggestionsDropdown" style="position:absolute;top:100%;left:0;right:0;background:white;border:1px solid #cbd5e1;border-top:none;border-radius:0 0 6px 6px;max-height:300px;overflow-y:auto;display:none;z-index:1000;box-shadow:0 4px 6px rgba(0,0,0,.1)"></div>
+    </div>
+  </div>
   <nav>
     <div class="sb-sec">Core</div>
     <a href="dashboard.html" class=""><span class="ni">📊</span>Dashboard</a>
@@ -51,12 +57,12 @@
     <a href="hours.html" class=""><span class="ni">⏰</span>Opening Hours</a>
     <a href="settings.html" class=""><span class="ni">⚙️</span>Settings</a>
   </nav>
-  <div class="sb-foot">
-    <a href="index.html" class="btn-sb-link">ðŸŒ Website</a>
-    <button class="btn-sb-out" onclick="if(confirm('Log out?')){sessionStorage.removeItem('dv_admin');location.href='login.html';}">ðŸšª Log Out</button>
+    <div class="sb-foot" style="display:flex;flex-direction:column;gap:8px">
+
+    <button class="btn btn-ghost btn-sm" onclick="showPageGuide()" style="border:1px solid #e2e8f0" title="📚 View all pages">📚 Guide</button>
   </div>
 </div>
-<div class="main"><div class="topbar"><h1>📋 Quotes</h1><div class="tr"><button class="btn btn-primary" onclick="openM('mQuote')">+ New Quote</button><button class="btn btn-info" onclick="exportQuotes()">ðŸ“¥ Export</button><button class="btn btn-ghost" onclick="loadQuotes()">ðŸ”„ Refresh</button></div></div><div class="body"><div class="tbl-wrap"><table><thead><tr><th>Quote #</th><th>Customer</th><th>Date</th><th>Vehicle</th><th>Description</th><th>Amount</th><th>Valid Until</th><th>Status</th><th>Actions</th></tr></thead>
+<div class="main"><div class="topbar"><h1>📋 Quotes</h1><div class="tr"><button class="btn btn-primary" onclick="openM('mQuote')">+ New Quote</button><button class="btn btn-info" onclick="exportQuotes()">📥 Export</button><button class="btn btn-ghost" onclick="loadQuotes()">🔄 Refresh</button></div></div><div class="body"><div class="tbl-wrap"><table><thead><tr><th>Quote #</th><th>Customer</th><th>Date</th><th>Vehicle</th><th>Description</th><th>Amount</th><th>Valid Until</th><th>Status</th><th>Actions</th></tr></thead>
 <tbody id="quoteTb"></tbody></table></div>
 <div class="modal" id="mQuote"><div class="mbox" style="max-width:680px"><h3 id="mQuoteTit">📋 New Quote</h3>
 <div class="g2">
@@ -70,14 +76,14 @@
 </div>
 <div class="fg"><label>Work Description *</label><textarea id="qDesc" placeholder="What work is being quoted..."></textarea></div>
 <div class="g2">
-  <div class="fg"><label>Parts Cost (Â£)</label><input type="number" id="qParts" placeholder="0.00" min="0" step="0.01"></div>
-  <div class="fg"><label>Labour Cost (Â£)</label><input type="number" id="qLabour" placeholder="0.00" min="0" step="0.01"></div>
+  <div class="fg"><label>Parts Cost (£)</label><input type="number" id="qParts" placeholder="0.00" min="0" step="0.01"></div>
+  <div class="fg"><label>Labour Cost (£)</label><input type="number" id="qLabour" placeholder="0.00" min="0" step="0.01"></div>
 </div>
-<div class="fg"><label>Total Quote Amount (Â£) *</label><input type="number" id="qAmt" placeholder="0.00" min="0" step="0.01"></div>
+<div class="fg"><label>Total Quote Amount (£) *</label><input type="number" id="qAmt" placeholder="0.00" min="0" step="0.01"></div>
 <div class="fg"><label>Status</label><select id="qStat"><option>Pending</option><option>Accepted</option><option>Declined</option><option>Expired</option></select></div>
 <div class="fg"><label>Notes</label><textarea id="qNote"></textarea></div>
-<div class="mfoot"><button class="btn btn-ghost" onclick="closeM('mQuote')">Cancel</button><button class="btn btn-primary" onclick="saveQuote()">ðŸ’¾ Save Quote</button></div>
-</div></div></div></div><div class="modal" id="mDel"><div class="mbox" style="max-width:360px"><h3>ðŸ—‘ï¸ Confirm Delete</h3><p id="mDelMsg" style="color:#555">This cannot be undone.</p><div class="mfoot"><button class="btn btn-ghost" onclick="closeM('mDel')">Cancel</button><button class="btn btn-danger" id="mDelBtn">Yes, Delete</button></div></div></div><script src="shared.js"></script><script>
+<div class="mfoot"><button class="btn btn-ghost" onclick="closeM('mQuote')">Cancel</button><button class="btn btn-primary" onclick="saveQuote()">💾 Save Quote</button></div>
+</div></div></div></div><div class="modal" id="mDel"><div class="mbox" style="max-width:360px"><h3>🗑️ Confirm Delete</h3><p id="mDelMsg" style="color:#555">This cannot be undone.</p><div class="mfoot"><button class="btn btn-ghost" onclick="closeM('mDel')">Cancel</button><button class="btn btn-danger" id="mDelBtn">Yes, Delete</button></div></div></div><script src="shared.js"></script><script>
 let quoteData=[],quoteEdit=null;
 async function loadQuotes(){quoteData=await dbGet("quotes","&order=quote_date.desc");renderQuotes();}
 function renderQuotes(){
@@ -89,20 +95,20 @@ function renderQuotes(){
     tb.innerHTML+=`<tr>
       <td style="font-family:monospace;font-weight:700;color:var(--ac)">${num}</td>
       <td><strong>${q.customer_name}</strong>${q.customer_email?`<br><span style="font-size:.76rem;color:#888">${q.customer_email}</span>`:""}</td>
-      <td style="font-size:.82rem">${q.quote_date||"â€”"}</td>
-      <td>${q.car_reg||"â€”"}</td>
-      <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis">${q.work_description||"â€”"}</td>
-      <td><strong style="color:var(--ac);font-size:1.05rem">Â£${(q.quote_amount||0).toFixed(2)}</strong></td>
-      <td style="font-size:.82rem">${q.valid_until||"â€”"}</td>
+      <td style="font-size:.82rem">${q.quote_date||"—"}</td>
+      <td>${q.car_reg||"—"}</td>
+      <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis">${q.work_description||"—"}</td>
+      <td><strong style="color:var(--ac);font-size:1.05rem">£${(q.quote_amount||0).toFixed(2)}</strong></td>
+      <td style="font-size:.82rem">${q.valid_until||"—"}</td>
       <td><span class="badge ${sc}">${q.status||"Pending"}</span></td>
       <td>
-        <button class="btn btn-warning btn-sm" onclick="editQuote('${q.id}')">âœï¸</button>
-        <button class="btn btn-success btn-sm" onclick="acceptQuote('${q.id}')">âœ“ Accept</button>
-        <button class="btn btn-danger btn-sm" onclick="delQuote('${q.id}')">ðŸ—‘ï¸</button>
+        <button class="btn btn-warning btn-sm" onclick="editQuote('${q.id}')">✏️</button>
+        <button class="btn btn-success btn-sm" onclick="acceptQuote('${q.id}')">✓ Accept</button>
+        <button class="btn btn-danger btn-sm" onclick="delQuote('${q.id}')">🗑️</button>
       </td></tr>`;
   });
 }
-function editQuote(id){const q=quoteData.find(x=>x.id===id);if(!q)return;quoteEdit=id;document.getElementById("mQuoteTit").textContent="âœï¸ Edit Quote";document.getElementById("qCust").value=q.customer_name;document.getElementById("qEmail").value=q.customer_email||"";document.getElementById("qDate").value=q.quote_date;document.getElementById("qValid").value=q.valid_until;document.getElementById("qReg").value=q.car_reg||"";document.getElementById("qDesc").value=q.work_description||"";document.getElementById("qParts").value=q.parts_cost||"";document.getElementById("qLabour").value=q.labour_cost||"";document.getElementById("qAmt").value=q.quote_amount||"";document.getElementById("qStat").value=q.status||"Pending";document.getElementById("qNote").value=q.notes||"";openM("mQuote");}
+function editQuote(id){const q=quoteData.find(x=>x.id===id);if(!q)return;quoteEdit=id;document.getElementById("mQuoteTit").textContent="✏️ Edit Quote";document.getElementById("qCust").value=q.customer_name;document.getElementById("qEmail").value=q.customer_email||"";document.getElementById("qDate").value=q.quote_date;document.getElementById("qValid").value=q.valid_until;document.getElementById("qReg").value=q.car_reg||"";document.getElementById("qDesc").value=q.work_description||"";document.getElementById("qParts").value=q.parts_cost||"";document.getElementById("qLabour").value=q.labour_cost||"";document.getElementById("qAmt").value=q.quote_amount||"";document.getElementById("qStat").value=q.status||"Pending";document.getElementById("qNote").value=q.notes||"";openM("mQuote");}
 async function saveQuote(){const cn=document.getElementById("qCust").value.trim(),dt=document.getElementById("qDate").value,valid=document.getElementById("qValid").value,amt=document.getElementById("qAmt").value,desc=document.getElementById("qDesc").value.trim();if(!cn||!dt||!valid||!amt||!desc){toast("Fill required fields","er");return;}const d={customer_name:cn,customer_email:document.getElementById("qEmail").value.trim()||null,quote_date:dt,valid_until:valid,car_reg:document.getElementById("qReg").value.trim()||null,work_description:desc,parts_cost:parseFloat(document.getElementById("qParts").value)||null,labour_cost:parseFloat(document.getElementById("qLabour").value)||null,quote_amount:parseFloat(amt),status:document.getElementById("qStat").value,notes:document.getElementById("qNote").value.trim()||null};if(quoteEdit){await dbUpd("quotes",quoteEdit,d);toast("Updated!");}else{await dbIns("quotes",d);toast("Quote created!");}quoteEdit=null;closeM("mQuote");loadQuotes();}
 async function acceptQuote(id){await dbUpd("quotes",id,{status:"Accepted"});const q=quoteData.find(x=>x.id===id);if(q)q.status="Accepted";renderQuotes();toast("Quote accepted!","ok");}
 function delQuote(id){confirmDel("Delete this quote?",async()=>{await dbDel("quotes",id);quoteData=quoteData.filter(q=>q.id!==id);renderQuotes();toast("Deleted","in");});}

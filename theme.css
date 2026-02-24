@@ -464,3 +464,52 @@ body{overflow-x:hidden}
 .pub-wrap,.pub-wrap-wide{padding:20px 16px}
 .pub-title{font-size:1.8rem}
 }
+/* Enhanced Toggle/Checkbox UI - highly visible */
+.tog-row{display:flex;align-items:center;justify-content:space-between;padding:14px 12px;background:#fff;border:1.5px solid #e2e8f0;border-radius:8px;margin-bottom:12px;transition:all .2s;font-weight:500;color:#475569}
+.tog-row:hover{background:#f8f9fb;border-color:#cbd5e0;box-shadow:0 2px 6px rgba(0,0,0,.04)}
+.tog-row label:first-child{flex:1;margin:0;cursor:pointer;user-select:none;font-weight:500;color:#1b2b3a;font-size:.9rem}
+.tog{display:inline-flex;align-items:center;height:28px;width:50px;background:#cbd5e0;border-radius:14px;position:relative;cursor:pointer;transition:all .3s;border:0;padding:0;margin:0;flex-shrink:0}
+.tog input{display:none}
+.tog-sl{display:block;position:absolute;left:2px;top:2px;width:24px;height:24px;background:#fff;border-radius:11px;transition:all .3s;box-shadow:0 2px 4px rgba(0,0,0,.1);border:1px solid #cbd5e0}
+.tog input:checked+.tog-sl{left:24px;background:#fff;border-color:var(--ac)}
+.tog:has(input:checked){background:var(--ac);box-shadow:0 0 0 3px rgba(96,165,250,.15)}
+.tog input:disabled+.tog-sl{opacity:.5}
+
+/* Enhanced mobile responsive */
+@media(max-width:768px){
+  .pub-h{padding:0 12px}
+  .pub-title{font-size:1.5rem}
+  .btn{min-height:44px;padding:12px 16px;font-size:.9rem}
+  .btn-sm{min-height:40px;padding:8px 12px}
+  input,textarea,select{padding:12px;font-size:16px}
+  .g2,.g3{grid-template-columns:1fr!important}
+  .contact-grid{grid-template-columns:1fr!important;gap:16px}
+  .info-card,.form-card{padding:16px}
+  .ci{padding:10px;margin-bottom:12px}
+}
+
+@media(max-width:640px){
+  .pub-wrap,.pub-wrap-wide{padding:16px 12px}
+  h1{font-size:1.3rem}
+  h2{font-size:1.1rem}
+  body{font-size:.9rem}
+  .info-card,.form-card{padding:12px}
+  .ci{padding:8px;margin-bottom:10px;gap:10px}
+  .ci-ic{font-size:1.2rem}
+  .form-card input,.form-card textarea{padding:10px 8px!important}
+}
+
+/* NOTIFICATION SYSTEM */
+.notification-banner{position:fixed;top:0;left:0;right:0;background:linear-gradient(135deg,#fef3c7 0%,#fde68a 100%);border-bottom:2px solid #f59e0b;padding:16px;box-shadow:0 4px 12px rgba(0,0,0,.15);display:flex;gap:16px;align-items:flex-start;z-index:500;animation:slideDown .3s ease-out}
+.notification-banner.error{background:linear-gradient(135deg,#fee2e2 0%,#fecaca 100%);border-bottom-color:#dc3545}
+.notification-banner.warning{background:linear-gradient(135deg,#fef3c7 0%,#fde68a 100%);border-bottom-color:#f59e0b}
+.notification-banner.success{background:linear-gradient(135deg,#dcfce7 0%,#bbf7d0 100%);border-bottom-color:#28a745}
+@keyframes slideDown{from{transform:translateY(-100%)}to{transform:translateY(0)}}
+.notification-banner.removing{animation:slideUp .3s ease-out;opacity:0}
+@keyframes slideUp{from{transform:translateY(0)}to{transform:translateY(-100%)}}
+.notification-icon{font-size:1.4rem;flex-shrink:0;margin-top:2px}
+.notification-content{flex:1}
+.notification-title{font-weight:700;color:#1b2b3a;margin-bottom:4px}
+.notification-message{font-size:.9rem;color:#475569;line-height:1.4}
+.notification-close{background:none;border:none;font-size:1.2rem;cursor:pointer;color:#94a3b8;padding:0;width:24px;height:24px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s}
+.notification-close:hover{color:#1b2b3a;transform:scale(1.1)}

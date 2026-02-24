@@ -2,12 +2,18 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>DeltaV â€” Reports</title>
+<title>DeltaV — Reports</title>
 <link rel="stylesheet" href="theme.css">
 </head>
 <body>
 <div class="sidebar">
   <div class="sb-logo">DeltaV <span>Auto</span><small>Admin Panel</small></div>
+  <div style="padding:8px;margin-bottom:12px">
+    <div style="position:relative">
+      <input type="text" id="quickNavSearch" placeholder="🔍 Go to page..." style="width:100%;padding:8px;border:1px solid #cbd5e1;border-radius:6px;font-size:.85rem;background:#f8fafc;color:#1e293b" oninput="DeltaV._updateNavSuggestions()" onkeypress="if(event.key==='Enter') quickNav()" onclick="if(this.value) DeltaV._showNavSuggestions()">
+      <div id="navSuggestionsDropdown" style="position:absolute;top:100%;left:0;right:0;background:white;border:1px solid #cbd5e1;border-top:none;border-radius:0 0 6px 6px;max-height:300px;overflow-y:auto;display:none;z-index:1000;box-shadow:0 4px 6px rgba(0,0,0,.1)"></div>
+    </div>
+  </div>
   <nav>
     <div class="sb-sec">Core</div>
     <a href="dashboard.html" class=""><span class="ni">📊</span>Dashboard</a>
@@ -59,9 +65,9 @@
     <a href="hours.html" class=""><span class="ni">⏰</span>Opening Hours</a>
     <a href="settings.html" class=""><span class="ni">⚙️</span>Settings</a>
   </nav>
-  <div class="sb-foot">
-    <a href="index.html" class="btn-sb-link">ðŸŒ Website</a>
-    <button class="btn-sb-out" onclick="if(confirm('Log out?')){sessionStorage.removeItem('dv_admin');location.href='login.html';}">ðŸšª Log Out</button>
+    <div class="sb-foot" style="display:flex;flex-direction:column;gap:8px">
+
+    <button class="btn btn-ghost btn-sm" onclick="showPageGuide()" style="border:1px solid #e2e8f0" title="📚 View all pages">📚 Guide</button>
   </div>
 </div>
 <div class="main">
@@ -69,8 +75,8 @@
     <h1>📉 Reports & Analytics</h1>
     <div class="tr">
       <button class="btn btn-primary" onclick="genRep()" title="Creates a comprehensive PDF/CSV summary of bookings, revenue, expenses, and profit metrics for the selected date range">📊 Generate Report</button>
-      <span style="font-size:.75rem;color:#94a3b8;cursor:help;margin-left:10px" title="Report includes: Total revenue from paid invoices, booking statistics, customer breakdown, top services, expenses by category, and net profit analysis">â„¹ï¸ What's included?</span>
-      <button class="btn btn-ghost" onclick="loadRep()">ðŸ”„ Refresh</button>
+      <span style="font-size:.75rem;color:#94a3b8;cursor:help;margin-left:10px" title="Report includes: Total revenue from paid invoices, booking statistics, customer breakdown, top services, expenses by category, and net profit analysis">ℹ️ What's included?</span>
+      <button class="btn btn-ghost" onclick="loadRep()">🔄 Refresh</button>
     </div>
   </div>
   <div class="body">
@@ -86,17 +92,17 @@
     </div>
 
     <div class="stat-grid" id="repStats">
-      <div class="card"><div class="card-title">💰 Total Revenue</div><div class="card-val" id="rRev">â€”</div><div class="card-sub">Paid invoices</div></div>
-      <div class="card"><div class="card-title">📅 Bookings</div><div class="card-val" id="rBk">â€”</div><div class="card-sub">Total bookings</div></div>
-      <div class="card"><div class="card-title">💳 Payments</div><div class="card-val" id="rPay">â€”</div><div class="card-sub">Total received</div></div>
-      <div class="card"><div class="card-title">📦 Parts Sold</div><div class="card-val" id="rParts">â€”</div><div class="card-sub">Inventory items</div></div>
-      <div class="card"><div class="card-title">📉 Expenses</div><div class="card-val" id="rExp" style="color:var(--er)">â€”</div><div class="card-sub">Total spent</div></div>
-      <div class="card"><div class="card-title">📈 Net Profit</div><div class="card-val" id="rProf">â€”</div><div class="card-sub">Revenue - Expenses</div></div>
+      <div class="card"><div class="card-title">💰 Total Revenue</div><div class="card-val" id="rRev">—</div><div class="card-sub">Paid invoices</div></div>
+      <div class="card"><div class="card-title">📅 Bookings</div><div class="card-val" id="rBk">—</div><div class="card-sub">Total bookings</div></div>
+      <div class="card"><div class="card-title">💳 Payments</div><div class="card-val" id="rPay">—</div><div class="card-sub">Total received</div></div>
+      <div class="card"><div class="card-title">📦 Parts Sold</div><div class="card-val" id="rParts">—</div><div class="card-sub">Inventory items</div></div>
+      <div class="card"><div class="card-title">📉 Expenses</div><div class="card-val" id="rExp" style="color:var(--er)">—</div><div class="card-sub">Total spent</div></div>
+      <div class="card"><div class="card-title">📈 Net Profit</div><div class="card-val" id="rProf">—</div><div class="card-sub">Revenue - Expenses</div></div>
     </div>
 
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:20px">
       <div class="card-flat">
-        <h3 style="margin-bottom:12px">ðŸ† Top Services</h3>
+        <h3 style="margin-bottom:12px">🏆 Top Services</h3>
         <div id="topSrvs"><p style="color:#aaa;font-size:.9rem">Run report to see data</p></div>
       </div>
       <div class="card-flat">
@@ -107,7 +113,7 @@
   </div>
 </div>
 
-<div class="modal" id="mDel"><div class="mbox" style="max-width:360px"><h3>ðŸ—‘ï¸ Confirm Delete</h3><p id="mDelMsg" style="color:#555">This cannot be undone.</p><div class="mfoot"><button class="btn btn-ghost" onclick="closeM('mDel')">Cancel</button><button class="btn btn-danger" id="mDelBtn">Yes, Delete</button></div></div></div>
+<div class="modal" id="mDel"><div class="mbox" style="max-width:360px"><h3>🗑️ Confirm Delete</h3><p id="mDelMsg" style="color:#555">This cannot be undone.</p><div class="mfoot"><button class="btn btn-ghost" onclick="closeM('mDel')">Cancel</button><button class="btn btn-danger" id="mDelBtn">Yes, Delete</button></div></div></div>
 
 <script src="shared.js"></script>
 <script>
@@ -135,12 +141,12 @@ async function genRep(){
     const exp=tx.reduce((s,t)=>s+(t.amount||0),0);
     const prof=rev-exp;
     
-    document.getElementById("rRev").textContent="Â£"+rev.toFixed(2);
+    document.getElementById("rRev").textContent="£"+rev.toFixed(2);
     document.getElementById("rBk").textContent=bk.length;
-    document.getElementById("rPay").textContent="Â£"+payTotal.toFixed(2);
+    document.getElementById("rPay").textContent="£"+payTotal.toFixed(2);
     document.getElementById("rParts").textContent=invt.length;
-    document.getElementById("rExp").textContent="Â£"+exp.toFixed(2);
-    document.getElementById("rProf").textContent="Â£"+prof.toFixed(2);
+    document.getElementById("rExp").textContent="£"+exp.toFixed(2);
+    document.getElementById("rProf").textContent="£"+prof.toFixed(2);
     document.getElementById("rProf").style.color=prof>=0?"var(--ok)":"var(--er)";
     
     // Top services
@@ -153,7 +159,7 @@ async function genRep(){
     const custMap={};
     inv.filter(i=>i.payment_status==="paid").forEach(i=>custMap[i.customer_name]=(custMap[i.customer_name]||0)+(i.total_amount||0));
     const custs=Object.entries(custMap).sort((a,b)=>b[1]-a[1]).slice(0,5);
-    document.getElementById("topCust").innerHTML=custs.length?custs.map(([n,a])=>`<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f0f2f5"><span>${n}</span><strong style="color:var(--ac)">Â£${a.toFixed(2)}</strong></div>`).join(""):'<p style="color:#aaa">No data for this period</p>';
+    document.getElementById("topCust").innerHTML=custs.length?custs.map(([n,a])=>`<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f0f2f5"><span>${n}</span><strong style="color:var(--ac)">£${a.toFixed(2)}</strong></div>`).join(""):'<p style="color:#aaa">No data for this period</p>';
     
     toast("Report generated!","ok");
   }catch(e){

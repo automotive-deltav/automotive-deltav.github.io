@@ -7,6 +7,12 @@
 </head><body>
 <div class="sidebar">
   <div class="sb-logo">DeltaV <span>Auto</span><small>Admin Panel</small></div>
+  <div style="padding:8px;margin-bottom:12px">
+    <div style="position:relative">
+      <input type="text" id="quickNavSearch" placeholder="🔍 Go to page..." style="width:100%;padding:8px;border:1px solid #cbd5e1;border-radius:6px;font-size:.85rem;background:#f8fafc;color:#1e293b" oninput="DeltaV._updateNavSuggestions()" onkeypress="if(event.key==='Enter') quickNav()" onclick="if(this.value) DeltaV._showNavSuggestions()">
+      <div id="navSuggestionsDropdown" style="position:absolute;top:100%;left:0;right:0;background:white;border:1px solid #cbd5e1;border-top:none;border-radius:0 0 6px 6px;max-height:300px;overflow-y:auto;display:none;z-index:1000;box-shadow:0 4px 6px rgba(0,0,0,.1)"></div>
+    </div>
+  </div>
   <nav>
     <div class="sb-sec">Core</div>
     <a href="dashboard.html" class=""><span class="ni">📊</span>Dashboard</a>
@@ -58,9 +64,9 @@
     <a href="hours.html" class=""><span class="ni">⏰</span>Opening Hours</a>
     <a href="settings.html" class=""><span class="ni">⚙️</span>Settings</a>
   </nav>
-  <div class="sb-foot">
-    <a href="index.html" class="btn-sb-link">ðŸŒ Website</a>
-    <button class="btn-sb-out" onclick="if(confirm('Log out?')){sessionStorage.removeItem('dv_admin');location.href='login.html';}">ðŸšª Log Out</button>
+    <div class="sb-foot" style="display:flex;flex-direction:column;gap:8px">
+
+    <button class="btn btn-ghost btn-sm" onclick="showPageGuide()" style="border:1px solid #e2e8f0" title="📚 View all pages">📚 Guide</button>
   </div>
 </div>
 <div class="main">
@@ -68,7 +74,7 @@
     <h1>🔔 Reminders</h1>
     <div class="tr">
       <button class="btn btn-primary" onclick="openNew()">+ New</button>
-      <button class="btn btn-ghost" onclick="loadData()">ðŸ”„ Refresh</button>
+      <button class="btn btn-ghost" onclick="loadData()">🔄 Refresh</button>
     </div>
   </div>
   <div class="body">
@@ -80,18 +86,18 @@
 
 <div class="modal" id="mForm">
   <div class="mbox">
-    <h3 id="formTitle">âž• New</h3>
+    <h3 id="formTitle">➕ New</h3>
     <div class="fg"><label>Date *</label><input type="date" id="inp0" placeholder="Date"></div><div class="fg"><label>Title</label><input type="text" id="inp1" placeholder="Title"></div><div class="fg"><label>Notes</label><input type="text" id="inp2" placeholder="Notes"></div><div class="fg"><label>Priority</label><input type="text" id="inp3" placeholder="Priority"></div>
     <div class="mfoot">
       <button class="btn btn-ghost" onclick="closeM('mForm')">Cancel</button>
-      <button class="btn btn-primary" onclick="saveData()">ðŸ’¾ Save</button>
+      <button class="btn btn-primary" onclick="saveData()">💾 Save</button>
     </div>
   </div>
 </div>
 
 <div class="modal" id="mDel">
   <div class="mbox" style="max-width:400px">
-    <h3>ðŸ—‘ï¸ Confirm Delete</h3>
+    <h3>🗑️ Confirm Delete</h3>
     <p id="mDelMsg" style="color:#64748b;line-height:1.8">Are you sure? This cannot be undone.</p>
     <div class="mfoot">
       <button class="btn btn-ghost" onclick="closeM('mDel')">Cancel</button>
@@ -102,7 +108,7 @@
 
 <div class="modal" id="mError">
   <div class="mbox" style="max-width:420px">
-    <h3>âŒ Error</h3>
+    <h3>❌ Error</h3>
     <p id="errorMsg" style="color:#64748b;line-height:1.8"></p>
     <div class="mfoot">
       <button class="btn btn-primary" onclick="closeM('mError')">OK</button>
@@ -125,10 +131,10 @@ function renderData(){
     tb.innerHTML='<tr><td colspan="99"><div class="empty"><div class="ei">🔔</div><h3>No data yet</h3><p>Click "+ New" to add your first entry</p></div></td></tr>';
     return;
   }
-  tb.innerHTML=data.map(r=>`<tr><td>${r.reminder_date || 'â€”'}</td><td>${r.title || 'â€”'}</td><td>${r.notes || 'â€”'}</td><td>${r.priority || 'â€”'}</td><td><button class="btn btn-warning btn-sm" onclick="editRow('${r.id}')">âœï¸</button> <button class="btn btn-danger btn-sm" onclick="confirmDel('Delete this?',()=>deleteRow('${r.id}'))">ðŸ—‘ï¸</button></td></tr>`).join('');
+  tb.innerHTML=data.map(r=>`<tr><td>${r.reminder_date || '—'}</td><td>${r.title || '—'}</td><td>${r.notes || '—'}</td><td>${r.priority || '—'}</td><td><button class="btn btn-warning btn-sm" onclick="editRow('${r.id}')">✏️</button> <button class="btn btn-danger btn-sm" onclick="confirmDel('Delete this?',()=>deleteRow('${r.id}'))">🗑️</button></td></tr>`).join('');
 }
-function openNew(){editId=null;document.getElementById("formTitle").textContent="âž• New";document.getElementById("inp0").value = ""; document.getElementById("inp1").value = ""; document.getElementById("inp2").value = ""; document.getElementById("inp3").value = "";openM("mForm");}
-function editRow(id){const r=data.find(x=>x.id===id);if(!r)return;editId=id;document.getElementById("formTitle").textContent="âœï¸ Edit";document.getElementById("inp0").value = r.reminder_date || ""; document.getElementById("inp1").value = r.title || ""; document.getElementById("inp2").value = r.notes || ""; document.getElementById("inp3").value = r.priority || "";openM("mForm");}
+function openNew(){editId=null;document.getElementById("formTitle").textContent="➕ New";document.getElementById("inp0").value = ""; document.getElementById("inp1").value = ""; document.getElementById("inp2").value = ""; document.getElementById("inp3").value = "";openM("mForm");}
+function editRow(id){const r=data.find(x=>x.id===id);if(!r)return;editId=id;document.getElementById("formTitle").textContent="✏️ Edit";document.getElementById("inp0").value = r.reminder_date || ""; document.getElementById("inp1").value = r.title || ""; document.getElementById("inp2").value = r.notes || ""; document.getElementById("inp3").value = r.priority || "";openM("mForm");}
 async function saveData(){
   const val=document.getElementById("inp0").value.trim();
   if(!val){showError("Date is required!");return;}

@@ -1,0 +1,40 @@
+﻿Around "Refresh": b'k="loadData()">\xf0\x9f\x94\x84 Refresh</button>\r\n  '
+Hex: 6b 3d 22 6c 6f 61 64 44 61 74 61 28 29 22 3e f0 9f 94 84 20 52 65 66 72 65 73 68 3c 2f 62 75 74 74 6f 6e 3e 0d 0a 20 20
+
+Around "Export": b'k="doExport()">\xf0\x9f\x93\xa5 Export</button>\r\n   '
+Hex: 6b 3d 22 64 6f 45 78 70 6f 72 74 28 29 22 3e f0 9f 93 a5 20 45 78 70 6f 72 74 3c 2f 62 75 74 74 6f 6e 3e 0d 0a 20 20 20
+
+Around "Confirm Delete": b'h3>\xc3\xb0\xc5\xb8\xe2\x80\x94\xe2\x80\x98\xc3\xaf\xc2\xb8\xc2\x8f Confirm Delete</h3>\r'
+Hex: 68 33 3e c3 b0 c5 b8 e2 80 94 e2 80 98 c3 af c2 b8 c2 8f 20 43 6f 6e 66 69 72 6d 20 44 65 6c 65 74 65 3c 2f 68 33 3e 0d
+
+Around "Contact": b':#94a3b8">\xc3\xb0\xc5\xb8\xe2\x80\x9c\xc5\xbe Contact</span><div s'
+Hex: 3a 23 39 34 61 33 62 38 22 3e c3 b0 c5 b8 e2 80 9c c5 be 20 43 6f 6e 74 61 63 74 3c 2f 73 70 61 6e 3e 3c 64 69 76 20 73
+
+Around "Customer": b'ttom:4px">\xc3\xb0\xc5\xb8\xe2\x80\x98\xc2\xa4 Customer</div>\r\n    '
+Hex: 74 74 6f 6d 3a 34 70 78 22 3e c3 b0 c5 b8 e2 80 98 c2 a4 20 43 75 73 74 6f 6d 65 72 3c 2f 64 69 76 3e 0d 0a 20 20 20 20
+
+Around "Service Details": b'ttom:4px">\xc3\xb0\xc5\xb8\xe2\x80\x9d\xc2\xa7 Service Details</div'
+Hex: 74 74 6f 6d 3a 34 70 78 22 3e c3 b0 c5 b8 e2 80 9d c2 a7 20 53 65 72 76 69 63 65 20 44 65 74 61 69 6c 73 3c 2f 64 69 76
+
+--- All non-ASCII sequences (potential garbled) ---
+
+  Offset 3761: byte=0xc2
+  Hex: c2 90 20 57 65 62 73 69 74 65 3c 2f
+python : Traceback (most recent call last):
+At line:1 char:1
++ python c:\Users\Andrei\Downloads\DeltaV\diagnose_bytes.py 2>&1 | Out- ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (Traceback (most recent call last) 
+   ::String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+  File "c:\Users\Andrei\Downloads\DeltaV\diagnose_bytes.py", line 71, in 
+<module>
+    print(f'  Context: {text_context}')
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Andrei\AppData\Local\Programs\Python\Python314\Lib\encodings\c
+p1252.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode characters in position 37-38: 
+character maps to <undefined>

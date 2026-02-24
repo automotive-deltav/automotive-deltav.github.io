@@ -1,5 +1,166 @@
-﻿<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>DeltaV — Settings (Advanced)</title><link rel="stylesheet" href="theme.css"></head><body>
-<div class="sidebar"><div class="sb-logo">DeltaV <span>Auto</span><small>Admin Panel</small></div><nav><div class="sb-sec">Settings</div><a href="settings.html">General</a><a href="settings_advanced.html" class="active">Advanced</a></nav><div class="sb-foot"><a href="index.html" class="btn-sb-link">🌐 Website</a></div></div>
-<div class="main"><div class="topbar"><h1>Advanced Settings</h1><div class="tr"><button class="btn btn-primary">Save</button><button class="btn btn-ghost">Reset</button><button class="btn btn-info">Export</button></div></div>
-<div class="body"><div class="card"><div class="card-title">System</div><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px"><button class="btn btn-warning">Clear Cache</button><button class="btn btn-danger">Rebuild Index</button><button class="btn btn-success">Enable Debug</button></div></div></div></div>
-<script src="shared.js"></script></body></html>
+﻿<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>DeltaV — Settings (Advanced)</title><link rel="stylesheet" href="theme.css"></head><body>
+<div class="sidebar"><div class="sb-logo">DeltaV <span>Auto</span><small>Admin Panel</small></div>
+  <div style="padding:8px;margin-bottom:12px">
+    <div style="position:relative">
+      <input type="text" id="quickNavSearch" placeholder="🔍 Go to page..." style="width:100%;padding:8px;border:1px solid #cbd5e1;border-radius:6px;font-size:.85rem;background:#f8fafc;color:#1e293b" oninput="DeltaV._updateNavSuggestions()" onkeypress="if(event.key==='Enter') quickNav()" onclick="if(this.value) DeltaV._showNavSuggestions()">
+      <div id="navSuggestionsDropdown" style="position:absolute;top:100%;left:0;right:0;background:white;border:1px solid #cbd5e1;border-top:none;border-radius:0 0 6px 6px;max-height:300px;overflow-y:auto;display:none;z-index:1000;box-shadow:0 4px 6px rgba(0,0,0,.1)"></div>
+    </div>
+  </div>
+  <nav><div class="sb-sec">Settings</div><a href="settings.html" class="">General Settings</a><a href="settings_advanced.html" class="active">Advanced</a></nav>
+  <div class="sb-foot" style="display:flex;flex-direction:column;gap:8px"><button class="btn btn-ghost btn-sm" onclick="showPageGuide()" style="border:1px solid #e2e8f0" title="📚 View all pages">📚 Guide</button></div>
+</div>
+<div class="main"><div class="topbar"><h1>⚙️ Advanced Settings</h1><div class="tr"><button class="btn btn-primary" onclick="saveAdvSettings()">💾 Save Changes</button><button class="btn btn-warning" onclick="resetAdvSettings()">🔄 Reset</button></div></div>
+<div class="body"><div class="card-flat" style="max-width:700px">
+
+  <h3 style="margin-bottom:14px">🔧 System Maintenance</h3>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px">
+    <button class="btn btn-warning" onclick="clearCache()">🗑️ Clear Browser Cache</button>
+    <button class="btn btn-danger" onclick="clearLocalStorage()">⚠️ Clear All Data</button>
+    <button class="btn btn-success" onclick="exportData()">📥 Export All Data</button>
+  </div>
+  
+  <div class="divider"></div>
+  <h3 style="margin-bottom:14px">🔐 Database & API</h3>
+  <p style="color:#888;font-size:.84rem;margin-bottom:12px">📌 Supabase credentials are already configured in shared.js</p>
+  <div class="tog-row"><label>Enable Supabase sync</label><label class="tog"><input type="checkbox" id="sDbSync" checked><span class="tog-sl"></span></label></div>
+  <div class="tog-row"><label>Auto-backup to database</label><label class="tog"><input type="checkbox" id="sAutoBackup" checked><span class="tog-sl"></span></label></div>
+  <div class="tog-row"><label>Sync settings across devices</label><label class="tog"><input type="checkbox" id="sSyncDevices" checked><span class="tog-sl"></span></label></div>
+  
+  <div class="divider"></div>
+  <h3 style="margin-bottom:14px">📊 Developer Tools</h3>
+  <div class="tog-row"><label>Enable debug console</label><label class="tog"><input type="checkbox" id="sDebugMode"><span class="tog-sl"></span></label></div>
+  <div class="tog-row"><label>Log all API calls</label><label class="tog"><input type="checkbox" id="sApiLog"><span class="tog-sl"></span></label></div>
+  <div class="tog-row"><label>Performance monitoring</label><label class="tog"><input type="checkbox" id="sPerf"><span class="tog-sl"></span></label></div>
+  <div class="fg"><label>Log Level</label><select id="sLogLevel" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:4px"><option value="error">Error Only</option><option value="warn">Warnings & Errors</option><option value="info" selected>Info & Above</option><option value="debug">Debug (Verbose)</option></select></div>
+  
+  <div class="divider"></div>
+  <h3 style="margin-bottom:14px">📈 Analytics & Tracking</h3>
+  <div class="tog-row"><label>Track page visits</label><label class="tog"><input type="checkbox" id="sPageTrack" checked><span class="tog-sl"></span></label></div>
+  <div class="tog-row"><label>Track user actions</label><label class="tog"><input type="checkbox" id="sActionTrack" checked><span class="tog-sl"></span></label></div>
+  <div class="tog-row"><label>Send error reports</label><label class="tog"><input type="checkbox" id="sErrorReport" checked><span class="tog-sl"></span></label></div>
+  <div class="g2">
+    <div class="fg"><label>Session Timeout (mins)</label><input type="number" id="sSessionTimeout" value="60" min="5" step="5"></div>
+    <div class="fg"><label>Inactivity Warning (mins)</label><input type="number" id="sInactWarn" value="50" min="1" step="5"></div>
+  </div>
+  
+  <div class="divider"></div>
+  <h3 style="margin-bottom:14px">🔔 System Alerts</h3>
+  <div class="tog-row"><label>Browser notifications enabled</label><label class="tog"><input type="checkbox" id="sBrowserNotif" checked><span class="tog-sl"></span></label></div>
+  <div class="tog-row"><label>Alert on errors</label><label class="tog"><input type="checkbox" id="sAlertErrors" checked><span class="tog-sl"></span></label></div>
+  <div class="tog-row"><label>Alert on warnings</label><label class="tog"><input type="checkbox" id="sAlertWarnings"><span class="tog-sl"></span></label></div>
+  <div class="fg"><label>Max Notifications (per session)</label><input type="number" id="sMaxNotif" value="20" min="1" step="1"></div>
+  
+  <div class="divider"></div>
+  <h3 style="margin-bottom:14px">📦 Data Management</h3>
+  <div class="fog-row"><label>Compress exported files</label><label class="tog"><input type="checkbox" id="sCompressExport" checked><span class="tog-sl"></span></label></div>
+  <div class="tog-row"><label>Keep local copy of all data</label><label class="tog"><input type="checkbox" id="sLocalCopy" checked><span class="tog-sl"></span></label></div>
+  <div class="fog-row"><label>Auto-delete old records (1+ year)</label><label class="tog"><input type="checkbox" id="sAutoDelete"><span class="tog-sl"></span></label></div>
+  
+  <div class="divider"></div>
+  <h3 style="margin-bottom:14px">🛡️ Security & Compliance</h3>
+  <div class="tog-row"><label>Enforce HTTPS only</label><label class="tog"><input type="checkbox" id="sHttpsOnly" checked><span class="tog-sl"></span></label></div>
+  <div class="tog-row"><label>Enable session locking</label><label class="tog"><input type="checkbox" id="sSessionLock" checked><span class="tog-sl"></span></label></div>
+  <div class="tog-row"><label>Encrypt sensitive data in storage</label><label class="tog"><input type="checkbox" id="sEncrypt"><span class="tog-sl"></span></label></div>
+  <div class="tog-row"><label>Log security events</label><label class="tog"><input type="checkbox" id="sSecLog" checked><span class="tog-sl"></span></label></div>
+  
+  <button class="btn btn-primary btn-lg btn-fw" onclick="saveAdvSettings()" style="margin-top:20px">💾 Save All Settings</button>
+</div></div></div>
+<script src="shared.js"></script><script>
+function saveAdvSettings(){
+  const settings={
+    dbSync:document.getElementById("sDbSync").checked,
+    autoBackup:document.getElementById("sAutoBackup").checked,
+    syncDevices:document.getElementById("sSyncDevices").checked,
+    debugMode:document.getElementById("sDebugMode").checked,
+    apiLog:document.getElementById("sApiLog").checked,
+    perf:document.getElementById("sPerf").checked,
+    logLevel:document.getElementById("sLogLevel").value,
+    pageTrack:document.getElementById("sPageTrack").checked,
+    actionTrack:document.getElementById("sActionTrack").checked,
+    errorReport:document.getElementById("sErrorReport").checked,
+    sessionTimeout:parseInt(document.getElementById("sSessionTimeout").value),
+    inactWarn:parseInt(document.getElementById("sInactWarn").value),
+    browserNotif:document.getElementById("sBrowserNotif").checked,
+    alertErrors:document.getElementById("sAlertErrors").checked,
+    alertWarnings:document.getElementById("sAlertWarnings").checked,
+    maxNotif:parseInt(document.getElementById("sMaxNotif").value),
+    compressExport:document.getElementById("sCompressExport").checked,
+    localCopy:document.getElementById("sLocalCopy").checked,
+    autoDelete:document.getElementById("sAutoDelete").checked,
+    httpsOnly:document.getElementById("sHttpsOnly").checked,
+    sessionLock:document.getElementById("sSessionLock").checked,
+    encrypt:document.getElementById("sEncrypt").checked,
+    secLog:document.getElementById("sSecLog").checked
+  };
+  localStorage.setItem("dv_adv_settings",JSON.stringify(settings));
+  toast("Advanced settings saved!","ok");
+}
+function resetAdvSettings(){
+  if(confirm("Reset all advanced settings to defaults?")){
+    localStorage.removeItem("dv_adv_settings");
+    location.reload();
+  }
+}
+function clearCache(){
+  caches.keys().then(names=>{
+    names.forEach(name=>caches.delete(name));
+  });
+  localStorage.clear();
+  sessionStorage.clear();
+  toast("Cache cleared!","ok");
+  location.reload();
+}
+function clearLocalStorage(){
+  if(confirm("⚠️ This will DELETE ALL local data. Are you absolutely sure?")){
+    localStorage.clear();
+    sessionStorage.clear();
+    toast("All data cleared!","warning");
+    location.reload();
+  }
+}
+function exportData(){
+  const allData={
+    settings:localStorage.getItem("dv_settings"),
+    advSettings:localStorage.getItem("dv_adv_settings"),
+    timestamp:new Date().toISOString()
+  };
+  const json=JSON.stringify(allData,null,2);
+  const blob=new Blob([json],{type:"application/json"});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");
+  a.href=url;
+  a.download="deltav-backup-"+new Date().getTime()+".json";
+  a.click();
+  URL.revokeObjectURL(url);
+  toast("Data exported successfully!","ok");
+}
+const saved=localStorage.getItem("dv_adv_settings");
+if(saved){
+  try{
+    const s=JSON.parse(saved);
+    if(s.dbSync!==undefined)document.getElementById("sDbSync").checked=s.dbSync;
+    if(s.autoBackup!==undefined)document.getElementById("sAutoBackup").checked=s.autoBackup;
+    if(s.syncDevices!==undefined)document.getElementById("sSyncDevices").checked=s.syncDevices;
+    if(s.debugMode!==undefined)document.getElementById("sDebugMode").checked=s.debugMode;
+    if(s.apiLog!==undefined)document.getElementById("sApiLog").checked=s.apiLog;
+    if(s.perf!==undefined)document.getElementById("sPerf").checked=s.perf;
+    if(s.logLevel)document.getElementById("sLogLevel").value=s.logLevel;
+    if(s.pageTrack!==undefined)document.getElementById("sPageTrack").checked=s.pageTrack;
+    if(s.actionTrack!==undefined)document.getElementById("sActionTrack").checked=s.actionTrack;
+    if(s.errorReport!==undefined)document.getElementById("sErrorReport").checked=s.errorReport;
+    if(s.sessionTimeout)document.getElementById("sSessionTimeout").value=s.sessionTimeout;
+    if(s.inactWarn)document.getElementById("sInactWarn").value=s.inactWarn;
+    if(s.browserNotif!==undefined)document.getElementById("sBrowserNotif").checked=s.browserNotif;
+    if(s.alertErrors!==undefined)document.getElementById("sAlertErrors").checked=s.alertErrors;
+    if(s.alertWarnings!==undefined)document.getElementById("sAlertWarnings").checked=s.alertWarnings;
+    if(s.maxNotif)document.getElementById("sMaxNotif").value=s.maxNotif;
+    if(s.compressExport!==undefined)document.getElementById("sCompressExport").checked=s.compressExport;
+    if(s.localCopy!==undefined)document.getElementById("sLocalCopy").checked=s.localCopy;
+    if(s.autoDelete!==undefined)document.getElementById("sAutoDelete").checked=s.autoDelete;
+    if(s.httpsOnly!==undefined)document.getElementById("sHttpsOnly").checked=s.httpsOnly;
+    if(s.sessionLock!==undefined)document.getElementById("sSessionLock").checked=s.sessionLock;
+    if(s.encrypt!==undefined)document.getElementById("sEncrypt").checked=s.encrypt;
+    if(s.secLog!==undefined)document.getElementById("sSecLog").checked=s.secLog;
+  }catch(e){console.error(e)}
+}
+</script></body></html>

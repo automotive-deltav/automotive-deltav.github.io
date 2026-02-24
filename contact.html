@@ -123,6 +123,61 @@ select:-webkit-autofill{
   -webkit-box-shadow:0 0 0 1000px #0a1318 inset !important;
   -webkit-text-fill-color:#ffffff !important;
 }
+
+@media(max-width:768px){
+  .contact-grid{
+    grid-template-columns:1fr!important;
+    gap:16px;
+  }
+  .info-card,
+  .form-card{
+    padding:16px;
+  }
+  .info-card h3,
+  .form-card h3{
+    font-size:1rem;
+  }
+  .ci{
+    padding:10px;
+    gap:10px;
+    margin-bottom:12px;
+  }
+  .ci .ci-ic{
+    font-size:1.2rem;
+    width:26px;
+  }
+  .ci-lbl{
+    font-size:.65rem;
+  }
+  .ci-val{
+    font-size:.8rem;
+  }
+  .form-card input,
+  .form-card select,
+  .form-card textarea{
+    padding:12px!important;
+    font-size:16px!important;
+  }
+}
+
+@media(max-width:640px){
+  .contact-grid{
+    gap:12px;
+  }
+  .info-card,
+  .form-card{
+    padding:12px;
+  }
+  .ci{
+    padding:8px;
+    margin-bottom:10px;
+  }
+  .form-card input,
+  .form-card select,
+  .form-card textarea{
+    padding:10px 8px!important;
+  }
+}
 </style>
 </head>
 

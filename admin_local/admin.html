@@ -8,6 +8,12 @@
 <script src="shared.js"></script>
 <div class="sidebar">
   <div class="sb-logo">DeltaV <span>Auto</span><small>Admin Panel</small></div>
+  <div style="padding:8px;margin-bottom:12px">
+    <div style="position:relative">
+      <input type="text" id="quickNavSearch" placeholder="🔍 Go to page..." style="width:100%;padding:8px;border:1px solid #cbd5e1;border-radius:6px;font-size:.85rem;background:#f8fafc;color:#1e293b" oninput="DeltaV._updateNavSuggestions()" onkeypress="if(event.key==='Enter') quickNav()" onclick="if(this.value) DeltaV._showNavSuggestions()">
+      <div id="navSuggestionsDropdown" style="position:absolute;top:100%;left:0;right:0;background:white;border:1px solid #cbd5e1;border-top:none;border-radius:0 0 6px 6px;max-height:300px;overflow-y:auto;display:none;z-index:1000;box-shadow:0 4px 6px rgba(0,0,0,.1)"></div>
+    </div>
+  </div>
   <nav>
     <div class="sb-sec">Core</div>
     <a href="dashboard.html" class=""><span class="ni">📊</span>Dashboard</a>
@@ -59,23 +65,23 @@
     <a href="hours.html" class=""><span class="ni">⏰</span>Opening Hours</a>
     <a href="settings.html" class=""><span class="ni">⚙️</span>Settings</a>
   </nav>
-  <div class="sb-foot">
-    <a href="index.html" class="btn-sb-link">ðŸŒ Website</a>
-    <button class="btn-sb-out" onclick="if(confirm('Log out?')){sessionStorage.removeItem('dv_admin');location.href='login.html';}">ðŸšª Log Out</button>
+    <div class="sb-foot" style="display:flex;flex-direction:column;gap:8px">
+
+    <button class="btn btn-ghost btn-sm" onclick="showPageGuide()" style="border:1px solid #e2e8f0" title="📚 View all pages">📚 Guide</button>
   </div>
 </div>
 <div class="main">
   <div class="topbar">
     <h1>📅 Bookings</h1>
     <div class="tr">
-      <button class="btn btn-ghost" onclick="loadData()">ðŸ”„ Refresh</button>
+      <button class="btn btn-ghost" onclick="loadData()">🔄 Refresh</button>
     </div>
   </div>
   <div class="body">
     <div style="display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap">
       <div class="srch-w"><input type="text" id="srch" placeholder="Search bookings..." oninput="renderData()"></div>
-      <button class="btn btn-info" onclick="doExport()">ðŸ“¥ Export</button>
-      <button class="btn btn-ghost" onclick="loadData()">ðŸ”„</button>
+      <button class="btn btn-info" onclick="doExport()">📥 Export</button>
+      <button class="btn btn-ghost" onclick="loadData()">🔄</button>
       <select id="statusFilter" class="btn btn-ghost" onchange="renderData()" style="padding:9px 12px;font-size:.82rem">
         <option value="">All Status</option>
         <option value="open">Open</option>
@@ -101,7 +107,7 @@
 
 <div class="modal" id="mDel">
   <div class="mbox" style="max-width:400px">
-    <h3>ðŸ—‘ï¸ Confirm Delete</h3>
+    <h3>🗑️ Confirm Delete</h3>
     <p id="mDelMsg" style="color:#64748b">Delete this booking?</p>
     <div class="mfoot">
       <button class="btn btn-ghost" onclick="closeM('mDel')">Cancel</button>
@@ -179,7 +185,7 @@ function renderData(){
     card.onmouseover=function(){this.style.transform="translateY(-4px)";this.style.boxShadow="0 8px 24px rgba(0,0,0,.12)";}
     card.onmouseout=function(){this.style.transform="translateY(0)";this.style.boxShadow="var(--s2)";}
     card.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:12px">
-      <div style="flex:1"><div style="font-weight:700;color:#1b2b3a">${r.name}</div><div style="font-size:.8rem;color:#94a3b8">${r.email}</div></div>
+      <div style="flex:1"><div style="font-weight:700;color:#1b2b3a">${r.name}</div><div style="font-size:.8rem;color:#94a3b8">${r.phone||'—'}</div></div>
       <span style="display:inline-block;padding:4px 8px;border-radius:4px;font-size:.7rem;font-weight:600;background:${statusColor};color:#fff">${r.status||'pending'}</span>
     </div>
     <div style="margin:12px 0;padding:12px;background:#f8f9fb;border-radius:8px;cursor:pointer;transition:all .2s" onclick="this.parentElement.querySelector('[data-expanded]').click()">
@@ -191,30 +197,36 @@ function renderData(){
       <div><span style="color:#94a3b8">📋 Service</span><div style="font-weight:600;color:#1b2b3a">${r.service||'General'}</div></div>
       <div><span style="color:#94a3b8">📅 Date</span><div style="font-weight:600;color:#1b2b3a">${r.date}</div></div>
     </div>
-    <div style="font-size:.85rem;margin:12px 0"><span style="color:#94a3b8">ðŸ“ž Contact</span><div style="font-weight:600;color:#1b2b3a">${r.phone||'â€”'}</div></div>
-    <div data-expanded="false" style="display:none;padding:12px;margin:12px 0;background:#f8f9fb;border-radius:8px;border-left:3px solid var(--ac);max-height:0;overflow:hidden;transition:all .3s" id="exp-${r.id}">
+    <div style="font-size:.85rem;margin:12px 0"><span style="color:#94a3b8">📞 Contact</span><div style="font-weight:600;color:#1b2b3a">${r.phone||'—'}</div></div>
+    <div data-expanded="false" style="padding:12px;margin:12px 0;background:#f8f9fb;border-radius:8px;border-left:3px solid var(--ac);max-height:0;overflow:hidden;opacity:0;transition:all .3s ease" id="exp-${r.id}">
       <div style="font-weight:600;margin-bottom:8px">📝 Additional Info</div>
       <div style="font-size:.8rem;color:#64748b;line-height:1.6">${r.notes||'No additional notes'}</div>
     </div>
-    <div style="display:flex;gap:8px;margin-top:16px;align-items:stretch">
-      <button class="btn btn-primary btn-sm" onclick="viewRow('${r.id}')" style="flex:1.5;min-width:60px;white-space:nowrap">View</button>
-      <button class="btn ${r.status==='confirmed'?'btn-warning':'btn-success'} btn-sm" onclick="toggleConfirm('${r.id}','${r.name}',${r.status==='confirmed'})" style="flex:1.2;min-width:0;white-space:nowrap">${r.status==='confirmed'?'âœ“ Undo':'Confirm'}</button>
-      <button class="btn btn-info btn-sm" onclick="toggleExpand('exp-${r.id}')" title="More details" style="min-width:32px;width:32px">â–¼</button>
-      <button class="btn btn-danger btn-sm" onclick="delRow('${r.id}')" style="min-width:32px;width:32px">ðŸ—‘ï¸</button>
+    <div style="display:flex;gap:8px;margin-top:16px;align-items:center;justify-content:space-between">
+      <button class="btn btn-primary btn-sm" onclick="viewRow('${r.id}')" style="flex:1.5;min-width:80px;white-space:nowrap">View</button>
+      <button class="btn ${r.status==='confirmed'?'btn-warning':'btn-success'} btn-sm" onclick="toggleConfirm('${r.id}','${r.name}',${r.status==='confirmed'})" style="flex:1.2;min-width:80px;white-space:nowrap">${r.status==='confirmed'?'✓ Undo':'Confirm'}</button>
+      <button class="btn btn-info btn-sm" onclick="toggleExpand('exp-${r.id}')" title="More details" style="width:40px;height:40px;padding:0;display:flex;align-items:center;justify-content:center;transition:transform .3s ease;flex-shrink:0">▼</button>
+      <button class="btn btn-danger btn-sm" onclick="delRow('${r.id}')" style="width:40px;height:40px;padding:0;display:flex;align-items:center;justify-content:center;flex-shrink:0">🗑️</button>
     </div>`;
     grid.appendChild(card);
   });
 }
 function toggleExpand(id){
   const el=document.getElementById(id);
+  const btn=event.target.closest('button');
   const expanded=el.getAttribute("data-expanded")==="true";
   if(expanded){
-    el.style.display="none";
+    el.style.maxHeight="0";
+    el.style.opacity="0";
+    el.style.marginBottom="0";
     el.setAttribute("data-expanded","false");
+    if(btn)btn.style.transform="rotate(0deg)";
   }else{
-    el.style.display="block";
-    el.style.maxHeight="200px";
+    el.style.maxHeight="300px";
+    el.style.opacity="1";
+    el.style.marginBottom="12px";
     el.setAttribute("data-expanded","true");
+    if(btn)btn.style.transform="rotate(180deg)";
   }
 }
 function delRow(id){
@@ -230,17 +242,17 @@ function viewRow(id){
   if(!booking)return;
   const html=`<div style="display:grid;gap:16px">
     <div style="background:#f8f9fb;border-radius:8px;padding:16px;border-left:4px solid var(--ac)">
-      <div style="font-size:.8rem;color:#94a3b8;margin-bottom:4px">ðŸ‘¤ Customer</div>
+      <div style="font-size:.8rem;color:#94a3b8;margin-bottom:4px">👤 Customer</div>
       <div style="font-weight:600;color:#1b2b3a;margin-bottom:6px">${booking.name}</div>
-      <div style="font-size:.85rem;color:#64748b">${booking.email}<br>${booking.phone||'â€”'}</div>
+      <div style="font-size:.85rem;color:#64748b">${booking.phone||'—'}</div>
     </div>
     <div style="background:#f8f9fb;border-radius:8px;padding:16px;border-left:4px solid var(--in)">
       <div style="font-size:.8rem;color:#94a3b8;margin-bottom:4px">🚗 Vehicle</div>
       <div style="font-weight:600;color:#1b2b3a;margin-bottom:4px">${booking.reg}</div>
-      <div style="font-size:.85rem;color:#64748b">${booking.car||'Unknown Model'} â€¢ ${booking.year||'Year unknown'}</div>
+      <div style="font-size:.85rem;color:#64748b">${booking.car||'Unknown Model'} • ${booking.year||'Year unknown'}</div>
     </div>
     <div style="background:#f8f9fb;border-radius:8px;padding:16px;border-left:4px solid var(--ok)">
-      <div style="font-size:.8rem;color:#94a3b8;margin-bottom:4px">ðŸ”§ Service Details</div>
+      <div style="font-size:.8rem;color:#94a3b8;margin-bottom:4px">🔧 Service Details</div>
       <div style="font-weight:600;color:#1b2b3a;margin-bottom:4px">${booking.service||'General'}</div>
       <div style="font-size:.85rem;color:#64748b">📅 ${booking.date} ${booking.slot?'@ '+booking.slot:''}</div>
     </div>
@@ -249,7 +261,7 @@ function viewRow(id){
       <div style="font-size:.85rem;color:#64748b;line-height:1.6">${booking.notes}</div>
     </div>`:''}
     <div style="display:flex;gap:8px;align-items:center;padding:12px;background:linear-gradient(135deg,rgba(96,165,250,.08),rgba(96,165,250,.02));border-radius:8px;border:1px solid rgba(96,165,250,.2)">
-      <span style="font-size:1.2rem">ðŸ“Œ</span>
+      <span style="font-size:1.2rem">📌</span>
       <span style="font-size:.8rem;color:#64748b"><strong>Status:</strong> <span style="color:${booking.status==='confirmed'?'var(--ok)':booking.status==='completed'?'var(--in)':'var(--wa)'}; font-weight:600">${booking.status||'pending'}</span></span>
     </div>
   </div>`;

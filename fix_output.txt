@@ -1,0 +1,4 @@
+﻿
+Total: 0 replacements across 41 files
+
+No garbled sequences detected - all clean!

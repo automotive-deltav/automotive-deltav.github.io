@@ -1,0 +1,37 @@
+﻿Fixed: admin.html
+Fixed: audit.html
+Fixed: checklist.html
+Fixed: contact_inquiries.html
+Fixed: customers.html
+Fixed: dashboard.html
+Fixed: expenses.html
+Fixed: feedback.html
+Fixed: gallery_mgr.html
+Fixed: hours.html
+Fixed: jobs.html
+Fixed: loyalty.html
+Fixed: MOT.html
+Fixed: notes.html
+Fixed: parts_orders.html
+Fixed: payments.html
+Fixed: promotions.html
+Fixed: quotes.html
+Fixed: reminders.html
+Fixed: reports.html
+Fixed: returns.html
+Fixed: returns_mgmt.html
+Fixed: schedule.html
+Fixed: service_history.html
+Fixed: sms.html
+Fixed: staff_rota.html
+Fixed: suppliers.html
+Fixed: targets.html
+Fixed: tasks.html
+Fixed: timesheets.html
+Fixed: vehicles.html
+Fixed: waiting.html
+Fixed: warranties.html
+Fixed: workers.html
+
+Done! Fixed 34 files out of 41 total.
+All files verified clean!

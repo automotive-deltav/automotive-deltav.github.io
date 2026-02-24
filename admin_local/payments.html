@@ -2,13 +2,19 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>DeltaV â€” 💳 Payments</title>
+<title>DeltaV — 💳 Payments</title>
 <link rel="stylesheet" href="theme.css">
 <style></style>
 </head>
 <body>
 <div class="sidebar">
   <div class="sb-logo">DeltaV <span>Auto</span><small>Admin Panel</small></div>
+  <div style="padding:8px;margin-bottom:12px">
+    <div style="position:relative">
+      <input type="text" id="quickNavSearch" placeholder="🔍 Go to page..." style="width:100%;padding:8px;border:1px solid #cbd5e1;border-radius:6px;font-size:.85rem;background:#f8fafc;color:#1e293b" oninput="DeltaV._updateNavSuggestions()" onkeypress="if(event.key==='Enter') quickNav()" onclick="if(this.value) DeltaV._showNavSuggestions()">
+      <div id="navSuggestionsDropdown" style="position:absolute;top:100%;left:0;right:0;background:white;border:1px solid #cbd5e1;border-top:none;border-radius:0 0 6px 6px;max-height:300px;overflow-y:auto;display:none;z-index:1000;box-shadow:0 4px 6px rgba(0,0,0,.1)"></div>
+    </div>
+  </div>
   <nav>
     <div class="sb-sec">Core</div>
     <a href="dashboard.html" class=""><span class="ni">📊</span>Dashboard</a>
@@ -60,28 +66,28 @@
     <a href="hours.html" class=""><span class="ni">⏰</span>Opening Hours</a>
     <a href="settings.html" class=""><span class="ni">⚙️</span>Settings</a>
   </nav>
-  <div class="sb-foot">
-    <a href="index.html" class="btn-sb-link">ðŸŒ Website</a>
-    <button class="btn-sb-out" onclick="if(confirm('Log out?')){sessionStorage.removeItem('dv_admin');location.href='login.html';}">ðŸšª Log Out</button>
+    <div class="sb-foot" style="display:flex;flex-direction:column;gap:8px">
+
+    <button class="btn btn-ghost btn-sm" onclick="showPageGuide()" style="border:1px solid #e2e8f0" title="📚 View all pages">📚 Guide</button>
   </div>
 </div>
 <div class="main">
-  <div class="topbar"><h1>💳 Payments</h1><div class="tr"><button class="btn btn-primary" onclick="openM('mNewPay')">+ Record Payment</button><button class="btn btn-info" onclick="exportPay()">ðŸ“¥ Export</button><button class="btn btn-ghost" onclick="loadPay()">ðŸ”„ Refresh</button></div></div>
+  <div class="topbar"><h1>💳 Payments</h1><div class="tr"><button class="btn btn-primary" onclick="openM('mNewPay')">+ Record Payment</button><button class="btn btn-info" onclick="exportPay()">📥 Export</button><button class="btn btn-ghost" onclick="loadPay()">🔄 Refresh</button></div></div>
   <div class="body">
 <div class="stat-grid">
-  <div class="card"><div class="card-title">💰 Total Received</div><div class="card-val" id="pTot">â€”</div></div>
-  <div class="card"><div class="card-title">📅 This Month</div><div class="card-val" id="pMo">â€”</div></div>
-  <div class="card"><div class="card-title">💳 Card Payments</div><div class="card-val" id="pCard">â€”</div></div>
-  <div class="card"><div class="card-title">ðŸ’µ Cash Payments</div><div class="card-val" id="pCash">â€”</div></div>
+  <div class="card"><div class="card-title">💰 Total Received</div><div class="card-val" id="pTot">—</div></div>
+  <div class="card"><div class="card-title">📅 This Month</div><div class="card-val" id="pMo">—</div></div>
+  <div class="card"><div class="card-title">💳 Card Payments</div><div class="card-val" id="pCard">—</div></div>
+  <div class="card"><div class="card-title">💵 Cash Payments</div><div class="card-val" id="pCash">—</div></div>
 </div>
 <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;align-items:center">
   <div class="srch-w"><input type="text" id="psrch" placeholder="Search payments..." oninput="renderPay()"></div>
   <select id="pmMeth" class="btn btn-ghost" onchange="renderPay()" style="padding:9px 12px;font-size:.82rem">
     <option value="">All Methods</option><option>Cash</option><option>Card</option><option>Bank Transfer</option><option>Cheque</option>
   </select>
-  <button class="btn btn-ghost btn-sm" onclick="loadPay()">ðŸ”„</button>
-  <button class="btn btn-info btn-sm" onclick="exportPay()">ðŸ“¥ CSV</button>
-  <button class="btn btn-warning btn-sm" onclick="window.print()">ðŸ–¨ï¸ Print</button>
+  <button class="btn btn-ghost btn-sm" onclick="loadPay()">🔄</button>
+  <button class="btn btn-info btn-sm" onclick="exportPay()">📥 CSV</button>
+  <button class="btn btn-warning btn-sm" onclick="window.print()">🖨️ Print</button>
 </div>
 <div class="tbl-wrap"><table><thead><tr>
   <th>Date</th><th>Customer</th><th>Invoice Ref</th><th>Method</th><th>Amount</th><th>Notes</th><th>Actions</th>
@@ -91,7 +97,7 @@
   <h3>💳 Record Payment</h3>
   <div class="g2">
     <div class="fg"><label>Date *</label><input type="date" id="pyDt"></div>
-    <div class="fg"><label>Amount (Â£) *</label><input type="number" id="pyAmt" placeholder="0.00" min="0" step="0.01"></div>
+    <div class="fg"><label>Amount (£) *</label><input type="number" id="pyAmt" placeholder="0.00" min="0" step="0.01"></div>
   </div>
   <div class="fg ac-w"><label>Customer Name *</label><input type="text" id="pyCN" placeholder="John Smith"></div>
   <div class="g2">
@@ -103,13 +109,13 @@
   <div class="fg"><label>Notes</label><textarea id="pyNote" placeholder="Any notes..."></textarea></div>
   <div class="mfoot">
     <button class="btn btn-ghost" onclick="closeM('mNewPay')">Cancel</button>
-    <button class="btn btn-primary" onclick="savePay()">ðŸ’¾ Save Payment</button>
+    <button class="btn btn-primary" onclick="savePay()">💾 Save Payment</button>
   </div>
 </div></div>
 </div>
 </div>
 <div class="modal" id="mDel"><div class="mbox" style="max-width:360px">
-  <h3>ðŸ—‘ï¸ Confirm Delete</h3>
+  <h3>🗑️ Confirm Delete</h3>
   <p id="mDelMsg" style="color:#555;margin-bottom:4px">This cannot be undone.</p>
   <div class="mfoot">
     <button class="btn btn-ghost" onclick="closeM('mDel')">Cancel</button>
@@ -153,14 +159,14 @@ function renderPay(){
     const mc=p.method==="Cash"?"b-ok":p.method==="Card"?"b-in":"b-dk";
     tb.innerHTML+=`<tr>
       <td style="font-size:.82rem">${fmtD(p.payment_date)}</td>
-      <td><strong>${p.customer_name||"â€”"}</strong></td>
-      <td style="font-family:monospace;font-size:.8rem">${p.invoice_ref||"â€”"}</td>
-      <td><span class="badge ${mc}">${p.method||"â€”"}</span></td>
+      <td><strong>${p.customer_name||"—"}</strong></td>
+      <td style="font-family:monospace;font-size:.8rem">${p.invoice_ref||"—"}</td>
+      <td><span class="badge ${mc}">${p.method||"—"}</span></td>
       <td><strong style="color:var(--ac);font-size:1.05rem">${fmtGBP(p.amount)}</strong></td>
-      <td style="font-size:.8rem;color:#888">${p.notes||"â€”"}</td>
+      <td style="font-size:.8rem;color:#888">${p.notes||"—"}</td>
       <td>
-        <button class="btn btn-warning btn-sm" onclick="editPay('${p.id}')">âœï¸</button>
-        <button class="btn btn-danger btn-sm" onclick="delPay('${p.id}')">ðŸ—‘ï¸</button>
+        <button class="btn btn-warning btn-sm" onclick="editPay('${p.id}')">✏️</button>
+        <button class="btn btn-danger btn-sm" onclick="delPay('${p.id}')">🗑️</button>
       </td></tr>`;
   });
 }

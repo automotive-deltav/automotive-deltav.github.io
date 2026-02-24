@@ -635,3 +635,120 @@ table tbody tr:hover{background:#f9fafb;box-shadow:inset 0 0 0 2px rgba(96,165,2
 .pub-wrap,.pub-wrap-wide{padding:20px 16px}
 .pub-title{font-size:1.8rem}
 }
+/* Enhanced Toggle/Checkbox UI - highly visible */
+.tog-row{display:flex;align-items:center;justify-content:space-between;padding:14px 12px;background:#fff;border:1.5px solid #e2e8f0;border-radius:8px;margin-bottom:12px;transition:all .2s;font-weight:500;color:#475569}
+.tog-row:hover{background:#f8f9fb;border-color:#cbd5e0;box-shadow:0 2px 6px rgba(0,0,0,.04)}
+.tog-row label:first-child{flex:1;margin:0;cursor:pointer;user-select:none;font-weight:500;color:#1b2b3a;font-size:.9rem}
+.tog{display:inline-flex;align-items:center;height:28px;width:50px;background:#cbd5e0;border-radius:14px;position:relative;cursor:pointer;transition:all .3s;border:0;padding:0;margin:0;flex-shrink:0}
+.tog input{display:none}
+.tog-sl{display:block;position:absolute;left:2px;top:2px;width:24px;height:24px;background:#fff;border-radius:11px;transition:all .3s;box-shadow:0 2px 4px rgba(0,0,0,.1);border:1px solid #cbd5e0}
+.tog input:checked+.tog-sl{left:24px;background:#fff;border-color:var(--ac)}
+.tog:has(input:checked){background:var(--ac);box-shadow:0 0 0 3px rgba(96,165,250,.15)}
+.tog input:disabled+.tog-sl{opacity:.5}
+
+/* MOBILE RESPONSIVE DESIGN */
+@media(max-width:768px){
+  /* Sidebar transforms to off-canvas on mobile */
+  .sidebar{position:fixed;left:-280px;top:0;bottom:0;width:280px;height:100vh;z-index:1000;transition:left .3s ease;background:#1a2a38;overflow-y:auto;box-shadow:2px 0 12px rgba(0,0,0,.3)}
+  .sidebar.active{left:0}
+  
+  /* Hamburger menu button */
+  .hamburger{display:flex;position:fixed;top:16px;left:16px;z-index:999;background:var(--ac);border:none;color:#fff;width:40px;height:40px;border-radius:8px;align-items:center;justify-content:center;cursor:pointer;font-size:1.4rem;transition:all .2s}
+  .hamburger:hover{background:#3b82f6;transform:scale(1.05)}
+  .hamburger.active{left:296px}
+  
+  /* Main content shifts on desktop but not mobile */
+  .main{margin-left:0;width:100%;transition:margin-left .3s ease}
+  
+  /* Topbar adjustments */
+  .topbar{padding:0 16px;margin-left:40px}
+  
+  /* Grid layouts collapse to single column */
+  .g2,.g3{grid-template-columns:1fr!important;gap:12px}
+  .g4,.g5{grid-template-columns:1fr!important}
+  
+  /* Cards take full width */
+  .card{width:100%}
+  
+  /* Buttons get more padding for touch */
+  .btn{padding:12px 16px;min-height:44px;font-size:.9rem}
+  .btn-sm{padding:8px 12px;min-height:40px}
+  
+  /* Form inputs larger for mobile */
+  .fg input,.fg textarea,.fg select{padding:12px;font-size:16px}
+  .fg label{font-size:.9rem}
+  
+  /* Typography scale down slightly */
+  h1{font-size:1.5rem}
+  h2{font-size:1.3rem}
+  h3{font-size:1.1rem}
+  body{font-size:.9rem}
+  
+  /* Tables become scrollable */
+  table{font-size:.8rem}
+  
+  /* Modals full-width */
+  .modal{max-width:95vw}
+  
+  /* Sidebars nav section titles smaller */
+  .sb-sec{font-size:.75rem;padding:8px 12px}
+  .sidebar nav a{padding:10px 12px;font-size:.85rem}
+  .sidebar nav a .ni{margin-right:8px;font-size:1rem}
+  
+  /* Search bar adjustments */
+  .sidebar input[type="text"]{padding:6px;font-size:.8rem}
+}
+
+@media(max-width:640px){
+  /* Further adjustments for small phones */
+  .hamburger{width:36px;height:36px;font-size:1.2rem;top:12px;left:12px}
+  .topbar{padding:0 12px;margin-left:36px;gap:8px}
+  .topbar h1{font-size:1.3rem}
+  .tr{gap:6px}
+  
+  /* Button row wraps on very small screens */
+  .card button{width:100%;margin-bottom:8px}
+  
+  /* Reduce padding further */
+  .card{padding:16px}
+  .body{padding:16px}
+  
+  /* Form groups stack vertically */
+  .fg{margin-bottom:16px}
+  
+  /* Stat cards smaller */
+  .stat-card{padding:16px 12px}
+  .stat-icon{font-size:1.8rem}
+  .stat-value{font-size:1.6rem}
+}
+
+/* Overlay closes sidebar when clicked */
+.sidebar-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);z-index:999}
+.sidebar-overlay.active{display:block}
+
+/* NOTIFICATION SYSTEM */
+.notification-banner{position:fixed;top:0;left:0;right:0;background:linear-gradient(135deg,#fef3c7 0%,#fde68a 100%);border-bottom:2px solid #f59e0b;padding:16px;box-shadow:0 4px 12px rgba(0,0,0,.15);display:flex;gap:16px;align-items:flex-start;z-index:500;animation:slideDown .3s ease-out}
+.notification-banner.error{background:linear-gradient(135deg,#fee2e2 0%,#fecaca 100%);border-bottom-color:#dc3545}
+.notification-banner.warning{background:linear-gradient(135deg,#fef3c7 0%,#fde68a 100%);border-bottom-color:#f59e0b}
+.notification-banner.success{background:linear-gradient(135deg,#dcfce7 0%,#bbf7d0 100%);border-bottom-color:#28a745}
+@keyframes slideDown{from{transform:translateY(-100%)}to{transform:translateY(0)}}
+.notification-banner.removing{animation:slideUp .3s ease-out;opacity:0}
+@keyframes slideUp{from{transform:translateY(0)}to{transform:translateY(-100%)}}
+
+.notification-icon{font-size:1.4rem;flex-shrink:0;margin-top:2px}
+.notification-content{flex:1}
+.notification-title{font-weight:700;color:#1b2b3a;margin-bottom:4px}
+.notification-message{font-size:.9rem;color:#475569;line-height:1.4}
+.notification-close{background:none;border:none;font-size:1.2rem;cursor:pointer;color:#94a3b8;padding:0;width:24px;height:24px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s}
+.notification-close:hover{color:#1b2b3a;transform:scale(1.1)}
+.notification-item{font-size:.85rem;padding:6px 8px;background:rgba(255,255,255,.5);border-radius:4px;margin-bottom:4px;display:flex;gap:8px;align-items:center}
+.notification-item-icon{flex-shrink:0}
+.notification-item-text{flex:1}
+
+/* Notification badges on sidebar icons */
+.badge{position:absolute;top:-6px;right:-6px;background:#dc3545;color:#fff;border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;border:2px solid #fff;box-shadow:0 2px 4px rgba(0,0,0,.2)}
+.sidebar nav a{position:relative}
+.sidebar nav a .badge{top:2px;right:2px;width:18px;height:18px;font-size:.65rem}
+
+/* Adjust topbar if notification banner present */
+body.with-notification .topbar{margin-top:0;transition:margin-top .3s}

@@ -8,6 +8,12 @@
 <script src="shared.js"></script>
 <div class="sidebar">
   <div class="sb-logo">DeltaV <span>Auto</span><small>Admin Panel</small></div>
+  <div style="padding:8px;margin-bottom:12px">
+    <div style="position:relative">
+      <input type="text" id="quickNavSearch" placeholder="🔍 Go to page..." style="width:100%;padding:8px;border:1px solid #cbd5e1;border-radius:6px;font-size:.85rem;background:#f8fafc;color:#1e293b" oninput="DeltaV._updateNavSuggestions()" onkeypress="if(event.key==='Enter') quickNav()" onclick="if(this.value) DeltaV._showNavSuggestions()">
+      <div id="navSuggestionsDropdown" style="position:absolute;top:100%;left:0;right:0;background:white;border:1px solid #cbd5e1;border-top:none;border-radius:0 0 6px 6px;max-height:300px;overflow-y:auto;display:none;z-index:1000;box-shadow:0 4px 6px rgba(0,0,0,.1)"></div>
+    </div>
+  </div>
   <nav>
     <div class="sb-sec">Core</div>
     <a href="dashboard.html" class="active"><span class="ni">📊</span>Dashboard</a>
@@ -60,18 +66,16 @@
     <a href="settings.html" class=""><span class="ni">⚙️</span>Settings</a>
   </nav>
   <div class="sb-foot" style="display:flex;flex-direction:column;gap:8px">
-    <input type="text" id="quickNavSearch" placeholder="🔍 Go to page..." style="padding:8px;border:1px solid #e2e8f0;border-radius:6px;font-size:.85rem" onkeypress="if(event.key==='Enter') quickNav()">
+
     <button class="btn btn-ghost btn-sm" onclick="showPageGuide()" style="border:1px solid #e2e8f0" title="📚 View all pages">📚 Guide</button>
-    <button class="btn btn-ghost btn-sm" onclick="toggleDarkMode()" style="border:1px solid #e2e8f0">🌙 Theme</button>
-    <button class="btn btn-danger btn-sm" onclick="if(confirm('Log out?')){sessionStorage.removeItem('dv_admin');location.href='login.html';}">🚪 Log Out</button>
   </div>
 </div>
 <div class="main">
   <div class="topbar">
     <h1>📊 Dashboard</h1>
     <div class="tr">
-      <button class="btn btn-ghost" onclick="loadDash()">ðŸ”„ Refresh</button>
-      <button class="btn btn-ghost" onclick="showKeyboardHelp()">âŒ¨ï¸ Shortcuts</button>
+      <button class="btn btn-ghost" onclick="loadDash()">🔄 Refresh</button>
+      <button class="btn btn-ghost" onclick="showKeyboardHelp()">⌨️ Shortcuts</button>
     </div>
   </div>
   <div class="body">
@@ -86,7 +90,7 @@
         <span class="stat-icon">🏭</span>
         <div class="stat-label">Suppliers</div>
         <div class="stat-value" id="statSuppliers">0</div>
-        <div class="stat-sub">âœ“ Active</div>
+        <div class="stat-sub">✓ Active</div>
       </div>
       <div class="stat-card stat-card-info">
         <span class="stat-icon">🚗</span>
@@ -115,16 +119,64 @@
       </div>
     </div>
   </div>
+
+  <div class="divider-lg"></div>
+  
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:28px">
+    <div class="card">
+      <h3 style="margin-bottom:20px;font-family:'Barlow Condensed',sans-serif;font-size:1.4rem;color:var(--dk)">📈 Bookings Trend (This Week)</h3>
+      <div id="bookingsTrendChart" style="height:200px;display:flex;align-items:flex-end;gap:8px;justify-content:space-around"></div>
+      <div id="bookingsTrendLegend" style="margin-top:16px;font-size:.85rem;color:#94a3b8;text-align:center"></div>
+    </div>
+    <div class="card">
+      <h3 style="margin-bottom:20px;font-family:'Barlow Condensed',sans-serif;font-size:1.4rem;color:var(--dk)">💰 Revenue by Category</h3>
+      <div id="revenuePieChart" style="height:200px;display:flex;align-items:center;justify-content:space-around;flex-wrap:wrap"></div>
+    </div>
+  </div>
+
+  <div class="divider-lg"></div>
+  
+  <div class="card" style="background:linear-gradient(135deg, #f8f9fb 0%, #fff 100%)">
+    <h3 style="margin-bottom:16px;font-family:'Barlow Condensed',sans-serif;font-size:1.4rem;color:var(--dk)">⌨️ Keyboard Shortcuts</h3>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px">
+      <div style="padding:12px;background:#fff;border-left:3px solid #60a5fa;border-radius:6px">
+        <div style="font-weight:600;color:#60a5fa;font-family:monospace;font-size:.85rem">Ctrl+K (Cmd+K)</div>
+        <div style="color:#64748b;font-size:.8rem">Quick search & navigate</div>
+      </div>
+      <div style="padding:12px;background:#fff;border-left:3px solid #28a745;border-radius:6px">
+        <div style="font-weight:600;color:#28a745;font-family:monospace;font-size:.85rem">Ctrl+G (Cmd+G)</div>
+        <div style="color:#64748b;font-size:.8rem">Show page guide</div>
+      </div>
+      <div style="padding:12px;background:#fff;border-left:3px solid #17a2b8;border-radius:6px">
+        <div style="font-weight:600;color:#17a2b8;font-family:monospace;font-size:.85rem">Ctrl+S (Cmd+S)</div>
+        <div style="color:#64748b;font-size:.8rem">Save form</div>
+      </div>
+      <div style="padding:12px;background:#fff;border-left:3px solid #ffc107;border-radius:6px">
+        <div style="font-weight:600;color:#ffc107;font-family:monospace;font-size:.85rem">Ctrl+N (Cmd+N)</div>
+        <div style="color:#64748b;font-size:.8rem">Create new item</div>
+      </div>
+      <div style="padding:12px;background:#fff;border-left:3px solid #dc3545;border-radius:6px">
+        <div style="font-weight:600;color:#dc3545;font-family:monospace;font-size:.85rem">Ctrl+Shift+?</div>
+        <div style="color:#64748b;font-size:.8rem">Show all shortcuts</div>
+      </div>
+      <div style="padding:12px;background:#fff;border-left:3px solid #60a5fa;border-radius:6px">
+        <div style="font-weight:600;color:#60a5fa;font-family:monospace;font-size:.85rem">Escape</div>
+        <div style="color:#64748b;font-size:.8rem">Close modal/guide</div>
+      </div>
+    </div>
+    <button class="btn btn-primary" onclick="DeltaV.showShortcuts()" style="margin-top:16px">📚 View Full Shortcuts List</button>
+  </div>
 </div>
 <script src="shared.js"></script>
 <script>
 async function loadDash(){
   try{
-    const [bookings,suppliers,vehicles,tasks]=await Promise.all([
-      dbGet("bookings","&order=date.desc&limit=5"),
+    const [bookings,suppliers,vehicles,tasks,invoices]=await Promise.all([
+      dbGet("bookings","&order=date.desc&limit=100"),
       dbGet("suppliers"),
       dbGet("vehicles"),
-      dbGet("tasks","&order=id.desc&limit=5")
+      dbGet("tasks","&order=id.desc&limit=5"),
+      dbGet("invoices","&order=id.desc&limit=100")
     ]);
   
   // Animate stat values
@@ -132,6 +184,12 @@ async function loadDash(){
   animateStat("statSuppliers",suppliers.length);
   animateStat("statVehicles",vehicles.length);
   animateStat("statTasks",tasks.length);
+  
+  // Render bookings trend chart (last 7 days)
+  renderBookingsTrend(bookings);
+  
+  // Render revenue pie chart
+  renderRevenueChart(invoices);
   
   // Render recent bookings with animations
   const rb=document.getElementById("recentBookings");
@@ -175,7 +233,7 @@ async function loadDash(){
 
 function animateStat(id,target){
   const el=document.getElementById(id);
-  if(!el) return; // safety check
+  if(!el) return;
   const current=parseInt(el.textContent)||0;
   const step=(target-current)/20;
   let count=current;
@@ -189,6 +247,77 @@ function animateStat(id,target){
     }
   },50);
 }
+
+function renderBookingsTrend(bookings){
+  const days = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  const today = new Date();
+  const weekData = [0,0,0,0,0,0,0];
+  
+  bookings.forEach(b => {
+    const bDate = new Date(b.date);
+    const dayDiff = Math.floor((today - bDate) / (1000*60*60*24));
+    if(dayDiff < 7 && dayDiff >= 0){
+      weekData[6-dayDiff]++;
+    }
+  });
+  
+  const maxVal = Math.max(...weekData, 1);
+  const container = document.getElementById('bookingsTrendChart');
+  container.innerHTML = days.map((day, i) => {
+    const height = (weekData[i] / maxVal) * 150;
+    return `
+      <div style="display:flex;flex-direction:column;align-items:center;flex:1">
+        <div style="width:100%;height:${height}px;background:linear-gradient(180deg, #60a5fa 0%, #93c5fd 100%);border-radius:6px 6px 0 0;transition:all .3s;cursor:pointer" 
+             onmouseover="this.style.background='linear-gradient(180deg, #3b82f6 0%, #60a5fa 100%)';this.nextElementSibling.style.opacity='1'" 
+             onmouseout="this.style.background='linear-gradient(180deg, #60a5fa 0%, #93c5fd 100%)';this.nextElementSibling.style.opacity='.5'">
+          <div style="text-align:center;color:#fff;font-weight:700;margin-top:${Math.max(height-20, 0)}px;font-size:.75rem">${weekData[i]}</div>
+        </div>
+        <div style="font-size:.75rem;color:#94a3b8;margin-top:8px;opacity:.5;transition:opacity .2s">${day}</div>
+      </div>
+    `;
+  }).join('');
+  
+  const total = weekData.reduce((a,b) => a+b);
+  document.getElementById('bookingsTrendLegend').innerHTML = `<strong>${total} bookings this week</strong>`;
+}
+
+function renderRevenueChart(invoices){
+  const categories = {};
+  let totalRevenue = 0;
+  
+  invoices.forEach(inv => {
+    const category = inv.service_type || 'General Service';
+    const amount = parseFloat(inv.total) || 0;
+    categories[category] = (categories[category] || 0) + amount;
+    totalRevenue += amount;
+  });
+  
+  const colors = ['#60a5fa','#28a745','#17a2b8','#ffc107','#dc3545','#6f42c1','#e83e8c'];
+  const entries = Object.entries(categories).slice(0, 6); // Top 6 categories
+  
+  const container = document.getElementById('revenuePieChart');
+  container.innerHTML = entries.map((entry, i) => {
+    const [category, amount] = entry;
+    const percentage = totalRevenue > 0 ? ((amount / totalRevenue) * 100).toFixed(1) : 0;
+    const color = colors[i % colors.length];
+    return `
+      <div style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:8px;border-radius:6px;transition:all .2s" 
+           onmouseover="this.style.backgroundColor='rgba(0,0,0,.05)';this.style.transform='scale(1.05)'" 
+           onmouseout="this.style.backgroundColor='';this.style.transform='scale(1)'">
+        <div style="width:16px;height:16px;background:${color};border-radius:3px"></div>
+        <div style="font-size:.8rem">
+          <div style="font-weight:600;color:#1b2b3a">${category}</div>
+          <div style="color:#94a3b8">£${amount.toFixed(2)} (${percentage}%)</div>
+        </div>
+      </div>
+    `;
+  }).join('');
+  
+  if(entries.length === 0){
+    container.innerHTML = '<p style="color:#94a3b8;text-align:center;padding:40px">No invoice data yet</p>';
+  }
+}
+
 loadDash();
 </script>
 </body></html>

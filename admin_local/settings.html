@@ -1,5 +1,11 @@
 ﻿<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>DeltaV — ⚙️ Settings</title><link rel="stylesheet" href="theme.css"><style></style></head><body><div class="sidebar">
   <div class="sb-logo">DeltaV <span>Auto</span><small>Admin Panel</small></div>
+  <div style="padding:8px;margin-bottom:12px">
+    <div style="position:relative">
+      <input type="text" id="quickNavSearch" placeholder="🔍 Go to page..." style="width:100%;padding:8px;border:1px solid #cbd5e1;border-radius:6px;font-size:.85rem;background:#f8fafc;color:#1e293b" oninput="DeltaV._updateNavSuggestions()" onkeypress="if(event.key==='Enter') quickNav()" onclick="if(this.value) DeltaV._showNavSuggestions()">
+      <div id="navSuggestionsDropdown" style="position:absolute;top:100%;left:0;right:0;background:white;border:1px solid #cbd5e1;border-top:none;border-radius:0 0 6px 6px;max-height:300px;overflow-y:auto;display:none;z-index:1000;box-shadow:0 4px 6px rgba(0,0,0,.1)"></div>
+    </div>
+  </div>
   <nav>
     <div class="sb-sec">Core</div>
     <a href="dashboard.html" class=""><span class="ni">📊</span>Dashboard</a>
@@ -51,78 +57,186 @@
     <a href="hours.html" class=""><span class="ni">⏰</span>Opening Hours</a>
     <a href="settings.html" class="active"><span class="ni">⚙️</span>Settings</a>
   </nav>
-  <div class="sb-foot">
-    <a href="index.html" class="btn-sb-link">🌐 Website</a>
-    <button class="btn-sb-out" onclick="if(confirm('Log out?')){sessionStorage.removeItem('dv_admin');location.href='login.html';}">🚪 Log Out</button>
+    <div class="sb-foot" style="display:flex;flex-direction:column;gap:8px">
+
+    <button class="btn btn-ghost btn-sm" onclick="showPageGuide()" style="border:1px solid #e2e8f0" title="📚 View all pages">📚 Guide</button>
   </div>
 </div>
 <div class="main"><div class="topbar"><h1>⚙️ Settings</h1><div class="tr"><button class="btn btn-primary" onclick="saveSettings()">💾 Save All Settings</button><button class="btn btn-warning" onclick="resetSettings()">🔄 Reset Defaults</button></div></div><div class="body"><div class="card-flat" style="max-width:700px">
   <h3 style="margin-bottom:18px">⚙️ Garage Settings</h3>
   
   <div class="fg"><label>Garage Name</label><input type="text" id="sName" value="DeltaV Automotive"></div>
-  <div class="g2">
-    <div class="fg"><label>Phone</label><input type="tel" id="sPhone" value="0121 5650888"></div>
-    <div class="fg"><label>Email</label><input type="email" id="sEmail" value="automotive.deltav@yahoo.com"></div>
-  </div>
   <div class="fg"><label>Address</label><textarea id="sAddr" rows="3">106 Rolfe Street
 Smethwick, West Midlands, B66 2B4</textarea></div>
   
   <div class="divider"></div>
-  <h3 style="margin-bottom:14px">💳 Payment Settings</h3>
-  <div class="fg"><label>VAT Registration Number</label><input type="text" id="sVAT" value="GB XXX XXXX XX"></div>
-  <div class="tog-row"><label>Apply VAT by default (20%)</label><label class="tog"><input type="checkbox" id="sVATDef" checked><span class="tog-sl"></span></label></div>
-  <div class="fg"><label>Bank Name</label><input type="text" id="sBank" value="Example Bank"></div>
+  <h3 style="margin-bottom:14px">⏰ Operating Hours</h3>
   <div class="g2">
-    <div class="fg"><label>Sort Code</label><input type="text" id="sSort" value="00-00-00"></div>
-    <div class="fg"><label>Account Number</label><input type="text" id="sAcc" value="12345678"></div>
+    <div class="fg"><label>Opening Time (Mon-Fri)</label><input type="time" id="sOpenMF" value="09:00"></div>
+    <div class="fg"><label>Closing Time (Mon-Fri)</label><input type="time" id="sCloseMF" value="18:00"></div>
+  </div>
+  <div class="g2">
+    <div class="fg"><label>Opening Time (Saturday)</label><input type="time" id="sOpenSat" value="09:00"></div>
+    <div class="fg"><label>Closing Time (Saturday)</label><input type="time" id="sCloseSat" value="14:00"></div>
+  </div>
+  <div class="tog-row"><label>Open on Sundays</label><label class="tog"><input type="checkbox" id="sOpenSun"><span class="tog-sl"></span></label></div>
+  
+  <div class="divider"></div>
+  <h3 style="margin-bottom:14px">💼 Business Operations</h3>
+  <div class="g2">
+    <div class="fg"><label>Default Booking Duration (mins)</label><input type="number" id="sBookDur" value="60" min="15" step="15"></div>
+    <div class="fg"><label>Labour Rate (£/hour)</label><input type="number" id="sLabRate" value="45" min="0" step="5"></div>
+  </div>
+  <div class="g2">
+    <div class="fg"><label>Parts Markup (%)</label><input type="number" id="sPartMark" value="25" min="0" max="100" step="5"></div>
+    <div class="fg"><label>Default Warranty Days</label><input type="number" id="sWarranty" value="30" min="0" step="1"></div>
   </div>
   
   <div class="divider"></div>
-  <h3 style="margin-bottom:14px">📧 Email Settings (EmailJS)</h3>
-  <p style="color:#888;font-size:.84rem;margin-bottom:12px">Configure EmailJS to send booking verification emails. Works with ALL email providers (Gmail, Outlook, Yahoo, etc.)</p>
-  <div class="fg"><label>EmailJS Public Key</label><input type="text" id="sEJKey" placeholder="YOUR_EMAILJS_PUBLIC_KEY"></div>
+  <h3 style="margin-bottom:14px">💳 Payment & VAT</h3>
   <div class="g2">
-    <div class="fg"><label>Service ID</label><input type="text" id="sEJSrv" value="service_hi4mpao"></div>
-    <div class="fg"><label>Template ID</label><input type="text" id="sEJTmp" value="template_aj5l14u"></div>
+    <div class="fg"><label>VAT Number</label><input type="text" id="sVAT" value="GB"></div>
+    <div class="fg"><label>VAT Rate (%)</label><input type="number" id="sVATRate" value="20" min="0" max="100" step="0.5"></div>
   </div>
+  <div class="tog-row"><label>Apply VAT by default</label><label class="tog"><input type="checkbox" id="sVATDef" checked><span class="tog-sl"></span></label></div>
+  <div class="fg"><label>Invoice Due Days</label><input type="number" id="sInvDays" value="30" min="0" step="1"></div>
+  <div class="fg"><label>Invoice Prefix</label><input type="text" id="sInvPre" value="INV-" placeholder="e.g. INV-"></div>
+  <div class="g2">
+    <div class="fg"><label>Bank Name</label><input type="text" id="sBank" value=""></div>
+    <div class="fg"><label>Sort Code</label><input type="text" id="sSort" value=""></div>
+  </div>
+  <div class="fg"><label>Account Number</label><input type="text" id="sAcc" value=""></div>
   
   <div class="divider"></div>
-  <h3 style="margin-bottom:14px">� Admin Account</h3>
-  <div class="fg"><label>Admin Username</label><input type="text" id="sUser" value="admin" disabled></div>
-  <div class="fg"><label>Change Password</label><input type="password" id="sPass" placeholder="Leave blank to keep current"></div>
+  <h3 style="margin-bottom:14px">📊 Stock & Inventory</h3>
+  <div class="tog-row"><label>Auto-alert on low stock</label><label class="tog"><input type="checkbox" id="sStockAlert" checked><span class="tog-sl"></span></label></div>
+  <div class="fg"><label>Default Reorder Level (%)</label><input type="number" id="sReorderLvl" value="20" min="5" max="50" step="5"></div>
+  <div class="tog-row"><label>Track inventory costs</label><label class="tog"><input type="checkbox" id="sTrackCosts" checked><span class="tog-sl"></span></label></div>
   
   <div class="divider"></div>
-  <h3 style="margin-bottom:14px">🎨 Preferences</h3>
+  <h3 style="margin-bottom:14px">📧 Notifications & Alerts</h3>
+  <div class="tog-row"><label>Send booking reminders (24h before)</label><label class="tog"><input type="checkbox" id="sBookRemind" checked><span class="tog-sl"></span></label></div>
+  <div class="tog-row"><label>Send invoice reminders (7 days overdue)</label><label class="tog"><input type="checkbox" id="sInvRemind" checked><span class="tog-sl"></span></label></div>
+  <div class="tog-row"><label>Alert on low stock items</label><label class="tog"><input type="checkbox" id="sStockWarn" checked><span class="tog-sl"></span></label></div>
+  <div class="tog-row"><label>Admin dashboard notifications</label><label class="tog"><input type="checkbox" id="sAdminNotif" checked><span class="tog-sl"></span></label></div>
+  <div class="tog-row"><label>Notify on high-value jobs (£500+)</label><label class="tog"><input type="checkbox" id="sHighValAlert" checked><span class="tog-sl"></span></label></div>
+  
+  <div class="divider"></div>
+  <h3 style="margin-bottom:14px">🎨 Dashboard & Appearance</h3>
+  <div class="tog-row"><label>Dark mode</label><label class="tog"><input type="checkbox" id="sDarkMode"><span class="tog-sl"></span></label></div>
   <div class="tog-row"><label>Auto-refresh dashboard (30s)</label><label class="tog"><input type="checkbox" id="sDashRef" checked><span class="tog-sl"></span></label></div>
+  <div class="g2">
+    <div class="fg"><label>Currency Symbol</label><input type="text" id="sCurrency" value="£" maxlength="3"></div>
+    <div class="fg"><label>Theme Color</label><input type="color" id="sThemeCol" value="#3b82f6"></div>
+  </div>
+  
+  <div class="divider"></div>
+  <h3 style="margin-bottom:14px">👥 Customer & Booking Settings</h3>
   <div class="tog-row"><label>Auto-mark bookings as viewed</label><label class="tog"><input type="checkbox" id="sAutoView" checked><span class="tog-sl"></span></label></div>
-  <div class="tog-row"><label>Send email confirmation on booking</label><label class="tog"><input type="checkbox" id="sEmailConf" checked><span class="tog-sl"></span></label></div>
+  <div class="tog-row"><label>Enable customer portal access</label><label class="tog"><input type="checkbox" id="sCustPortal"><span class="tog-sl"></span></label></div>
+  <div class="tog-row"><label>Allow online booking deposits</label><label class="tog"><input type="checkbox" id="sDeposits"><span class="tog-sl"></span></label></div>
+  <div class="fg"><label>Deposit Amount (%)</label><input type="number" id="sDepositPct" value="25" min="0" max="100" step="5"></div>
+  
+  <div class="divider"></div>
+  <h3 style="margin-bottom:14px">⭐ Ratings & Reviews</h3>
+  <div class="tog-row"><label>Request customer feedback on completion</label><label class="tog"><input type="checkbox" id="sRequestFB" checked><span class="tog-sl"></span></label></div>
+  <div class="tog-row"><label>Show average rating on quotes</label><label class="tog"><input type="checkbox" id="sShowRating" checked><span class="tog-sl"></span></label></div>
+  <div class="tog-row"><label>Send thank you email after booking</label><label class="tog"><input type="checkbox" id="sThankYou" checked><span class="tog-sl"></span></label></div>
+  
+  <div class="divider"></div>
+  <h3 style="margin-bottom:14px">📈 Reports & Data</h3>
+  <div class="tog-row"><label>Auto-generate daily dashboard report</label><label class="tog"><input type="checkbox" id="sAutoReport" checked><span class="tog-sl"></span></label></div>
+  <div class="tog-row"><label>Track customer lifetime value</label><label class="tog"><input type="checkbox" id="sTrackLTV" checked><span class="tog-sl"></span></label></div>
+  <div class="tog-row"><label>Keep audit log (for security)</label><label class="tog"><input type="checkbox" id="sAuditLog" checked><span class="tog-sl"></span></label></div>
+  <div class="fg"><label>Data Backup Frequency</label><select id="sBackupFreq" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:4px"><option value="daily">Daily</option><option value="weekly" selected>Weekly</option><option value="monthly">Monthly</option></select></div>
+  
+  <div class="divider"></div>
+  <h3 style="margin-bottom:14px">📱 Mobile & Accessibility</h3>
+  <div class="tog-row"><label>Enable mobile app notifications</label><label class="tog"><input type="checkbox" id="sMobileNotif" checked><span class="tog-sl"></span></label></div>
+  <div class="tog-row"><label>Send SMS alerts for urgent jobs</label><label class="tog"><input type="checkbox" id="sSMSAlert"><span class="tog-sl"></span></label></div>
+  <div class="tog-row"><label>Enable accessibility mode</label><label class="tog"><input type="checkbox" id="sA11y"><span class="tog-sl"></span></label></div>
+  
+  <div class="divider"></div>
+  <h3 style="margin-bottom:14px">💼 Staff & Team</h3>
+  <div class="tog-row"><label>Staff overtime badge on dashboard</label><label class="tog"><input type="checkbox" id="sOvertimeBadge" checked><span class="tog-sl"></span></label></div>
+  <div class="tog-row"><label>Track staff performance metrics</label><label class="tog"><input type="checkbox" id="sStaffMetrics" checked><span class="tog-sl"></span></label></div>
+  <div class="fg"><label>Default Staff Rate (£/hour)</label><input type="number" id="sStaffRate" value="20" min="0" step="1"></div>
+  
+  <div class="divider"></div>
+  <h3 style="margin-bottom:14px">🏆 Business Goals & Targets</h3>
+  <div class="fg"><label>Monthly Revenue Target (£)</label><input type="number" id="sRevTarget" value="5000" min="0" step="100"></div>
+  <div class="fg"><label>Booking Target (monthly)</label><input type="number" id="sBookTarget" value="50" min="0" step="5"></div>
+  <div class="tog-row"><label>Show progress to targets on dashboard</label><label class="tog"><input type="checkbox" id="sShowTargets" checked><span class="tog-sl"></span></label></div>
+  
+  <div class="divider"></div>
+  <h3 style="margin-bottom:14px">🔐 Security & Admin</h3>
+  <div class="fg"><label>Change Admin Password</label><input type="password" id="sPass" placeholder="Leave blank to keep current"></div>
+  <div class="tog-row"><label>Require password every 30 days</label><label class="tog"><input type="checkbox" id="sPassExpire"><span class="tog-sl"></span></label></div>
+  <div class="tog-row"><label>Log out inactive sessions (30 mins)</label><label class="tog"><input type="checkbox" id="sAutoLogout" checked><span class="tog-sl"></span></label></div>
+  <div class="tog-row"><label>Email alerts on failed login attempts</label><label class="tog"><input type="checkbox" id="sFailAlert" checked><span class="tog-sl"></span></label></div>
   
   <button class="btn btn-primary btn-lg btn-fw" onclick="saveSettings()" style="margin-top:20px">💾 Save All Settings</button>
-</div></div></div><div class="modal" id="mDel"><div class="mbox" style="max-width:360px"><h3>🗑️ Confirm Delete</h3><p id="mDelMsg" style="color:#555">This cannot be undone.</p><div class="mfoot"><button class="btn btn-ghost" onclick="closeM('mDel')">Cancel</button><button class="btn btn-danger" id="mDelBtn">Yes, Delete</button></div></div></div><script src="shared.js"></script><script>
+</div></div></div><script src="shared.js"></script><script>
 function saveSettings(){
   const settings={
     name:document.getElementById("sName").value,
-    phone:document.getElementById("sPhone").value,
-    email:document.getElementById("sEmail").value,
     address:document.getElementById("sAddr").value,
+    openMF:document.getElementById("sOpenMF").value,
+    closeMF:document.getElementById("sCloseMF").value,
+    openSat:document.getElementById("sOpenSat").value,
+    closeSat:document.getElementById("sCloseSat").value,
+    openSun:document.getElementById("sOpenSun").checked,
+    bookDur:parseInt(document.getElementById("sBookDur").value),
+    labRate:parseFloat(document.getElementById("sLabRate").value),
+    partMark:parseFloat(document.getElementById("sPartMark").value),
+    warranty:parseInt(document.getElementById("sWarranty").value),
     vat:document.getElementById("sVAT").value,
+    vatRate:parseFloat(document.getElementById("sVATRate").value),
     vat_default:document.getElementById("sVATDef").checked,
+    invDays:parseInt(document.getElementById("sInvDays").value),
+    invPre:document.getElementById("sInvPre").value,
     bank:document.getElementById("sBank").value,
     sort:document.getElementById("sSort").value,
     account:document.getElementById("sAcc").value,
-    emailjs_key:document.getElementById("sEJKey").value,
-    emailjs_service:document.getElementById("sEJSrv").value,
-    emailjs_template:document.getElementById("sEJTmp").value,
+    stockAlert:document.getElementById("sStockAlert").checked,
+    reorderLvl:parseInt(document.getElementById("sReorderLvl").value),
+    trackCosts:document.getElementById("sTrackCosts").checked,
+    bookRemind:document.getElementById("sBookRemind").checked,
+    invRemind:document.getElementById("sInvRemind").checked,
+    stockWarn:document.getElementById("sStockWarn").checked,
+    adminNotif:document.getElementById("sAdminNotif").checked,
+    highValAlert:document.getElementById("sHighValAlert").checked,
+    darkMode:document.getElementById("sDarkMode").checked,
     dash_refresh:document.getElementById("sDashRef").checked,
+    currency:document.getElementById("sCurrency").value,
+    themeCol:document.getElementById("sThemeCol").value,
     auto_view:document.getElementById("sAutoView").checked,
-    email_confirm:document.getElementById("sEmailConf").checked
+    custPortal:document.getElementById("sCustPortal").checked,
+    deposits:document.getElementById("sDeposits").checked,
+    depositPct:parseInt(document.getElementById("sDepositPct").value),
+    requestFB:document.getElementById("sRequestFB").checked,
+    showRating:document.getElementById("sShowRating").checked,
+    thankYou:document.getElementById("sThankYou").checked,
+    autoReport:document.getElementById("sAutoReport").checked,
+    trackLTV:document.getElementById("sTrackLTV").checked,
+    auditLog:document.getElementById("sAuditLog").checked,
+    backupFreq:document.getElementById("sBackupFreq").value,
+    mobileNotif:document.getElementById("sMobileNotif").checked,
+    smsAlert:document.getElementById("sSMSAlert").checked,
+    a11y:document.getElementById("sA11y").checked,
+    overtimeBadge:document.getElementById("sOvertimeBadge").checked,
+    staffMetrics:document.getElementById("sStaffMetrics").checked,
+    staffRate:parseFloat(document.getElementById("sStaffRate").value),
+    revTarget:parseInt(document.getElementById("sRevTarget").value),
+    bookTarget:parseInt(document.getElementById("sBookTarget").value),
+    showTargets:document.getElementById("sShowTargets").checked,
+    passExpire:document.getElementById("sPassExpire").checked,
+    autoLogout:document.getElementById("sAutoLogout").checked,
+    failAlert:document.getElementById("sFailAlert").checked
   };
   localStorage.setItem("dv_settings",JSON.stringify(settings));
-  // Sync ALL company data to Supabase
   const companyData = {
     name: settings.name,
-    phone: settings.phone,
-    email: settings.email,
     address: settings.address,
     vat: settings.vat
   };
@@ -133,7 +247,6 @@ function saveSettings(){
     console.error('Supabase save failed',err);
   });
   setCompanySettings(companyData);
-  
   const newPass=document.getElementById("sPass").value;
   if(newPass){
     if(confirm("Change admin password to: "+newPass+"?")){
@@ -142,42 +255,71 @@ function saveSettings(){
     }
   }
 }
-
 function resetSettings(){
   if(confirm("Reset all settings to defaults?")){
     localStorage.removeItem("dv_settings");
     location.reload();
   }
 }
-
-// Load saved settings
 const saved=localStorage.getItem("dv_settings");
 if(saved){
   try{
     const s=JSON.parse(saved);
     if(s.name)document.getElementById("sName").value=s.name;
-    if(s.phone)document.getElementById("sPhone").value=s.phone;
-    if(s.email)document.getElementById("sEmail").value=s.email;
     if(s.address)document.getElementById("sAddr").value=s.address;
+    if(s.openMF)document.getElementById("sOpenMF").value=s.openMF;
+    if(s.closeMF)document.getElementById("sCloseMF").value=s.closeMF;
+    if(s.openSat)document.getElementById("sOpenSat").value=s.openSat;
+    if(s.closeSat)document.getElementById("sCloseSat").value=s.closeSat;
+    if(s.openSun!==undefined)document.getElementById("sOpenSun").checked=s.openSun;
+    if(s.bookDur)document.getElementById("sBookDur").value=s.bookDur;
+    if(s.labRate)document.getElementById("sLabRate").value=s.labRate;
+    if(s.partMark)document.getElementById("sPartMark").value=s.partMark;
+    if(s.warranty)document.getElementById("sWarranty").value=s.warranty;
     if(s.vat)document.getElementById("sVAT").value=s.vat;
-    // Sync company data from settings
-    setCompanySettings({
-      name: s.name,
-      phone: s.phone,
-      email: s.email,
-      address: s.address,
-      vat: s.vat
-    });
+    if(s.vatRate)document.getElementById("sVATRate").value=s.vatRate;
     if(s.vat_default!==undefined)document.getElementById("sVATDef").checked=s.vat_default;
+    if(s.invDays)document.getElementById("sInvDays").value=s.invDays;
+    if(s.invPre)document.getElementById("sInvPre").value=s.invPre;
     if(s.bank)document.getElementById("sBank").value=s.bank;
     if(s.sort)document.getElementById("sSort").value=s.sort;
     if(s.account)document.getElementById("sAcc").value=s.account;
-    if(s.emailjs_key)document.getElementById("sEJKey").value=s.emailjs_key;
-    if(s.emailjs_service)document.getElementById("sEJSrv").value=s.emailjs_service;
-    if(s.emailjs_template)document.getElementById("sEJTmp").value=s.emailjs_template;
+    if(s.stockAlert!==undefined)document.getElementById("sStockAlert").checked=s.stockAlert;
+    if(s.reorderLvl)document.getElementById("sReorderLvl").value=s.reorderLvl;
+    if(s.trackCosts!==undefined)document.getElementById("sTrackCosts").checked=s.trackCosts;
+    if(s.bookRemind!==undefined)document.getElementById("sBookRemind").checked=s.bookRemind;
+    if(s.invRemind!==undefined)document.getElementById("sInvRemind").checked=s.invRemind;
+    if(s.stockWarn!==undefined)document.getElementById("sStockWarn").checked=s.stockWarn;
+    if(s.adminNotif!==undefined)document.getElementById("sAdminNotif").checked=s.adminNotif;
+    if(s.highValAlert!==undefined)document.getElementById("sHighValAlert").checked=s.highValAlert;
+    if(s.darkMode!==undefined)document.getElementById("sDarkMode").checked=s.darkMode;
     if(s.dash_refresh!==undefined)document.getElementById("sDashRef").checked=s.dash_refresh;
+    if(s.currency)document.getElementById("sCurrency").value=s.currency;
+    if(s.themeCol)document.getElementById("sThemeCol").value=s.themeCol;
     if(s.auto_view!==undefined)document.getElementById("sAutoView").checked=s.auto_view;
-    if(s.email_confirm!==undefined)document.getElementById("sEmailConf").checked=s.email_confirm;
+    if(s.custPortal!==undefined)document.getElementById("sCustPortal").checked=s.custPortal;
+    if(s.deposits!==undefined)document.getElementById("sDeposits").checked=s.deposits;
+    if(s.depositPct)document.getElementById("sDepositPct").value=s.depositPct;
+    if(s.requestFB!==undefined)document.getElementById("sRequestFB").checked=s.requestFB;
+    if(s.showRating!==undefined)document.getElementById("sShowRating").checked=s.showRating;
+    if(s.thankYou!==undefined)document.getElementById("sThankYou").checked=s.thankYou;
+    if(s.autoReport!==undefined)document.getElementById("sAutoReport").checked=s.autoReport;
+    if(s.trackLTV!==undefined)document.getElementById("sTrackLTV").checked=s.trackLTV;
+    if(s.auditLog!==undefined)document.getElementById("sAuditLog").checked=s.auditLog;
+    if(s.backupFreq)document.getElementById("sBackupFreq").value=s.backupFreq;
+    if(s.mobileNotif!==undefined)document.getElementById("sMobileNotif").checked=s.mobileNotif;
+    if(s.smsAlert!==undefined)document.getElementById("sSMSAlert").checked=s.smsAlert;
+    if(s.a11y!==undefined)document.getElementById("sA11y").checked=s.a11y;
+    if(s.overtimeBadge!==undefined)document.getElementById("sOvertimeBadge").checked=s.overtimeBadge;
+    if(s.staffMetrics!==undefined)document.getElementById("sStaffMetrics").checked=s.staffMetrics;
+    if(s.staffRate)document.getElementById("sStaffRate").value=s.staffRate;
+    if(s.revTarget)document.getElementById("sRevTarget").value=s.revTarget;
+    if(s.bookTarget)document.getElementById("sBookTarget").value=s.bookTarget;
+    if(s.showTargets!==undefined)document.getElementById("sShowTargets").checked=s.showTargets;
+    if(s.passExpire!==undefined)document.getElementById("sPassExpire").checked=s.passExpire;
+    if(s.autoLogout!==undefined)document.getElementById("sAutoLogout").checked=s.autoLogout;
+    if(s.failAlert!==undefined)document.getElementById("sFailAlert").checked=s.failAlert;
+    setCompanySettings({name:s.name,address:s.address,vat:s.vat});
   }catch(e){console.error(e)}
 }
 </script></body></html>

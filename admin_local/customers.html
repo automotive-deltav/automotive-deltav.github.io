@@ -1,5 +1,11 @@
-﻿<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>DeltaV â€” 👥 Customers</title><link rel="stylesheet" href="theme.css"><style></style></head><body><div class="sidebar">
+﻿<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>DeltaV — 👥 Customers</title><link rel="stylesheet" href="theme.css"><style></style></head><body><div class="sidebar">
   <div class="sb-logo">DeltaV <span>Auto</span><small>Admin Panel</small></div>
+  <div style="padding:8px;margin-bottom:12px">
+    <div style="position:relative">
+      <input type="text" id="quickNavSearch" placeholder="🔍 Go to page..." style="width:100%;padding:8px;border:1px solid #cbd5e1;border-radius:6px;font-size:.85rem;background:#f8fafc;color:#1e293b" oninput="DeltaV._updateNavSuggestions()" onkeypress="if(event.key==='Enter') quickNav()" onclick="if(this.value) DeltaV._showNavSuggestions()">
+      <div id="navSuggestionsDropdown" style="position:absolute;top:100%;left:0;right:0;background:white;border:1px solid #cbd5e1;border-top:none;border-radius:0 0 6px 6px;max-height:300px;overflow-y:auto;display:none;z-index:1000;box-shadow:0 4px 6px rgba(0,0,0,.1)"></div>
+    </div>
+  </div>
   <nav>
     <div class="sb-sec">Core</div>
     <a href="dashboard.html" class=""><span class="ni">📊</span>Dashboard</a>
@@ -51,12 +57,12 @@
     <a href="hours.html" class=""><span class="ni">⏰</span>Opening Hours</a>
     <a href="settings.html" class=""><span class="ni">⚙️</span>Settings</a>
   </nav>
-  <div class="sb-foot">
-    <a href="index.html" class="btn-sb-link">ðŸŒ Website</a>
-    <button class="btn-sb-out" onclick="if(confirm('Log out?')){sessionStorage.removeItem('dv_admin');location.href='login.html';}">ðŸšª Log Out</button>
+    <div class="sb-foot" style="display:flex;flex-direction:column;gap:8px">
+
+    <button class="btn btn-ghost btn-sm" onclick="showPageGuide()" style="border:1px solid #e2e8f0" title="📚 View all pages">📚 Guide</button>
   </div>
 </div>
-<div class="main"><div class="topbar"><h1>👥 Customers</h1><div class="tr"><button class="btn btn-primary" onclick="openM('mNewC')">âž• Add Customer</button><button class="btn btn-info" onclick="exportC()">ðŸ“¥ Export</button><button class="btn btn-ghost" onclick="loadC()">ðŸ”„ Refresh</button></div></div><div class="body"><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:20px">
+<div class="main"><div class="topbar"><h1>👥 Customers</h1><div class="tr"><button class="btn btn-primary" onclick="openM('mNewC')">➕ Add Customer</button><button class="btn btn-info" onclick="exportC()">📥 Export</button><button class="btn btn-ghost" onclick="loadC()">🔄 Refresh</button></div></div><div class="body"><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:20px">
   <div class="stat-card" style="background:linear-gradient(135deg,rgba(96,165,250,.1),rgba(96,165,250,.05))">
     <div class="stat-label">Total Customers</div>
     <div class="stat-value" id="statCustCount">0</div>
@@ -67,7 +73,7 @@
   </div>
   <div class="stat-card" style="background:linear-gradient(135deg,rgba(59,130,246,.1),rgba(59,130,246,.05))">
     <div class="stat-label">Total Revenue</div>
-    <div class="stat-value" style="font-size:1.3em" id="statRevenue">Â£0</div>
+    <div class="stat-value" style="font-size:1.3em" id="statRevenue">£0</div>
   </div>
   <div class="stat-card" style="background:linear-gradient(135deg,rgba(168,85,247,.1),rgba(168,85,247,.05))">
     <div class="stat-label">Active Bookings</div>
@@ -83,9 +89,9 @@
     <option value="bookings">Sort by Bookings</option>
     <option value="last">Sort by Last Visit</option>
   </select>
-  <button class="btn btn-ghost" onclick="loadC()" title="Refresh data">ðŸ”„</button>
-  <button class="btn btn-info btn-sm" onclick="exportC()">ðŸ“¥ CSV</button>
-  <button class="btn btn-warning btn-sm" onclick="window.print()">ðŸ–¨ï¸ Print</button>
+  <button class="btn btn-ghost" onclick="loadC()" title="Refresh data">🔄</button>
+  <button class="btn btn-info btn-sm" onclick="exportC()">📥 CSV</button>
+  <button class="btn btn-warning btn-sm" onclick="window.print()">🖨️ Print</button>
 </div>
 
 <div id="cGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px"></div>
@@ -94,16 +100,16 @@
   <p style="font-size:1.1em">No customers found</p>
 </div>
 
-<div class="modal" id="mVwC"><div class="mbox" style="max-width:500px"><h3>ðŸ‘¤ Customer Profile</h3><div id="mVwCB" style="max-height:400px;overflow-y:auto"></div>
+<div class="modal" id="mVwC"><div class="mbox" style="max-width:500px"><h3>👤 Customer Profile</h3><div id="mVwCB" style="max-height:400px;overflow-y:auto"></div>
 <div class="mfoot"><button class="btn btn-ghost" onclick="closeM('mVwC')">Close</button>
 <button class="btn btn-primary" onclick="closeM('mVwC')">💰 New Invoice</button>
 <button class="btn btn-info" onclick="closeM('mVwC');location.href='admin.html'">📅 Bookings</button></div></div></div>
-<div class="modal" id="mNewC"><div class="mbox"><h3>âž• Add Manual Customer</h3>
+<div class="modal" id="mNewC"><div class="mbox"><h3>➕ Add Manual Customer</h3>
 <div class="g2"><div class="fg"><label>Name *</label><input type="text" id="ncN"></div><div class="fg"><label>Phone *</label><input type="tel" id="ncP"></div></div>
 <div class="fg"><label>Email *</label><input type="email" id="ncE"></div>
 <div class="g2"><div class="fg"><label>Car Reg</label><input type="text" id="ncR" placeholder="AB12 CDE"></div><div class="fg"><label>Car Make/Model</label><input type="text" id="ncM" placeholder="Ford Focus"></div></div>
 <div class="fg"><label>Notes</label><textarea id="ncX"></textarea></div>
-<div class="mfoot"><button class="btn btn-ghost" onclick="closeM('mNewC')">Cancel</button><button class="btn btn-primary" onclick="saveNewC()">Save</button></div></div></div></div></div><div class="modal" id="mDel"><div class="mbox" style="max-width:370px"><h3>ðŸ—‘ï¸ Confirm Delete</h3><p id="mDelMsg" style="color:#555;margin-bottom:4px">This cannot be undone.</p><div class="mfoot"><button class="btn btn-ghost" onclick="closeM('mDel')">Cancel</button><button class="btn btn-danger" id="mDelBtn">Yes, Delete</button></div></div></div><script src="shared.js"></script><script>
+<div class="mfoot"><button class="btn btn-ghost" onclick="closeM('mNewC')">Cancel</button><button class="btn btn-primary" onclick="saveNewC()">Save</button></div></div></div></div></div><div class="modal" id="mDel"><div class="mbox" style="max-width:370px"><h3>🗑️ Confirm Delete</h3><p id="mDelMsg" style="color:#555;margin-bottom:4px">This cannot be undone.</p><div class="mfoot"><button class="btn btn-ghost" onclick="closeM('mDel')">Cancel</button><button class="btn btn-danger" id="mDelBtn">Yes, Delete</button></div></div></div><script src="shared.js"></script><script>
 let cData=[];
 async function loadC(){
   const[bk,inv]=await Promise.all([dbGet("bookings"),dbGet("invoices")]);
@@ -111,7 +117,7 @@ async function loadC(){
   let totalSpent=0;
   let activeBookings=0;
   bk.forEach(b=>{
-    if(!mp[b.email])mp[b.email]={name:b.name,email:b.email,phone:b.phone||"â€”",regs:[],bkCount:0,spent:0,lastDate:""};
+    if(!mp[b.email])mp[b.email]={name:b.name,email:b.email,phone:b.phone||"—",regs:[],bkCount:0,spent:0,lastDate:""};
     const c=mp[b.email];c.bkCount++;
     if(!c.regs.includes(b.reg))c.regs.push(b.reg);
     if(!c.lastDate||b.date>c.lastDate)c.lastDate=b.date;
@@ -172,12 +178,12 @@ function renderC(){
         
         <div style="font-size:.85em;color:#64748b;margin-bottom:12px">
           <div>📧 <a href="mailto:${c.email}" style="color:var(--ac);text-decoration:none">${c.email}</a></div>
-          <div>ðŸ“ž <a href="tel:${c.phone}" style="color:var(--ac);text-decoration:none">${c.phone}</a></div>
+          <div>📞 <a href="tel:${c.phone}" style="color:var(--ac);text-decoration:none">${c.phone}</a></div>
           ${c.lastDate?`<div style="color:#94a3b8">Last visit: ${fmtD(c.lastDate)}</div>`:""}
         </div>
         
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-          <button class="btn btn-primary btn-sm" onclick="viewC(${JSON.stringify(c).replace(/'/g,"&apos;")})">ðŸ‘¤ View</button>
+          <button class="btn btn-primary btn-sm" onclick="viewC(${JSON.stringify(c).replace(/'/g,"&apos;")})">👤 View</button>
           <button class="btn btn-success btn-sm" onclick='preInv("${c.name}","${c.email}")'>💰 Invoice</button>
         </div>
       </div>
@@ -202,10 +208,10 @@ function viewC(c){
     <div class="ir"><span class="lbl">Name</span><span class="val">${c.name}</span></div>
     <div class="ir"><span class="lbl">Email</span><span class="val">${c.email}</span></div>
     <div class="ir"><span class="lbl">Phone</span><span class="val">${c.phone}</span></div>
-    <div class="ir"><span class="lbl">Vehicles (${c.regs.length})</span><span class="val">${c.regs.join(", ") || "â€”"}</span></div>
+    <div class="ir"><span class="lbl">Vehicles (${c.regs.length})</span><span class="val">${c.regs.join(", ") || "—"}</span></div>
     <div class="ir"><span class="lbl">Total Bookings</span><span class="val">${c.bkCount}</span></div>
     ${revenue}
-    <div class="ir"><span class="lbl">Last Visit</span><span class="val">${c.lastDate?fmtD(c.lastDate):"â€”"}</span></div>
+    <div class="ir"><span class="lbl">Last Visit</span><span class="val">${c.lastDate?fmtD(c.lastDate):"—"}</span></div>
   `;
   openM("mVwC");
 }
