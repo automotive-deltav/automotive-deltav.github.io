@@ -101,12 +101,12 @@ body{font-family:'Segoe UI',Arial,sans-serif;font-size:11pt;color:#222;backgroun
         Smethwick, West Midlands, B66 2B4<br>
         📞 0121 5650888<br>
         📧 automotive.deltav@yahoo.com<br>
-        VAT Reg: GB XXX XXXX XX
+        VAT Registration Number: GB 511 6829 00
       </div>
     </div>
     <div class="inv-meta">
       <div class="inv-label">INVOICE</div>
-      <div class="inv-num" id="pInvNum">INV-0000</div>
+      <div class="inv-num" id="pInvNum">INV-000001</div>
       <div class="inv-date">Date: <span id="pDate">—</span></div>
       <div id="pStatusBadge" style="margin-top:10px"></div>
     </div>
@@ -153,7 +153,7 @@ body{font-family:'Segoe UI',Arial,sans-serif;font-size:11pt;color:#222;backgroun
     <div class="payment-box">
       <div class="pay-detail">
         <h4>Payment Details</h4>
-        <p>Bank: To be registered<br>Sort Code: —<br>Account: —<br>Reference: <span id="pPayRef">INV-0000</span></p>
+        <p>Bank: To be registered<br>Sort Code: —<br>Account: —<br>Reference: <span id="pPayRef">INV-000001</span></p>
       </div>
       <div class="pay-detail">
         <h4>Payment Terms</h4>
@@ -168,6 +168,22 @@ body{font-family:'Segoe UI',Arial,sans-serif;font-size:11pt;color:#222;backgroun
 const SB="https://cxzapvieqzqfxzolqwoh.supabase.co";
 const KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN4emFwdmllcXpxZnh6b2xxd29oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA1NjU4MzgsImV4cCI6MjA4NjE0MTgzOH0.x_F07XpdThY6EqwaP8jJGgdBIMTHdYfTr99IMOpSq_E";
 
+async function ensureInvoiceNumber(inv){
+  const existing=parseInt(inv?.invoice_number,10);
+  if(Number.isFinite(existing)&&existing>0)return existing;
+  const maxResp=await fetch(`${SB}/rest/v1/invoices?select=invoice_number&invoice_number=not.is.null&order=invoice_number.desc&limit=1`,{headers:{"apikey":KEY,"Authorization":`Bearer ${KEY}`}});
+  const maxRows=await maxResp.json();
+  const maxNum=parseInt(maxRows?.[0]?.invoice_number,10);
+  const nextNum=(Number.isFinite(maxNum)&&maxNum>0?maxNum:0)+1;
+  await fetch(`${SB}/rest/v1/invoices?id=eq.${inv.id}`,{
+    method:"PATCH",
+    headers:{"apikey":KEY,"Authorization":`Bearer ${KEY}`,"Content-Type":"application/json","Prefer":"return=minimal"},
+    body:JSON.stringify({invoice_number:nextNum})
+  });
+  inv.invoice_number=nextNum;
+  return nextNum;
+}
+
 async function loadPDF(){
   const id=sessionStorage.getItem("pdf_inv_id");
   if(!id){
@@ -178,7 +194,8 @@ async function loadPDF(){
   const[inv]=await r.json();
   if(!inv)return;
 
-  const num="INV-"+String(inv.id).padStart(4,"0").slice(-4);
+  const invoiceNumber=await ensureInvoiceNumber(inv);
+  const num="INV-"+String(invoiceNumber).padStart(6,"0");
   document.getElementById("pInvNum").textContent=num;
   document.getElementById("pPayRef").textContent=num;
   document.getElementById("pDate").textContent=inv.invoice_date;
@@ -190,7 +207,7 @@ async function loadPDF(){
   document.getElementById("pTotal").textContent="£"+(inv.total_amount||0).toFixed(2);
   
   if(!inv.vat_applied)document.getElementById("pVATRow").style.display="none";
-  document.getElementById("pVATNote").textContent=inv.vat_applied?"VAT registered invoice — VAT No. GB XXX XXXX XX":"Prices shown do not include VAT";
+  document.getElementById("pVATNote").textContent=inv.vat_applied?"VAT registered invoice — VAT No. GB 511 6829 00":"Prices shown do not include VAT";
 
   const pb=document.getElementById("pParts");
   (inv.parts||[]).forEach(p=>{

@@ -128,8 +128,41 @@
 <div class="mfoot"><button class="btn btn-ghost" onclick="closeM('mInv')">Cancel</button><button class="btn btn-primary" onclick="saveInv()">💾 Save Invoice</button></div>
 </div></div></div></div><div class="modal" id="mDel"><div class="mbox" style="max-width:370px"><h3>🗑️ Confirm Delete</h3><p id="mDelMsg" style="color:#555;margin-bottom:4px">This cannot be undone.</p><div class="mfoot"><button class="btn btn-ghost" onclick="closeM('mDel')">Cancel</button><button class="btn btn-danger" id="mDelBtn">Yes, Delete</button></div></div></div><script src="shared.js"></script><script>
 let invData=[],invEdit=null,custNms=[],custEms=[],custRegs=[];
+function getInvoiceNumberValue(inv){
+  const raw=inv?.invoice_number??0;
+  const n=parseInt(raw,10);
+  return Number.isFinite(n)&&n>0?n:0;
+}
+function formatInvoiceNum(n){
+  const v=parseInt(n,10);
+  const safe=Number.isFinite(v)&&v>0?v:1;
+  return "INV-"+String(safe).padStart(6,"0");
+}
+function getNextInvoiceNum(){
+  const maxNum=invData.reduce((mx,inv)=>Math.max(mx,getInvoiceNumberValue(inv)),0);
+  return maxNum+1;
+}
+async function ensureInvoiceNumbers(){
+  const existingMax=invData.reduce((mx,inv)=>Math.max(mx,getInvoiceNumberValue(inv)),0);
+  let nextNumber=existingMax+1;
+  const missing=invData
+    .filter(inv=>!getInvoiceNumberValue(inv))
+    .sort((a,b)=>{
+      const ad=(a.invoice_date||"").toString();
+      const bd=(b.invoice_date||"").toString();
+      if(ad<bd)return -1;
+      if(ad>bd)return 1;
+      return (a.id||0)-(b.id||0);
+    });
+  for(const inv of missing){
+    await dbUpd("invoices",inv.id,{invoice_number:nextNumber});
+    inv.invoice_number=nextNumber;
+    nextNumber++;
+  }
+}
 async function loadInv(){
   invData=await dbGet("invoices","&order=invoice_date.desc");
+  await ensureInvoiceNumbers();
   const bks=await dbGet("bookings");
   custNms=[...new Set(bks.map(b=>b.name).filter(Boolean))];
   custEms=[...new Set(bks.map(b=>b.email).filter(Boolean))];
@@ -159,7 +192,8 @@ function renderInv(){
   const el4=document.getElementById("statPaid");
   if(el4) el4.textContent=invData.filter(i=>i.payment_status==="paid").length;
   f.forEach(inv=>{
-    const num="INV-"+String(inv.id||"0000").slice(-4).padStart(4,"0");
+    const invNum=getInvoiceNumberValue(inv);
+    const num=invNum?formatInvoiceNum(invNum):"INV-—";
     const pc=(inv.parts||[]).length;
     const statusColor=inv.payment_status==="paid"?'var(--ok)':'var(--er)';
     const card=document.createElement("div");
@@ -318,6 +352,8 @@ async function saveInv(){
     await dbUpd("invoices",invEdit,payload);
     toast("Invoice updated!");
   } else {
+    const nextInvoiceNumber=getNextInvoiceNum();
+    payload.invoice_number=nextInvoiceNumber;
     const invId = await dbIns("invoices",payload);
     
     // Deduct from inventory
@@ -343,10 +379,11 @@ async function saveInv(){
   loadInv();
 }
 function editInv(id){const inv=invData.find(x=>x.id===id);if(!inv)return;invEdit=id;document.getElementById("mInvTit").textContent="✏️ Edit Invoice";document.getElementById("iCN").value=inv.customer_name;document.getElementById("iCE").value=inv.customer_email;document.getElementById("iDt").value=inv.invoice_date;document.getElementById("iReg").value=inv.car_reg||"";document.getElementById("iPay").value=inv.payment_status;document.getElementById("iVAT").checked=inv.vat_applied||false;document.getElementById("iNotes").value=inv.notes||"";document.getElementById("partsW").innerHTML="";(inv.parts||[]).forEach(p=>addPart(p));if(!(inv.parts||[]).length)addPart();calcT();openM("mInv");}
+function editInv(id){const inv=invData.find(x=>x.id===id);if(!inv)return;invEdit=id;document.getElementById("mInvTit").textContent="✏️ Edit Invoice";const invNum=getInvoiceNumberValue(inv);document.getElementById("iNum").textContent=invNum?formatInvoiceNum(invNum):"INV-—";document.getElementById("iCN").value=inv.customer_name;document.getElementById("iCE").value=inv.customer_email;document.getElementById("iDt").value=inv.invoice_date;document.getElementById("iReg").value=inv.car_reg||"";document.getElementById("iPay").value=inv.payment_status;document.getElementById("iVAT").checked=inv.vat_applied||false;document.getElementById("iNotes").value=inv.notes||"";document.getElementById("partsW").innerHTML="";(inv.parts||[]).forEach(p=>addPart(p));if(!(inv.parts||[]).length)addPart();calcT();openM("mInv");}
 async function togPay(id,cur){const ns=cur==="paid"?"unpaid":"paid";await dbUpd("invoices",id,{payment_status:ns});const inv=invData.find(x=>x.id===id);if(inv)inv.payment_status=ns;renderInv();toast(`Marked ${ns}`,"in");}
 async function dupInv(id){const inv=invData.find(x=>x.id===id);if(!inv)return;const c={...inv};delete c.id;c.invoice_date=today();await dbIns("invoices",c);loadInv();toast("Invoice duplicated!");}
 function delInv(id){confirmDel("Delete this invoice?",async()=>{await dbDel("invoices",id);invData=invData.filter(i=>i.id!==id);renderInv();toast("Deleted","in");});}
-function exportInv(){const rows=[["Invoice #","Customer","Email","Date","Reg","Subtotal","VAT","Total","Status"]];invData.forEach(i=>rows.push(["INV-"+String(i.id||0).slice(-4),i.customer_name,i.customer_email,i.invoice_date,i.car_reg||"",i.subtotal?.toFixed(2)||"0.00",i.vat_amount?.toFixed(2)||"0.00",i.total_amount?.toFixed(2)||"0.00",i.payment_status]));const csv=rows.map(r=>r.map(c=>`"${c||""}"`).join(",")).join("\\n");const a=document.createElement("a");a.href="data:text/csv,"+encodeURIComponent(csv);a.download="invoices.csv";a.click();}
+function exportInv(){const rows=[["Invoice #","Customer","Email","Date","Reg","Subtotal","VAT","Total","Status"]];invData.forEach(i=>{const invNum=getInvoiceNumberValue(i);rows.push([invNum?formatInvoiceNum(invNum):"",i.customer_name,i.customer_email,i.invoice_date,i.car_reg||"",i.subtotal?.toFixed(2)||"0.00",i.vat_amount?.toFixed(2)||"0.00",i.total_amount?.toFixed(2)||"0.00",i.payment_status]);});const csv=rows.map(r=>r.map(c=>`"${c||""}"`).join(",")).join("\\n");const a=document.createElement("a");a.href="data:text/csv,"+encodeURIComponent(csv);a.download="invoices.csv";a.click();}
 function pdfInv(id){sessionStorage.setItem("pdf_inv_id",id);window.open("invoice-print.html","_blank");}
 function downloadInvPDF(id){
   sessionStorage.setItem("pdf_inv_id",id);
